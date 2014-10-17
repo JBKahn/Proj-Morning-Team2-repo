@@ -1,5 +1,5 @@
-Django Sass Template [![Build Status](https://travis-ci.org/JBKahn/Django-sass-template-example.svg?branch=master)](https://travis-ci.org/JBKahn/Django-sass-template-example)
-====================
+AbArticulus
+===========
 
 Setup
 -----
