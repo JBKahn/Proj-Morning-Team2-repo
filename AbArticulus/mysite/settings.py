@@ -10,3 +10,6 @@ import dj_database_url
 DATABASES = {}
 DATABASES['default'] = dj_database_url.config()
 DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
+
+# Security
+ALLOWED_HOSTS = ['.abarticulus.me']
