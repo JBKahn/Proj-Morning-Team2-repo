@@ -7,7 +7,6 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('home', '0001_initial'),
     ]
 
     operations = [
@@ -16,7 +15,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('item', models.CharField(max_length=255)),
-                ('status', models.BooleanField(default=False)),
+                ('is_done', models.BooleanField(default=False)),
             ],
             options={
             },
