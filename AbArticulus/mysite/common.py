@@ -94,7 +94,9 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY', 'test
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET', 'test-secret')
 
 SOCIAL_AUTH_UID_LENGTH = 255
-
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    'https://www.googleapis.com/auth/plus.login'
+]
 # Uncomment when new release is made
 # TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
