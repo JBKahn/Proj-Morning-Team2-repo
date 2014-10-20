@@ -1,6 +1,12 @@
-from django.http import HttpResponse
-from django.views.generic.base import View
 from social_auth.views import complete
+
+from django.http import HttpResponse
+from django.views.generic import TemplateView
+from django.views.generic.base import View
+
+
+class LoggedInView(TemplateView):
+    template_name = 'logged_in.html'
 
 
 class AuthComplete(View):
