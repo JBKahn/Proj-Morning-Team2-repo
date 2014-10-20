@@ -118,6 +118,9 @@ Setup
     `heroku run python manage.py syncdb`
 
 
+7. You will also need to set: DJANGO_SETTINGS_MODULE, EMAIL_HOST_PASSWORD, EMAIL_HOST, DATABASE_URL, STATIC_ROOT, MEDIA_ROOT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, DEFAULT_FROM_EMAIL, SECRET_KEY
+
+
 Deploy
 ------
 
