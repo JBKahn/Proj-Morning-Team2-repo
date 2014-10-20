@@ -8,6 +8,11 @@ from django.views.generic.base import View
 class LoggedInView(TemplateView):
     template_name = 'logged_in.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(LoggedInView, self).get_context_data(**kwargs)
+        import ipdb; ipdb.set_trace();
+        return context
+
 
 class AuthComplete(View):
     def get(self, request, *args, **kwargs):

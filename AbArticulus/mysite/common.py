@@ -53,9 +53,7 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'social.backends.google.GoogleOpenId',
     'social.backends.google.GoogleOAuth2',
-    'social.backends.google.GoogleOAuth',
     'django.contrib.auth.backends.ModelBackend'
 )
 
@@ -94,8 +92,8 @@ LOGIN_ERROR_URL = '/login-error/'
 SOCIAL_AUTH_COMPLETE_URL_NAME = 'socialauth_complete'
 SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'socialauth_associate_complete'
 
-GOOGLE_OAUTH2_CLIENT_ID = os.getenv('CLIENT ID', 'realclient1')
-GOOGLE_OAUTH2_CLIENT_SECRET = os.getenv('CLIENT SECRET', 'brucewayne')
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY', 'test-key')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET', 'test-secret')
 
 # Uncomment when new release is made
 # TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
