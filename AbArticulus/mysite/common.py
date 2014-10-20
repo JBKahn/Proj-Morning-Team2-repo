@@ -12,6 +12,8 @@ from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
+from .common import *
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
@@ -29,6 +31,8 @@ INSTALLED_APPS = (
     'social_auth',
     # 'django_nose', uncomment when Django 1.7 release
     'home',
+    'todo',
+    'authentication',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -75,8 +79,6 @@ USE_TZ = True
 # Uncomment when new release is made
 # TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
-
-
 SOCIAL_AUTH_DEFAULT_USERNAME = 'new_social_auth_user'
 SOCIAL_AUTH_UID_LENGTH = 16
 SOCIAL_AUTH_ASSOCIATION_HANDLE_LENGTH = 16
@@ -85,18 +87,17 @@ SOCIAL_AUTH_ASSOCIATION_SERVER_URL_LENGTH = 16
 SOCIAL_AUTH_ASSOCIATION_HANDLE_LENGTH = 16
 SOCIAL_AUTH_ENABLED_BACKENDS = ('google')
 
-LOGIN_URL          = '/login-form/'
+LOGIN_URL = '/login-form/'
 LOGIN_REDIRECT_URL = '/logged-in/'
-LOGIN_ERROR_URL    = '/login-error/'
-SOCIAL_AUTH_COMPLETE_URL_NAME  = 'socialauth_complete'
+LOGIN_ERROR_URL = '/login-error/'
+SOCIAL_AUTH_COMPLETE_URL_NAME = 'socialauth_complete'
 SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'socialauth_associate_complete'
 
+GOOGLE_OAUTH2_CLIENT_ID = os.getenv('CLIENT ID', 'realclient1')
+GOOGLE_OAUTH2_CLIENT_SECRET = os.getenv('CLIENT SECRET', 'brucewayne')
 
-GOOGLE_OAUTH2_CLIENT_ID      = os.getenv('CLIENT ID', 'realclient1')
-GOOGLE_OAUTH2_CLIENT_SECRET  = os.getenv('CLIENT SECRET', 'brucewayne')
-import os
-
-from .common import *
+# Uncomment when new release is made
+# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
