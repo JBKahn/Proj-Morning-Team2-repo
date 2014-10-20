@@ -93,6 +93,8 @@ SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'socialauth_associate_complete'
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY', 'test-key')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET', 'test-secret')
 
+SOCIAL_AUTH_UID_LENGTH = 255
+
 # Uncomment when new release is made
 # TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
