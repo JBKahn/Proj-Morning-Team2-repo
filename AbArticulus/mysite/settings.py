@@ -9,7 +9,8 @@ from .common import *
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = ['static']
-STATIC_ROOT = "sitestatic"
+STATIC_ROOT = os.getenv('STATIC_ROOT', "sitestatic")
+MEDIA_ROOT = os.getenv('MEDIA_ROOT', "")
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -33,11 +34,11 @@ ALLOWED_HOSTS = ['*']
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'orlykahnmakeupartist@gmail.com'
-EMAIL_HOST_PASSWORD = 'testpassword'
-DEFAULT_FROM_EMAIL = 'orlykahnmakeupartist@gmail.com'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 
 # Security
-SECRET_KEY = 'u=^)5nuz)f)*svbu22kxg^(g+w2q*zk!x##o^hk7((_+87dsoc'
-DEBUG = True
+SECRET_KEY = os.getenv('SECRET_KEY', 'mopi)(=3l5y-)n*o2$io0=i(_=5vo=u4@5l%3kliqtkd_k(12=')
+DEBUG = False
 TEMPLATE_DEBUG = False
