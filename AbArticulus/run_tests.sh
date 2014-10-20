@@ -1,2 +1,2 @@
 #!/bin/sh
-python manage.py test --settings="mysite.development"
+python manage.py test
