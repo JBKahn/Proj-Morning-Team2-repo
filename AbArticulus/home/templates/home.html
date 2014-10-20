@@ -5,10 +5,9 @@
 
 {% block main_content %}
 
-{% url "auth:socialauth_begin" "google" %}
-{% url "ngtodo:todo_home" %}
-
-
+<a href="{% url "social:begin" "google" %}">Google auth time</a>
+<br>
+<a href="{% url "ngtodo:todo_home" %}">todo list time</a>
 
 {% endblock main_content %}
 

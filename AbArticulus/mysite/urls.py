@@ -8,5 +8,6 @@ urlpatterns = patterns(
     url(r'', include('home.urls', namespace="home")),
     url(r'^ngtodo/', include('todo.urls', namespace="ngtodo")),
     url(r'^auth/', include('authentication.urls', namespace="auth")),
+    url('', include('social.apps.django_app.urls', namespace='social')),
     url(r'^admin/', include(admin.site.urls)),
 )

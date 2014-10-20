@@ -28,7 +28,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rest_framework',
     'django_extensions',
-    'social_auth',
+    'social.apps.django_app.default',
     # 'django_nose', uncomment when Django 1.7 release
     'home',
     'todo',
@@ -53,9 +53,10 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'social_auth.backends.google.GoogleOAuthBackend',
-    'social_auth.backends.google.GoogleOAuth2Backend',
-    'social_auth.backends.google.GoogleBackend',
+    'social.backends.google.GoogleOpenId',
+    'social.backends.google.GoogleOAuth2',
+    'social.backends.google.GoogleOAuth',
+    'django.contrib.auth.backends.ModelBackend'
 )
 
 
