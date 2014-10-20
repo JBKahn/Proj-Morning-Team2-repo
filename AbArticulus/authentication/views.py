@@ -1,4 +1,4 @@
-from social_auth.views import complete
+from social.apps.django_app.views import complete
 
 from django.http import HttpResponse
 from django.views.generic import TemplateView

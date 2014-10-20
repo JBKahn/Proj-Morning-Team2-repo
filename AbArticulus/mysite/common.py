@@ -46,10 +46,8 @@ MIDDLEWARE_CLASSES = (
 
 TEMPLATE_CONTEXT_PROCESSORS += (
     "django.core.context_processors.request",
-    'social_auth.context_processors.social_auth_by_name_backends',
-    'social_auth.context_processors.social_auth_backends',
-    'social_auth.context_processors.social_auth_by_type_backends',
-    'social_auth.context_processors.social_auth_login_redirect',
+    'social.apps.django_app.context_processors.backends',
+    'social.apps.django_app.context_processors.login_redirect',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -129,3 +127,5 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'orlykahnmakeupartist@gmail
 SECRET_KEY = os.getenv('SECRET_KEY', 'mopi)(=3l5y-)n*o2$io0=i(_=5vo=u4@5l%3kliqtkd_k(12=')
 DEBUG = False
 TEMPLATE_DEBUG = False
+
+ADMINS = (('Joseph', 'josephbkahn@gmail.com'),)
