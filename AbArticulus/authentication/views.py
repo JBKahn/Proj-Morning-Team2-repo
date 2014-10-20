@@ -10,7 +10,6 @@ class LoggedInView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(LoggedInView, self).get_context_data(**kwargs)
-        import ipdb; ipdb.set_trace();
         return context
 
 
