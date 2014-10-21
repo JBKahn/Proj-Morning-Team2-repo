@@ -90,6 +90,7 @@ LOGIN_ERROR_URL = '/login-error/'
 SOCIAL_AUTH_COMPLETE_URL_NAME = 'socialauth_complete'
 SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'socialauth_associate_complete'
 
+# Testing credis, not the same as production.
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY', '431963982893-3pr9fbnqcqs07pf0q42mek9le21rabdo.apps.googleusercontent.com')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET', 'SKw8oWyoIbjU0POVySyg_25T')
 
