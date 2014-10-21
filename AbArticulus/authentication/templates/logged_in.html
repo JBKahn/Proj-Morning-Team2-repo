@@ -1,3 +1,6 @@
-You are logged in!!!!!
-{{ request.user }}
-{{ friends }}
+You are logged in as {{ request.user }}!!!!!
+<br>
+{% for friend in friends %}
+<h1><a href="{{ friend.url }}" target="_blank">{{ friend.displayName }}</a></h1>
+<img src="{{ friend.image.url }}">
+{% endfor %}
