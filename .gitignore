@@ -17,3 +17,6 @@ mysite/production.py
 
 # static root
 sitestatic/
+
+# database
+db.sqlite3
