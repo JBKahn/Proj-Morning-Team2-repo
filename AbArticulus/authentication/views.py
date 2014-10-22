@@ -1,4 +1,6 @@
+import json
 import requests
+from dateutil.parser import parse
 from social.apps.django_app.views import complete
 
 from django.contrib.auth import logout as auth_logout
@@ -26,14 +28,25 @@ class LoggedInView(TemplateView):
         user = self.request.user
         social = user.social_auth.get(provider='google-oauth2')
         response = requests.get(
-            'https://www.googleapis.com/plus/v1/people/me/people/visible',
+            'https://www.googleapis.com/calendar/v3/users/me/calendarList',
             params={'access_token': social.extra_data['access_token']}
         )
         friends = response.json()['items']
         context.update({
             'friends': friends,
         })
-        return context
+        id = friends[1].get('id')
+        response = requests.get(url='https://www.googleapis.com/calendar/v3/calendars/{}/events'.format(id),params={'access_token': social.extra_data['access_token']})
+        events = []
+        for item in response.json().get('items'):
+            events.append({
+                'end': item.get('end') and item.get('end').get('dateTime'),
+                'start': item.get('start') and item.get('start').get('dateTime'),
+                'allDay': item.get('end') and item.get('end').get('dateTime') and parse(item.get('end').get('dateTime')) and parse(item.get('end').get('dateTime')).hour == item.get('end') and item.get('end').get('dateTime') and parse(item.get('end').get('dateTime')) and parse(item.get('end').get('dateTime')).minute == 0,
+                'title': item.get('summary'),
+                'id': item.get('id'),
+            })
+        return {"events": json.dumps(events)}
 
 
 def logout(request):
