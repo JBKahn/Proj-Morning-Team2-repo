@@ -52,6 +52,7 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 
 AUTHENTICATION_BACKENDS = (
     'social.backends.google.GoogleOAuth2',
+    'social.backends.email.EmailAuth',
     'django.contrib.auth.backends.ModelBackend'
 )
 
@@ -113,6 +114,32 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'django.contrib.staticfiles.finders.FileSystemFinder',
 )
+
+SOCIAL_AUTH_PIPELINE = (
+    'social.pipeline.social_auth.social_details',
+    'social.pipeline.social_auth.social_uid',
+    'social.pipeline.social_auth.auth_allowed',
+    'social.pipeline.social_auth.social_user',
+    'authentication.pipeline.require_email',
+    'authentication.pipeline.uoft_email_validation',
+    'social.pipeline.user.create_user',
+    'social.pipeline.social_auth.associate_user',
+    'social.pipeline.social_auth.load_extra_data',
+    'social.pipeline.user.user_details',
+    # 'social.pipeline.debug.debug'
+)
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/auth/logged-in/'
+URL_PATH = ''
+SOCIAL_AUTH_STRATEGY = 'social.strategies.django_strategy.DjangoStrategy'
+SOCIAL_AUTH_STORAGE = 'social.apps.django_app.default.models.DjangoStorage'
+SOCIAL_AUTH_EMAIL_FORM_HTML = 'email_signup.html'
+SOCIAL_AUTH_EMAIL_VALIDATION_FUNCTION = 'authentication.mail.send_validation_code'
+SOCIAL_AUTH_EMAIL_VALIDATION_URL = '/auth/email-sent/'
+
+
+AUTH_USER_MODEL = 'authentication.CustomUser'
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
