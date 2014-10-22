@@ -1,0 +1,14 @@
+{
+  "name": "SampleApp",
+  "dependencies": {
+    "grunt": "0.4.2",
+    "grunt-contrib-concat": "0.3.0",
+    "grunt-contrib-watch": "0.5.3",
+    "grunt-contrib-sass": "0.6.0",
+    "grunt-contrib-copy": "0.5.0"
+  },
+  "devDependencies": {
+    "load-grunt-tasks": "~0.6.0",
+    "grunt-angular-templates": "~0.5.7"
+  }
+}
