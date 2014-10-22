@@ -1,32 +1,10 @@
 import requests
 from social.apps.django_app.views import complete
 
-from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout as auth_logout
 from django.views.generic import TemplateView
 from django.views.generic.base import View
-from django.utils.decorators import method_decorator
-
-class LoggedInView(TemplateView):
-    template_name = 'logged_in.html'
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(LoggedInView, self).dispatch(*args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super(LoggedInView, self).get_context_data(**kwargs)
-	user = self.request.user
-	social = user.social_auth.get(provider='google-oauth2')
-	response = requests.get(
-	    'https://www.googleapis.com/plus/v1/people/me/people/visible',
-	    params={'access_token': social.extra_data['access_token']}
-	)
-	friends = response.json()['items']
-	context.update({
-	    'friends': friends,
-	})
-        return context
+from django.shortcuts import redirect
 
 
 class AuthComplete(View):
@@ -35,6 +13,55 @@ class AuthComplete(View):
         return complete(request, backend, *args, **kwargs)
 
 
-class LoginError(View):
-    def get(self, request, *args, **kwargs):
-        return HttpResponse(status=401)
+class LoggedInView(TemplateView):
+    template_name = 'logged_in.html'
+
+    def dispatch(self, *args, **kwargs):
+        if not self.request.user.is_authenticated():
+            return redirect('home:home_page')
+        return super(LoggedInView, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(LoggedInView, self).get_context_data(**kwargs)
+        user = self.request.user
+        social = user.social_auth.get(provider='google-oauth2')
+        response = requests.get(
+            'https://www.googleapis.com/plus/v1/people/me/people/visible',
+            params={'access_token': social.extra_data['access_token']}
+        )
+        friends = response.json()['items']
+        context.update({
+            'friends': friends,
+        })
+        return context
+
+
+def logout(request):
+    """Logs out user"""
+    auth_logout(request)
+    return redirect('/')
+
+
+class RequireEmailView(TemplateView):
+    template_name = 'home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(RequireEmailView, self).get_context_data(**kwargs)
+        backend = self.request.session['partial_pipeline']['backend']
+        context.update({
+            'email_required': True,
+            'backend': backend
+        })
+        return context
+
+
+class ValidationCodeSentView(TemplateView):
+    template_name = 'home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ValidationCodeSentView, self).get_context_data(**kwargs)
+        context.update({
+            'validation_sent': True,
+            'email': self.request.session.get('email_validation_address')
+        })
+        return context
