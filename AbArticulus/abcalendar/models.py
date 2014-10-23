@@ -1,18 +1,17 @@
 from django.db import models
 
 class Event(models.Model):
-    eventID = models.CharField(max_length=255)#Google event id goes here
-    tagID = foreignKey(Tag)
+    event = models.CharField(max_length=255)#Google event id goes here
+    tag = foreignKey(Tag)
     eventDetail = foreignKey(EventDetail)
     
 class EventDetail(models.Model):
-    tagID = foreignKey(Tag)
-    eventType = foreignKey(Tag, to_field=tagType) #Unsure
-    votes = models.foreignKey(Vote) #how does this get all tags associated with User
+    tag = foreignKey(Tag)
+    votes = models.foreignKey(Vote) 
 
 class Tag(models.Model):
-    eventID = models.CharField(max_length=255)
-    tagID = models.CharField(max_length=255)
+    event = models.foreignKey(Event)
+    
     TAG_CHOICES = (
         ('Test, Test'),
         ('Assignment, Assignment'),
@@ -24,15 +23,13 @@ class Tag(models.Model):
     tagType = models.CharField(max_length=25, choices=TAG_CHOICES, default='Homework')
 
 class Comment(models.Model):
-    eventID = foreignKey(Event)
-    userID = models.foreignKey(User)
-    comment = models.CharField(max_length=255) #length too small?
-    time = models.DateTimeField(auto_now_add=True)
-    
-class User(models.Model):
-    userID = models.CharField(max_length=255) #this line necessary?
-    tags = models.foreignKey(tag) #how does this get all tags associated with User
+    event = foreignKey(Event)
+    user = models.foreignKey(User)
+    comment = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True)
+
     
 class Vote(models.Model):
     user = foreginKey(User)
     event = foreignKey(Event)
+
