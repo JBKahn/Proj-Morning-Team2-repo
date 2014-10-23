@@ -1,10 +1,11 @@
-var EventController =  function(TimeTable) {
+var CalendarController =  function(TimeTable) {
     var date = new Date();
     var d = date.getDate();
     var m = date.getMonth();
     var y = date.getFullYear();
     var self = this;
-    $scope.eventSources = [];
+    $scope.eventData ={};
+    $scope.eventData.eventSources = [];
 
     TimeTableService.getEvents()
         .then(function (data) {
@@ -12,4 +13,4 @@ var EventController =  function(TimeTable) {
         })
 };
 angular.module("timeTable.controllers.event", [])
-.controller("EventController", ["TimeTable", EventController]);
+.controller("CalendarController", ["TimeTable", CalendarController]);

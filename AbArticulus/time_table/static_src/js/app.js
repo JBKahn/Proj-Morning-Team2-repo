@@ -4,9 +4,6 @@ Error.stackTraceLimit = Infinity;
 var myApp = angular.module("TimeTable", [
     "ngRoute",
     "templates",
-    "todo.controllers.todo",
-    "todo.service.todo",
-    "todo.constants"
     'ui.calendar'
 ])
 .config(["$httpProvider", "$routeProvider", function($httpProvider, $routeProvider) {
@@ -14,7 +11,7 @@ var myApp = angular.module("TimeTable", [
     $httpProvider.defaults.xsrfHeaderName = "X-CSRFToken";
 
     var routeConfig = {
-        controller: "EventController",
+        controller: "CalendarController",
         templateUrl: "templates/calendar.html"
     };
     $routeProvider
@@ -24,12 +21,11 @@ var myApp = angular.module("TimeTable", [
     });
 }]);
 
-angular.module("todo.constants", [])
+angular.module("timeTable.constants", [])
 .factory("Constants", ["$window", function($window) {
     var jsBootstrap = $window.jsBootstrap || {};
     var constants = {
-        todoListUrl: jsBootstrap.todoListUrl || "",
-        todoUpdateUrl: jsBootstrap.todoUpdateUrl || "",
+        timeTableUrl: jsBootstrap.timeTableUrl || "",
         staticUrl: jsBootstrap.staticUrl || ""
     };
 

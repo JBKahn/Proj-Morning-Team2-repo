@@ -5,7 +5,7 @@ var buildPath = "build/";
 var staticPath = "static/";
 
 var appConfig = {
-    appName: "exampleApp",
+    appName: "TimeTable",
     path: {
         appPath: appPath,
         bowerPath:  bowerPath,

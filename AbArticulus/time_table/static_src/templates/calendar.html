@@ -1,19 +1,6 @@
-<script type="text/javascript" src="bower_components/jquery/jquery.js"></script>
-<script type="text/javascript" src="bower_components/jquery-ui/ui/jquery-ui.js"></script>
-<script type="text/javascript" src="bower_components/angular/angular.js"></script>
-<script type="text/javascript" src="bower_components/angular-ui-calendar/src/calendar.js"></script>
-<script type="text/javascript" src="bower_components/fullcalendar/fullcalendar.js"></script>
-<script type="text/javascript" src="bower_components/fullcalendar/gcal.js"></script>
-
-<div class="navbar navbar-inverse" role="navigation">
-    <div class="container">
-        <a class="navbar-brand" href="#">ng-todo</a>
-        <a class="navbar-right navbar-img" href="#"><img src="/static/img/AngularJS.png" alt=""></a>
-    </div>
-</div>
-
-<section ng-controller="NgTodoController as ctrl"><!-- ctrl -->
+<section ng-controller="CalendarController as ctrl">
+    <!-- ctrl -->
     <div class="outer-container">
-    <div ui-calendar ng-model="eventSources"></div>
+        <div ui-calendar ng-model="eventData.eventSources"></div>
     </div>
 </section>
