@@ -1,21 +1,22 @@
-Error.stackTraceLimit = Infinity;
 
-angular.module("ToDoApp", [
+
+Error.stackTraceLimit = Infinity;
+var myApp = angular.module("TimeTable", [
     "ngRoute",
     "templates",
     "todo.controllers.todo",
     "todo.service.todo",
     "todo.constants"
+    'ui.calendar'
 ])
 .config(["$httpProvider", "$routeProvider", function($httpProvider, $routeProvider) {
     $httpProvider.defaults.xsrfCookieName = "csrftoken";
     $httpProvider.defaults.xsrfHeaderName = "X-CSRFToken";
 
     var routeConfig = {
-        controller: "NgTodoController",
-        templateUrl: "templates/todoApp.html"
+        controller: "EventController",
+        templateUrl: "templates/calendar.html"
     };
-
     $routeProvider
     .when("/", routeConfig)
     .otherwise({

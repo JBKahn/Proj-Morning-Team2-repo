@@ -33,6 +33,7 @@ INSTALLED_APPS = (
     'home',
     'todo',
     'authentication',
+    'time_table',
 )
 
 MIDDLEWARE_CLASSES = (
