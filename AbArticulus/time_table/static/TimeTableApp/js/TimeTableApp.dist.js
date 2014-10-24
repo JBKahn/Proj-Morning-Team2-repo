@@ -32395,11 +32395,13 @@ angular.module('templates', []).run(['$templateCache', function($templateCache) 
   'use strict';
 
   $templateCache.put('templates/calendar.html',
-    "<section ng-controller=\"CalendarController\"> <!-- ctrl -->\n" +
-    "    <div class=\"outer-container\">\n" +
-    "        <div ui-calendar ng-model=\"eventData.events\" calendar=\"myCalendar1\" config=\"eventData.uiConfig.calendar\" ui-calendar=\"eventData.uiConfig.calendar\"></div>\n" +
+    "<div role=\"main\">\n" +
+    "    <div class=\"container\">\n" +
+    "        <section id=\"directives-calendar\" ng-controller=\"CalendarController\">\n" +
+    "            <div class=\"calendar\" ng-model=\"eventSources\" calendar=\"myCalendar1\" config=\"uiConfig.calendar\" ui-calendar=\"uiConfig.calendar\"></div>\n" +
+    "        </section>\n" +
     "    </div>\n" +
-    "</section>\n"
+    "</div>\n"
   );
 
 }]);
@@ -32468,27 +32470,33 @@ angular.module("timeTable.services.event", [])
 }]);
 
 var CalendarController =  function($scope, EventService) {
-    var self = this;
-    $scope.eventData = {
-        events: []
-    };
-
     var date = new Date();
     var d = date.getDate();
     var m = date.getMonth();
     var y = date.getFullYear();
 
-    $scope.eventData.events = [
+    /* event source that contains custom events on the scope */
+    $scope.events = [
       {title: 'All Day Event',start: new Date(y, m, 1)},
       {title: 'Long Event',start: new Date(y, m, d - 5),end: new Date(y, m, d - 2)},
       {id: 999,title: 'Repeating Event',start: new Date(y, m, d - 3, 16, 0),allDay: false},
       {id: 999,title: 'Repeating Event',start: new Date(y, m, d + 4, 16, 0),allDay: false},
       {title: 'Birthday Party',start: new Date(y, m, d + 1, 19, 0),end: new Date(y, m, d + 1, 22, 30),allDay: false},
-      {title: 'Click for Google',start: new Date(y, m, 28),end: new Date(y, m, 29)}
+      {title: 'Click for Google',start: new Date(y, m, 28),end: new Date(y, m, 29),url: 'http://google.com/'}
     ];
 
-
-   $scope.eventData.uiConfig = {
+    /* Change View */
+    $scope.changeView = function(view,calendar) {
+      calendar.fullCalendar('changeView',view);
+    };
+    /* Change View */
+    $scope.renderCalender = function(calendar) {
+      if(calendar){
+        calendar.fullCalendar('render');
+      }
+    };
+    /* config object */
+    $scope.uiConfig = {
       calendar:{
         height: 450,
         editable: true,
@@ -32502,15 +32510,15 @@ var CalendarController =  function($scope, EventService) {
 
     EventService.getEvents()
         .then(function (data) {
-            if ($scope.$$childHead.myCalendar1) {
-                $scope.$$childHead.eventData.events = data;
-                $scope.$$childHead.myCalendar1.fullCalendar("rerenderEvents");
-            } else {
-                $scope.eventData.events = data;
-                $scope.myCalendar1.fullCalendar("rerenderEvents");
-            }
+            $scope.events = [data];
+            $scope.renderCalender($scope.myCalendar1);
             console.log(data);
         })
+
+
+
+    /* event sources array*/
+    $scope.eventSources = [$scope.events];
 };
 angular.module("timeTable.controllers.calendar", [])
 .controller("CalendarController", ["$scope", "EventService", CalendarController]);
