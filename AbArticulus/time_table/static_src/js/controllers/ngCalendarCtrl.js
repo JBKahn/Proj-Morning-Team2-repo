@@ -1,25 +1,23 @@
 var CalendarController =  function($scope, EventService) {
-    var date = new Date();
-    var d = date.getDate();
-    var m = date.getMonth();
-    var y = date.getFullYear();
+    var self = this;
 
     /* event source that contains custom events on the scope */
-    $scope.events = [
-    ];
+    this.eventData = {
+        events: []
+    };
 
     /* Change View */
-    $scope.changeView = function(view,calendar) {
-      calendar.fullCalendar('changeView',view);
+    this.changeView = function(view) {
+      myCalendar1.fullCalendar('changeView',view);
     };
     /* Change View */
-    $scope.renderCalender = function(calendar) {
+    this.renderCalender = function(calendar) {
       if(calendar){
         calendar.fullCalendar('render');
       }
     };
     /* config object */
-    $scope.uiConfig = {
+    this.eventData.uiConfig = {
       calendar:{
         height: 450,
         editable: true,
@@ -34,17 +32,15 @@ var CalendarController =  function($scope, EventService) {
     EventService.getEvents()
         .then(function (data) {
             for (var i = 0; i < data.length; i++) {
-                $scope.events.push(data[i]);
+                self.eventData.events.push(data[i]);
             }
-            $scope.eventSources = [$scope.events];
-            //$scope.renderCalender($scope.myCalendar1);
-            console.log(data);
+            //console.log(data);
         });
 
-
-
     /* event sources array*/
-    $scope.eventSources = [$scope.events];
+    this.CalendarData = {
+        eventSources: [this.eventData.events]
+    };
 };
 angular.module("timeTable.controllers.calendar", [])
 .controller("CalendarController", ["$scope", "EventService", CalendarController]);

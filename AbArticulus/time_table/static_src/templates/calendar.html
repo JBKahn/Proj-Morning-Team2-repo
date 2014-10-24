@@ -1,7 +1,7 @@
 <div role="main">
     <div class="container">
-        <section id="directives-calendar" ng-controller="CalendarController">
-            <div class="calendar" ng-model="eventSources" calendar="myCalendar1" config="uiConfig.calendar" ui-calendar="uiConfig.calendar"></div>
+        <section id="directives-calendar" ng-controller="CalendarController as calCtrl">
+            <div class="calendar" ng-model="calCtrl.CalendarData.eventSources" calendar="myCalendar1" config="calCtrl.uiConfig.calendar" ui-calendar="calCtrl.uiConfig.calendar"></div>
         </section>
     </div>
 </div>

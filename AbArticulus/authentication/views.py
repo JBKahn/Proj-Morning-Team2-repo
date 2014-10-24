@@ -1,6 +1,3 @@
-import json
-import requests
-from dateutil.parser import parse
 from social.apps.django_app.views import complete
 
 from django.contrib.auth import logout as auth_logout
@@ -19,34 +16,14 @@ class LoggedInView(TemplateView):
     template_name = 'logged_in.html'
 
     def dispatch(self, *args, **kwargs):
+        # TODO: Signup flow
         if not self.request.user.is_authenticated():
             return redirect('home:home_page')
-        return super(LoggedInView, self).dispatch(*args, **kwargs)
+        return redirect('time_table:home')
 
     def get_context_data(self, **kwargs):
         context = super(LoggedInView, self).get_context_data(**kwargs)
-        user = self.request.user
-        social = user.social_auth.get(provider='google-oauth2')
-        response = requests.get(
-            'https://www.googleapis.com/calendar/v3/users/me/calendarList',
-            params={'access_token': social.extra_data['access_token']}
-        )
-        friends = response.json()['items']
-        context.update({
-            'friends': friends,
-        })
-        id = friends[1].get('id')
-        response = requests.get(url='https://www.googleapis.com/calendar/v3/calendars/{}/events'.format(id),params={'access_token': social.extra_data['access_token']})
-        events = []
-        for item in response.json().get('items'):
-            events.append({
-                'end': item.get('end') and item.get('end').get('dateTime'),
-                'start': item.get('start') and item.get('start').get('dateTime'),
-                'allDay': item.get('end') and item.get('end').get('dateTime') and parse(item.get('end').get('dateTime')) and parse(item.get('end').get('dateTime')).hour == item.get('end') and item.get('end').get('dateTime') and parse(item.get('end').get('dateTime')) and parse(item.get('end').get('dateTime')).minute == 0,
-                'title': item.get('summary'),
-                'id': item.get('id'),
-            })
-        return {"events": json.dumps(events)}
+        return context
 
 
 def logout(request):
