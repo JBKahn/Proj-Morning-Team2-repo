@@ -32395,7 +32395,7 @@ angular.module('templates', []).run(['$templateCache', function($templateCache) 
   'use strict';
 
   $templateCache.put('templates/calendar.html',
-    "<section ng-controller=\"CalendarController as calCtrl\"> <!-- ctrl -->\n" +
+    "<section ng-controller=\"CalendarController\"> <!-- ctrl -->\n" +
     "    <div class=\"outer-container\">\n" +
     "        <div ui-calendar ng-model=\"eventData.events\" calendar=\"myCalendar1\" config=\"eventData.uiConfig.calendar\" ui-calendar=\"eventData.uiConfig.calendar\"></div>\n" +
     "    </div>\n" +
@@ -32502,8 +32502,13 @@ var CalendarController =  function($scope, EventService) {
 
     EventService.getEvents()
         .then(function (data) {
-            $scope.eventData.events = data;
-            //$scope.myCalendar1.fullCalendar( 'rerenderEvents' );
+            if ($scope.$$childHead.myCalendar1) {
+                $scope.$$childHead.eventData.events = data;
+                $scope.$$childHead.myCalendar1.fullCalendar("rerenderEvents");
+            } else {
+                $scope.eventData.events = data;
+                $scope.myCalendar1.fullCalendar("rerenderEvents");
+            }
             console.log(data);
         })
 };

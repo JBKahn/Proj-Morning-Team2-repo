@@ -33,8 +33,13 @@ var CalendarController =  function($scope, EventService) {
 
     EventService.getEvents()
         .then(function (data) {
-            $scope.eventData.events = data;
-            //$scope.myCalendar1.fullCalendar( 'rerenderEvents' );
+            if ($scope.$$childHead.myCalendar1) {
+                $scope.$$childHead.eventData.events = data;
+                $scope.$$childHead.myCalendar1.fullCalendar("rerenderEvents");
+            } else {
+                $scope.eventData.events = data;
+                $scope.myCalendar1.fullCalendar("rerenderEvents");
+            }
             console.log(data);
         })
 };
