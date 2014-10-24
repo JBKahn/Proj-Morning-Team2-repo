@@ -7,11 +7,9 @@ class Event(models.Model):
     
 class EventDetail(models.Model):
     tag = foreignKey(Tag)
-    votes = models.foreignKey(Vote)
     comment = models.foreignKey(Comment)
 
 class Tag(models.Model):
-    event = models.foreignKey(Event)
     number = intergerFeild
     tagType = models.CharField(max_length=25, choices=TAG_CHOICES, default='Homework')
 
