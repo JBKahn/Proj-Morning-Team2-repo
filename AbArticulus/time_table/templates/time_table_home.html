@@ -1,0 +1,24 @@
+{% load staticfiles %}
+
+{% block extra_head %}
+    <link rel="stylesheet" type="text/css" href="{% static "TimeTableApp/css/TimeTableApp.dist.css" %}">
+    <script src="{% static "TimeTableApp/js/TimeTableApp.dist.js" %}"></script>
+{% endblock extra_head %}
+
+{% block main_content %}
+
+<div ng-app="TimeTableApp">
+    <div ng-view></div>
+</div>
+
+{% endblock main_content %}
+
+{% block extra_javascript %}
+
+<script>
+    // Bootstrap Django data for angular
+    window.jsBootstrap = {};
+    window.jsBootstrap.timeTableUrl = "";
+    window.jsBootstrap.staticUrl = "{% static "" %}";
+</script>
+{% endblock %}

@@ -1,10 +1,13 @@
 
 
 Error.stackTraceLimit = Infinity;
-var myApp = angular.module("TimeTable", [
+var myApp = angular.module("TimeTableApp", [
     "ngRoute",
     "templates",
-    'ui.calendar'
+    "ui.calendar",
+    "timeTable.controllers.calendar",
+    "timeTable.services.event",
+    "timeTable.constants"
 ])
 .config(["$httpProvider", "$routeProvider", function($httpProvider, $routeProvider) {
     $httpProvider.defaults.xsrfCookieName = "csrftoken";

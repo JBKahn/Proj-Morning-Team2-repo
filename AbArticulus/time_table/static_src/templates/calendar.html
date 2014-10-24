@@ -1,6 +1,5 @@
-<section ng-controller="CalendarController as ctrl">
-    <!-- ctrl -->
+<section ng-controller="CalendarController as calCtrl"> <!-- ctrl -->
     <div class="outer-container">
-        <div ui-calendar ng-model="eventData.eventSources"></div>
+        <div ui-calendar ng-model="calCtrl.eventData.events"></div>
     </div>
 </section>

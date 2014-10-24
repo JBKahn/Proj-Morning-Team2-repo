@@ -5,7 +5,7 @@ var buildPath = "build/";
 var staticPath = "static/";
 
 var appConfig = {
-    appName: "TimeTable",
+    appName: "TimeTableApp",
     path: {
         appPath: appPath,
         bowerPath:  bowerPath,
@@ -21,10 +21,12 @@ module.exports = function(grunt) {
         concat: {
             js: {
                 src: [
+                    appConfig.path.bowerPath + 'moment/min/moment-with-locales.js',
                     appConfig.path.bowerPath + 'angular/angular.js',
                     appConfig.path.bowerPath + 'angular-route/angular-route.js',
                     appConfig.path.bowerPath + "jquery/dist/jquery.min.js",
                     appConfig.path.bowerPath + "bootstrap/dist/js/bootstrap.min.js",
+                    appConfig.path.bowerPath + "fullcalendar/dist/fullcalendar.min.js",
                     appConfig.path.bowerPath + "angular-ui-calendar/src/calendar.js"
                 ],
                 dest: appConfig.path.buildPath + "js/requirements.dist.js"
@@ -33,6 +35,7 @@ module.exports = function(grunt) {
                 src: [
                     appConfig.path.bowerPath + "bootstrap/dist/css/bootstrap.min.css",
                     appConfig.path.bowerPath + "font-awesome/css/font-awesome.min.css",
+                    appConfig.path.bowerPath + "fullcalendar/dist/fullcalendar.min.css"
                 ],
                 dest: appConfig.path.buildPath + "css/deps.style.dist.css"
             },
@@ -86,14 +89,8 @@ module.exports = function(grunt) {
                         expand: true,
                         flatten: true,
                         src: [appConfig.path.bowerPath + "jquery/dist/jquery.min.map"],
-                        dest: appConfig.path.staticPath + '<%= appConfig.appName %>/js/lib/', filter: "isFile"
-                    },
-                    {
-                        expand: true,
-                        flatten: true,
-                        src: [appConfig.path.bowerPath + "jquery/dist/jquery.min.js"],
-                        dest: appConfig.path.staticPath + '<%= appConfig.appName %>/js/lib/', filter: "isFile"
-                    },
+                        dest: appConfig.path.staticPath + '<%= appConfig.appName %>/js/', filter: "isFile"
+                    }
                 ]
             }
         },

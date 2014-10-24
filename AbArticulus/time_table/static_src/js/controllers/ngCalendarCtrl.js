@@ -1,16 +1,13 @@
-var CalendarController =  function(TimeTable) {
-    var date = new Date();
-    var d = date.getDate();
-    var m = date.getMonth();
-    var y = date.getFullYear();
+var CalendarController =  function(EventService) {
     var self = this;
-    self.eventData ={};
-    self.eventData.eventSources = [];
+    self.eventData = {
+        events: []
+    };
 
-    TimeTableService.getEvents()
-        .then(function (data) {
-            self.eventData.events = data;
-        })
+    //EventService.getEvents()
+    //    .then(function (data) {
+    //        self.eventData.events = data;
+    //    })
 };
-angular.module("timeTable.controllers.event", [])
-.controller("CalendarController", ["TimeTable", CalendarController]);
+angular.module("timeTable.controllers.calendar", [])
+.controller("CalendarController", ["EventService", CalendarController]);

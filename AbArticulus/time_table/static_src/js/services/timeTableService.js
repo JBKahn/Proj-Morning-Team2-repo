@@ -1,8 +1,8 @@
-angular.module("timeTable.service.event", [])
-.factory("TimeTableService", ["$q", "$http", "Constants", function($q, $http, Constants) {
+angular.module("timeTable.services.event", [])
+.factory("EventService", ["$q", "$http", "Constants", function($q, $http, Constants) {
     return {
         getEvents: function(){
-            var url = $window.jsBootstrap.timeTableUrl;
+            var url = Constants.get('timeTableUrl');
             var params = {};
 
             var defer = $q.defer();
