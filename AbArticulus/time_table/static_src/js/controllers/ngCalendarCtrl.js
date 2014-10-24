@@ -1,6 +1,6 @@
 var CalendarController =  function($scope, EventService) {
     var self = this;
-    self.eventData = {
+    $scope.eventData = {
         events: []
     };
 
@@ -9,7 +9,7 @@ var CalendarController =  function($scope, EventService) {
     var m = date.getMonth();
     var y = date.getFullYear();
 
-    $scope.eventSources = [
+    $scope.eventData.events = [
       {title: 'All Day Event',start: new Date(y, m, 1)},
       {title: 'Long Event',start: new Date(y, m, d - 5),end: new Date(y, m, d - 2)},
       {id: 999,title: 'Repeating Event',start: new Date(y, m, d - 3, 16, 0),allDay: false},
@@ -19,7 +19,7 @@ var CalendarController =  function($scope, EventService) {
     ];
 
 
-   $scope.uiConfig = {
+   $scope.eventData.uiConfig = {
       calendar:{
         height: 450,
         editable: true,
@@ -33,8 +33,8 @@ var CalendarController =  function($scope, EventService) {
 
     EventService.getEvents()
         .then(function (data) {
-            //self.eventSources = data;
-            $scope.myCalendar1.fullCalendar( 'rerenderEvents' );
+            $scope.eventData.events = data;
+            //$scope.myCalendar1.fullCalendar( 'rerenderEvents' );
             console.log(data);
         })
 };
