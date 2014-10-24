@@ -32,5 +32,5 @@ class Vote(models.Model):
 
 class Organization(models.Model):
     name = models.CharField(max_length=255)
-    
+    user = models.foreignKey(CustomUser)
     
