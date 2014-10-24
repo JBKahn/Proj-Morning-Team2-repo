@@ -1,7 +1,6 @@
 from django.db import models
 
 from constants.py import TAG_CHOICES, VOTE_CHOICES
-
 from authentication.models import CustomUser
 
 
