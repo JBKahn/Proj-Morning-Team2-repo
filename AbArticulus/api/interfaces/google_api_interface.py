@@ -1,4 +1,4 @@
-from calendar.api_interfaces.helpers import get_google_api_endpoint_url, make_request
+from api.interfaces.helpers import get_google_api_endpoint_url, make_request
 
 
 class GoogleApiInterface(object):

@@ -1,5 +1,5 @@
-from calendar.api_interfaces.gapi import GoogleApiInterface
-from calendar.api_interfaces.helpers import is_all_day_event
+from api.interfaces.google_api_interface import GoogleApiInterface
+from api.interfaces.helpers import is_all_day_event
 
 
 class ApiInterface(object):

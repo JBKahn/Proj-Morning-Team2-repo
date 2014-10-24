@@ -2,7 +2,7 @@ import requests
 from dateutil.parser import parse
 
 
-def get_google_api_endpoint_url(api_name, access_token, id_num=None):
+def get_google_api_endpoint_url(api_name, id_num=None):
     if api_name == 'calendarList':
         return 'https://www.googleapis.com/calendar/v3/users/me/calendarList'
     if api_name == 'events':

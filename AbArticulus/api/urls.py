@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-from calendar.views import EventAPIView
+from api.views import EventAPIView
 
 
 urlpatterns = patterns(
