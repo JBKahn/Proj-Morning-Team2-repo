@@ -4,13 +4,10 @@ from constants.py import TAG_CHOICES
 class Event(models.Model):
     gevent_id = models.CharField(max_length=255)#Google event id
     eventDetail = foreignKey(EventDetail)
-    
-class EventDetail(models.Model):
     tag = foreignKey(Tag)
-    comment = models.foreignKey(Comment)
 
 class Tag(models.Model):
-    number = intergerFeild
+    number = intergerFeild(default=1, min_value=0)
     tagType = models.CharField(max_length=25, choices=TAG_CHOICES, default='Homework')
 
 class Comment(models.Model):
@@ -22,6 +19,7 @@ class Comment(models.Model):
 class Vote(models.Model):
     user = foreginKey(User)
     event = foreignKey(Event)
+    number = intergerFeild(choices=VOTE_CHOICES)
 
 class Orginization(models.Model):
     name = models.CharFeild(max_length=255)
