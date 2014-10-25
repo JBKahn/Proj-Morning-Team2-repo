@@ -14,8 +14,8 @@ class Tag(models.Model):
     number = models.IntegerField(default=1)
 
     def save(self, *args, **kwargs):
-        if self.number < -1:
-            raise ValueError("number must be greater than 0")
+        if self.number < 0:
+            raise ValueError("number must be greater than -1")
         super(Tag, self).save(*args, **kwargs)
 
 
