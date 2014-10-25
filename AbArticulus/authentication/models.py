@@ -5,3 +5,4 @@ from django.db import models
 
 class CustomUser(AbstractUser):
     uoft_email = models.EmailField(max_length=70, blank=True)
+    tags = models.ManyToManyField('abcalendar.Tag')

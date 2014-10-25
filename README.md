@@ -10,6 +10,11 @@ Application Setup and Usage
 
 Alll can be found in the [Application Readme](./AbArticulus/README.md).
 
+What We're Working On
+---------------------
+
+We've decided to use Jira instead of Github Issues, [view our board](https://csc301.atlassian.net/secure/RapidBoard.jspa?rapidView=2).
+
 Live Website
 ------------
 

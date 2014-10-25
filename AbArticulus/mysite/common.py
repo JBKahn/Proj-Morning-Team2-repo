@@ -34,6 +34,7 @@ INSTALLED_APPS = (
     'authentication',
     'time_table',
     'api',
+    'abcalendar',
 )
 
 MIDDLEWARE_CLASSES = (
