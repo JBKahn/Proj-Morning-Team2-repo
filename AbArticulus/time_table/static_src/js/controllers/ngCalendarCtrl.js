@@ -6,16 +6,6 @@ var CalendarController =  function($scope, EventService) {
         events: []
     };
 
-    /* Change View */
-    this.changeView = function(view) {
-      myCalendar1.fullCalendar('changeView',view);
-    };
-    /* Change View */
-    this.renderCalender = function(calendar) {
-      if(calendar){
-        calendar.fullCalendar('render');
-      }
-    };
     /* config object */
     this.eventData.uiConfig = {
       calendar:{
@@ -34,7 +24,6 @@ var CalendarController =  function($scope, EventService) {
             for (var i = 0; i < data.length; i++) {
                 self.eventData.events.push(data[i]);
             }
-            //console.log(data);
         });
 
     /* event sources array*/

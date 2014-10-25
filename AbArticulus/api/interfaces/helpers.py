@@ -2,13 +2,13 @@ import requests
 from dateutil.parser import parse
 
 
-def get_google_api_endpoint_url(api_name, id_num=None):
+def get_google_api_endpoint_url(api_name, **kwargs):
     if api_name == 'calendarList':
         return 'https://www.googleapis.com/calendar/v3/users/me/calendarList'
     if api_name == 'events':
-        if id_num is None:
+        if kwargs.get('calendar_id') is None:
             raise ValueError('Calendar id was not passing in `id_num`.')
-        return 'https://www.googleapis.com/calendar/v3/calendars/{}/events'.format(id_num)
+        return 'https://www.googleapis.com/calendar/v3/calendars/{}/events'.format(kwargs.get('calendar_id'))
     raise ValueError('request api endpoint not defined.')
 
 
