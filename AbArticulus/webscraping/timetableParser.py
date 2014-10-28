@@ -77,7 +77,7 @@ def merge_course_info(course_info, other_sched, popular_courses, courses, index)
      if (len(course_info) > 7):
           if regex_for_empt.match(course_info[0].encode('utf-8')):
                other_schedule_offered = [clean_text(course_info[index].encode('utf-8')) for index in [2,3,5,6,7]]
-               courses[course_code].append([clean_text(course_info[index].encode('utf-8')) for index in [2,3,5,6,7]])
+               courses[course_code].append(other_schedule_offered)
           
      return courses
      
