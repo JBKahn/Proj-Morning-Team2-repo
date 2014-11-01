@@ -42,7 +42,7 @@ def parse_seminar_offerings(course_link):
         if len(table_rows[row].findAll('td')) == 1:
             course_code_row = cleanText(table_rows[row].findAll('td')[0].findAll(text=True)[0].encode('utf-8'))
             course_code = course_code_row[:9]
-            course_semester = course_code_row[course_code_row.find(':', 10) + 2:]
+            course_semester = course_code[-1]
             row += 1
 
         while True and row < total_rows:
@@ -54,7 +54,7 @@ def parse_seminar_offerings(course_link):
                 row += 1
 
             else:
-                if cleanText(table_rows[row].findAll('td')[0].findAll(text=True)[0].encode('utf-8')).find('Categories') != -1:
+                if cleanText(table_rows[row].findAll('td')[0].findAll(text=True)[0].encode('utf-8')).find('Categories') == 0:
                     row += 1
                     # false positive due to shitty table construction, just points out the categories
                     continue
@@ -151,14 +151,8 @@ def get_course_information(tr):
 
 def get_seminar_information(tr, course_semester):
     ''' Returns course code, courses schedule offerings, and status of sched.'''
-    if course_semester == "Spring Offerings":
-        semester = "S"
-    elif course_semester == "Fall Offerings":
-        semester = "F"
-    else:
-        semester = "Y"
     course_info = [", ".join(cell.findAll(text=True)) for cell in tr.findAll('td')]
-    course_info_report = [semester]
+    course_info_report = [course_semester]
 
     for content in [0, 1, 3, 4, 5]:
         if content < len(course_info):
