@@ -31,31 +31,31 @@ def parse_course_offerings(course_link):
      course_table = soupified(course_link,'table')
      table_rows = course_table.findAll("tr")
      total_rows = len(table_rows)
-     
-     
+     is_first_year_seminar = course_link.split('/')[-1] == 'assem.html'
+
      while row < total_rows:
           course_code_out, course_info_out, is_cancelled = get_course_information(table_rows[row])
+          course_code_sem, course_info_sem, is_cancelled_sem = first_year_seminar(table_rows[row-1])
           
-          # skips empty lists
-          if not(all([x is '' for x in course_info_out])) and row < total_rows:
-               course_code, course_info, is_cancelled = get_course_information(table_rows[row])
-               course_offering_and_info[course_code].append(course_info)
-               row += 1
-     
-               if not is_cancelled:
-                    course_offering_and_info[course_code].append(course_info)
+          if not is_cancelled:
+               course_offering_and_info[course_code_out].append(course_info_out)
           row+=1
+          
+          if is_first_year_seminar and not is_cancelled_sem:
+               course_offering_and_info[course_code_sem].append(course_info_sem)
+          row+=1               
 
           while True and row < total_rows:
                potential_course_code, alternative_lecture_info, is_cancelled = get_course_information(table_rows[row])
-         
+          
                if not potential_course_code:
                     if not is_cancelled:
-                         course_offering_and_info[course_code].append(merge_course_info(course_info, alternative_lecture_info))
+                         course_offering_and_info[course_code_out].append(merge_course_info(course_info_out, alternative_lecture_info))
                     row += 1
+                    
                else:
-                    break          
-              
+                    break    
+
      return course_offering_and_info
 
 def merge_course_info(full_course_info, differing_course):
@@ -106,7 +106,28 @@ def get_course_information(tr):
      cancelled_schedules = len(course_info) >= 5 and (course_info[4] == 'Cancel')
      
      return course_code, course_info_report, cancelled_schedules
+
+def first_year_seminar(tr):
+     seminar=''
+     course_info_report = []
+     course_info = [", ".join(cell.findAll(text=True)) for cell in tr.findAll('td')]
+     course_code = cleanText(course_info[0].encode('utf-8'))
+     # retrieve seminar course main title
+     is_seminar_main_title = len(course_code) > 10
+     
+     if is_seminar_main_title:
+          seminar = cleanText(course_info[0].encode('utf-8'))
+          
+     for content in [0, 1, 2, 3]:
+          if content < len(course_info) and not(is_seminar_main_title):
+               course_info_report.append(cleanText(course_info[content].encode('utf-8')))
+          else:
+               course_info_report.append('')         
+     cancelled_schedules = len(course_info) >= 4 and (course_info[3] == 'Cancel')
+     
+     return seminar, course_info_report, cancelled_schedules     
      
 
 if __name__ == "__main__":
+     
      parse_timetable()
