@@ -2,7 +2,6 @@ import re
 import collections
 import requests
 from bs4 import BeautifulSoup
-from urlparse import urlparse
 
 ''' Searches for the expressions below after parsing html codes '''
 uoft_timetable_website = "http://www.artsandscience.utoronto.ca/ofr/timetable/winter/sponsors.htm"
@@ -12,13 +11,13 @@ regex_for_empt = re.compile(r'\xc2\xa0')
 
 def parse_timetable():
     ''' Returns a collection of courses offered by department. '''
-    parse_timetable_url = urlparse(uoft_timetable_website)
     table = soupified(uoft_timetable_website, 'li')
 
+    uoft_tiemtable_section_base = uoft_timetable_website.rsplit('/', 1)[0]
     for dept in table.findAll(href=True):
         url_dept = dept.get('href')
         if url_dept.endswith('.html'):
-            build_full_link = parse_timetable_url.geturl().rsplit('/', 1)[0] + '/' + url_dept
+            build_full_link = '/'.join([uoft_tiemtable_section_base, url_dept])
             if url_dept == "assem.html":
                 print parse_seminar_offerings(build_full_link)
             else:
