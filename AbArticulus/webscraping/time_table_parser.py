@@ -18,7 +18,6 @@ def parse_timetable():
     for dept in table.findAll(href=True):
         url_dept = dept.get('href')
         if url_dept.endswith('.html'):
-            # and not url_dept.startswith('assem'):
             build_full_link = parse_timetable_url.geturl().rsplit('/', 1)[0] + '/' + url_dept
             if url_dept == "assem.html":
                 print parse_seminar_offerings(build_full_link)
