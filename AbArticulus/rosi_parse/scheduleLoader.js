@@ -21,11 +21,11 @@ page.open('http://www.rosi.utoronto.ca', function(status){
               console.log('Request ' + JSON.stringify(request, undefined, 4));
         };
 
-       /* page.onResourceReceived = function(response) {
+        page.onResourceReceived = function(response) {
               console.log('Receive ' + JSON.stringify(response, undefined, 4));
-        };*/
+        };
        
-       page.evaluate(function() {
+        page.evaluate(function() {
               function click(el){
                   var ev = document.createEvent("MouseEvent");
                   ev.initMouseEvent(
@@ -40,20 +40,17 @@ page.open('http://www.rosi.utoronto.ca', function(status){
                   el.dispatchEvent(ev);
              }
               
-              var el = document.querySelector('.rosi-login-content a');
-              click(el);
-              });
+             var el = document.querySelector('.rosi-login-content a');
+               click(el);
+             });
 
-
-              window.setTimeout(function(){
-                    console.log(page.frameUrl);
-                        page.render("lol.png");
-              phantom.exit();
-
-    
-              }, 6000);
+        window.setTimeout(function(){ 
+          console.log(page.frameUrl);
+          page.render("lol.png");
+          phantom.exit()
+        }, 6000);
  
-                  /*var element = page.evaluate(function(){
+         /*var element = page.evaluate(function(){
             return document.querySelector('.rosi-login-content a');
         });
 
@@ -64,7 +61,6 @@ page.open('http://www.rosi.utoronto.ca', function(status){
           phantom.exit()
         }, 9000);
         */
-        console.log("print me first");
     }
 
  
