@@ -21,7 +21,7 @@ class Tag(models.Model):
 
 class Event(models.Model):
     gevent_id = models.CharField(max_length=255)  # Google event id
-    tag = models.ForeignKey(Tag)
+    tag = models.ForeignKey(Tag, default=None, blank=True, null=True)
     user = models.ForeignKey('authentication.CustomUser')
 
 
