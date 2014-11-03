@@ -33,6 +33,9 @@ class Event(models.Model):
     reccur_until = models.DateTimeField(blank=True, null=True)
     all_day = models.BooleanField(default=False)
 
+    # if tag_choices=lecture, need to add lecture info
+    # (i.e SC, title, section, time, loc, instructor)
+
 
 class Comment(models.Model):
     gevent = models.ForeignKey(GoogleEvent, related_name='comments')
