@@ -7,7 +7,6 @@ from bs4 import BeautifulSoup
 uoft_timetable_website = "http://www.artsandscience.utoronto.ca/ofr/timetable/winter/sponsors.htm"
 regex_for_strip = re.compile(r'[\n\r\t]')
 regex_for_empt = re.compile(r'\xc2\xa0')
-uoft_timetable = {}
 
 def University_of_Toronto_Timetable():
     ''' Returns a dictionary of all the course offerings in the University of Toronto St. George Campus '''
@@ -15,20 +14,20 @@ def University_of_Toronto_Timetable():
            
 def parse_timetable():
     ''' Returns a collection of courses offered by department. '''
+    complete_uoft_timetable = {}
     table = soupified(uoft_timetable_website, 'li')
 
-    uoft_tiemtable_section_base = uoft_timetable_website.rsplit('/', 1)[0]
+    uoft_timetable_section_base = uoft_timetable_website.rsplit('/', 1)[0]
     for dept in table.findAll(href=True):
         url_dept = dept.get('href')
         if url_dept.endswith('.html'):
-            build_full_link = '/'.join([uoft_tiemtable_section_base, url_dept])
+            build_full_link = '/'.join([uoft_timetable_section_base, url_dept])
             if url_dept == "assem.html":
-                add_courses(parse_seminar_offerings(build_full_link))
+                add_courses(complete_uoft_timetable,parse_seminar_offerings(build_full_link))     
             else:
-                add_courses(parse_course_offerings(build_full_link))
-    
-                
-    return uoft_timetable
+                add_courses(complete_uoft_timetable,parse_course_offerings(build_full_link))
+
+    return complete_uoft_timetable
 
 
 def parse_seminar_offerings(course_link):
@@ -104,12 +103,12 @@ def parse_course_offerings(course_link):
 
 # Helper functions
 
-def add_courses(course_information):
+def add_courses(complete_uoft_timetable,course_information):
     ''' Adds a course in the timetable dictionary '''
     for (course_code, info) in course_information.items():
-        if uoft_timetable.has_key(course_code):
-            uoft_timetable[course_code] = info
-        uoft_timetable[course_code] = info
+        if complete_uoft_timetable.has_key(course_code):
+            complete_uoft_timetable[course_code] = info
+        complete_uoft_timetable[course_code] = info
 
 def cleanText(text):
     ''' Returns a string of course description without the escape seq. characters (i.e \r,\n). '''
@@ -176,3 +175,16 @@ def get_seminar_information(tr, course_semester):
     cancelled = len(course_info) >= 4 and (course_info[3] == 'Cancel')
 
     return course_info_report, cancelled
+
+
+def get_lecture_info(course_list):
+    ''' Returns a tuple containing information about a course (course_title, time, location, instructor). '''
+    course_title = course_list[2]
+    course_time = course_list[3]
+    course_loc = course_list[4] 
+    course_instructor = course_list[5]
+    
+    return course_title, course_time, course_loc, course_instructor
+
+    
+    
