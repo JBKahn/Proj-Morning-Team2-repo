@@ -24,6 +24,9 @@ class Event(models.Model):
     tag = models.ForeignKey(Tag)
     user = models.ForeignKey('authentication.CustomUser')
 
+    # if tag_choices=lecture, need to add lecture info
+    # (i.e SC, title, section, time, loc, instructor)
+
 
 class Comment(models.Model):
     event = models.ForeignKey(Event)
