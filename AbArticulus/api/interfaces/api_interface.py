@@ -1,16 +1,18 @@
 from api.interfaces.google_api_interface import GoogleApiInterface
 from api.interfaces.helpers import is_all_day_event, json_to_dict
+from requests import codes
 
 class ApiInterface(object):
     @classmethod
     def get_calendars_from_user(cls, user):
         response = GoogleApiInterface.get_calendars_from_user(user)
+        assert response.status_code == requests.codes.ok
         return response.json()
 
     @classmethod
     def get_events_from_calendar(cls, user, calendar_id):
         response = GoogleApiInterface.get_events_from_calendar(user, calendar_id)
-        print response
+        assert response.status_code == requests.codes.ok
         formated_events = []
         for item in response.json().get('items'):
             formated_events.append(json_to_dict(item))
@@ -19,13 +21,20 @@ class ApiInterface(object):
     @classmethod
     def get_event_from_calendar(cls, user, calendar_id, event_id):
         response = GoogleApiInterface.get_event_from_calendar(user, calendar_id, event_id)
+        assert response.status_code == requests.codes.ok
         event = json_to_dict(response.json())
         return event
+
+    @classmethod
+    def delete_event_from_calendar(cls, user, calendar_id, event_id):
+        response = GoogleApiInterface.delete_event_from_calendar(user, calendar_id, event_id)
+        assert response.status_code == requests.codes.no_content
 
     @classmethod
     def post_event_to_calendar(cls, user, calendar_id, event):
         '''event is a JSON request body, can be populated via create_event_json()'''
         response = GoogleApiInterface.post_event_to_calendar(user, calendar_id, event)
+        assert response.status_code == requests.codes.created
         event = json_to_dict(response.json())
         return event
 
