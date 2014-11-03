@@ -176,7 +176,3 @@ def get_seminar_information(tr, course_semester):
     cancelled = len(course_info) >= 4 and (course_info[3] == 'Cancel')
 
     return course_info_report, cancelled
-
-if __name__ == "__main__":
-    timetable = University_of_Toronto_Timetable()
-    lecture = timetable['EEB498Y1']
