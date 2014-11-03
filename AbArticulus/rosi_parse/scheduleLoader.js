@@ -21,42 +21,50 @@ page.open('http://www.rosi.utoronto.ca', function(status){
               console.log('Request ' + JSON.stringify(request, undefined, 4));
         };
 
-        page.onResourceReceived = function(response) {
+       /* page.onResourceReceived = function(response) {
               console.log('Receive ' + JSON.stringify(response, undefined, 4));
-        };
+        };*/
        
-       // page.includeJs("http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js", function() {
-        page.evaluate(function() {
+       page.evaluate(function() {
               function click(el){
                   var ev = document.createEvent("MouseEvent");
                   ev.initMouseEvent(
                       "click",
-                      true /* bubble */, true /* cancelable */,
+                      true, true ,
                       window, null,
-                      0, 0, 0, 0, /* coordinates */
-                      false, false, false, false, /* modifier keys */
-                      0 /*left*/, null
+                      0, 0, 0, 0, 
+                      false, false, false, false, 
+                      0, null
                   );
            
                   el.dispatchEvent(ev);
-              }
-      
+             }
+              
               var el = document.querySelector('.rosi-login-content a');
-              click(el);   
+              click(el);
+              });
+
+
+              window.setTimeout(function(){
+                    console.log(page.frameUrl);
+                        page.render("lol.png");
+              phantom.exit();
+
+    
+              }, 6000);
+ 
+                  /*var element = page.evaluate(function(){
+            return document.querySelector('.rosi-login-content a');
         });
 
-	console.log("about to run finish");
-        page.onLoadFinished = function(status){
-            if(status !== 'success'){
-              console.log('FAIL to load the address ' + page.reason_url + " " + page.reason);
-            }else{
-              console.log("yeyeyeyey");
-              page.render('rosi.png');
-            }
-        }
-        console.log("finishing now");
-        phantom.exit();
-        //});
+        page.sendEvent('click', element.offsetLeft, element.offsetTop, 'left');
+        window.setTimeout(function(){
+          console.log(page.frameUrl);
+          page.render("afterclick.png");
+          phantom.exit()
+        }, 9000);
+        */
+        console.log("print me first");
     }
 
  
