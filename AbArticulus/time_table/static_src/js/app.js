@@ -8,7 +8,8 @@ var myApp = angular.module("TimeTableApp", [
     "ui-bootstrap",
     "timeTable.controllers.calendar",
     "timeTable.services.event",
-    "timeTable.constants"
+    "timeTable.constants",
+    "event.service.event"
 ])
 .config(["$httpProvider", "$routeProvider", function($httpProvider, $routeProvider) {
     $httpProvider.defaults.xsrfCookieName = "csrftoken";
