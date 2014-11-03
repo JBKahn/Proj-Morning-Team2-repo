@@ -5,6 +5,7 @@ var myApp = angular.module("TimeTableApp", [
     "ngRoute",
     "templates",
     "ui.calendar",
+    "ui-bootstrap",
     "timeTable.controllers.calendar",
     "timeTable.services.event",
     "timeTable.constants"
