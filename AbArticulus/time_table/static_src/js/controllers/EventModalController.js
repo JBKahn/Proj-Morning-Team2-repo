@@ -4,7 +4,7 @@ var eventModalController = function ($scope, $modalInstance, items) {
     item: items[0]
   };
 
-  $scope.ok = function () {
+  $scope.save = function () {     
     $modalInstance.close($scope.selected.item);
   };
 

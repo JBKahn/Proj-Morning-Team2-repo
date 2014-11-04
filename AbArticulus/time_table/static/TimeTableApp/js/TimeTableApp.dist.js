@@ -32419,7 +32419,7 @@ angular.module('templates', []).run(['$templateCache', function($templateCache) 
     "            <div class=\"calendar\" ng-model=\"calCtrl.CalendarData.eventSources\" calendar=\"myCalendar1\" config=\"calCtrl.uiConfig.calendar\" ui-calendar=\"calCtrl.uiConfig.calendar\"></div>\n" +
     "                <script type=\"text/ng-template\" id=\"myModalContent.html\">\n" +
     "                    <div class=\"modal-header\">\n" +
-    "                        <h3 class=\"modal-title\">I'm a modal!</h3>\n" +
+    "                        <h3 class=\"modal-title\">Create Your Event Here</h3>\n" +
     "                    </div>\n" +
     "                    <div class=\"modal-body\">\n" +
     "                        <ul>\n" +
@@ -32429,15 +32429,46 @@ angular.module('templates', []).run(['$templateCache', function($templateCache) 
     "                        </ul>\n" +
     "                        Selected: <b>{{ selected.item }}</b>\n" +
     "                    </div>\n" +
+    "                    <div class=\"add-todo-group input-group input-group-lg\">\n" +
+    "                        <span class=\"input-group-addon\">\n" +
+    "                            <i class=\"glyphicon glyphicon-list-alt\"></i>\n" +
+    "                        </span>\n" +
+    "                        <input ng-model=\"ctrl.todoData.newTask\" placeholder=\"Event Title\" class=\"form-control\" type=\"text\"><!-- model  -->\n" +
+    "                        <span class=\"input-group-btn\">\n" +
+    "                        </span>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"add-todo-group input-group input-group-lg\">\n" +
+    "                        <span class=\"input-group-addon\">\n" +
+    "                            <i class=\"glyphicon glyphicon-list-alt\"></i>\n" +
+    "                        </span>\n" +
+    "                        <input ng-model=\"ctrl.todoData.newTask\" placeholder=\"\" class=\"form-control\" type=\"text\"><!-- model  -->\n" +
+    "                        <span class=\"input-group-btn\">\n" +
+    "                        </span>\n" +
+    "                    </div>\n" +
+    "                    <form>\n" +
+    "                        Date:\n" +
+    "                        <input type=\"date\" name=\"date\">\n" +
+    "                    </form>\n" +
+    "                    <form>\n" +
+    "                        Start:\n" +
+    "                        <input type=\"datetime-local\" name=\"bdaytime\">\n" +
+    "                    </form>\n" +
+    "                    <form>\n" +
+    "                        End:\n" +
+    "                        <input type=\"datetime-local\" name=\"bdaytime\">\n" +
+    "                    </form>\n" +
+    "                    <div>\n" +
+    "\t\t\t<form>\n" +
+    "                            <input type=\"checkbox\" name=\"vehicle\" value=\"Car\">All-day event\n" +
+    "                        </form>\n" +
+    "\t\t    </div>\n" +
     "                    <div class=\"modal-footer\">\n" +
-    "                        <button class=\"btn btn-primary\" ng-click=\"ok()\">OK</button>\n" +
+    "                        <button class=\"btn btn-primary\" ng-click=\"save()\">Save</button>\n" +
     "                        <button class=\"btn btn-warning\" ng-click=\"cancel()\">Cancel</button>\n" +
+    "                        <button class=\"btn btn-success\" ng-click=\"ctrl.addNewTask()\">Save</button>\n" +
     "                    </div>\n" +
     "                </script>\n" +
-    "\n" +
-    "                <button class=\"btn btn-default\" ng-click=\"calCtrl.open()\">Open me!</button>\n" +
-    "                <button class=\"btn btn-default\" ng-click=\"calCtrl.open('lg')\">Large modal</button>\n" +
-    "                <button class=\"btn btn-default\" ng-click=\"calCtrl.open('sm')\">Small modal</button>\n" +
+    "                <button class=\"btn btn-default\" ng-click=\"calCtrl.open('lg')\">Create Event</button>\n" +
     "            <div ng-show=\"selected\">Selection from a modal: {{ selected }}</div>\n" +
     "        </section>\n" +
     "    </div>\n" +
@@ -32581,13 +32612,12 @@ angular.module("timeTable.services.event", [])
 }]);
 
 var eventModalController = function ($scope, $modalInstance, items) {
-  debugger;
   $scope.items = items;
   $scope.selected = {
     item: items[0]
   };
 
-  $scope.ok = function () {
+  $scope.save = function () {     
     $modalInstance.close($scope.selected.item);
   };
 
@@ -32656,6 +32686,14 @@ var CalendarController =  function($scope, $modal, EventService) {
     });
     
     };
+    // When a user clicks save you want to call your new service (which is currently
+    // just a copy of todo code) and then when that comes back, you'll want to either
+    // update the event the user clicked on with new information or if it's a new event
+    // You want to add it to self.eventData.events using push like I do in the above code.
+    //title start, end, all-day(boolean)
+    
+    //full cal api, on click of event
+    //vs create new event
 };
 angular.module("timeTable.controllers.calendar", [])
 .controller("CalendarController", ["$scope", "$modal", "EventService", CalendarController]);
