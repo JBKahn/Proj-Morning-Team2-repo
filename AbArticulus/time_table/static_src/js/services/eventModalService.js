@@ -56,23 +56,5 @@ angular.module("event.service.event", [])
 
             return defer.promise;
         },
-        removeEvent: function(id){
-            var url = $window.jsBootstrap.todoUpdateUrl.replace(/\/0\//, "/" + id + "/"); // eventUpdate instead of todoUpdateUrl
-            var params = {
-                id: id
-            };
-
-            var defer = $q.defer();
-
-            $http({method: "DELETE", url: url, data: params})
-            .success(function(result){
-                defer.resolve(result);
-            })
-            .error(function(error){
-                defer.reject(error);
-            });
-
-            return defer.promise;
-        }
     };
 }]);

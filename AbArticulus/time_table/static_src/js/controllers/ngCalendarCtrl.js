@@ -1,4 +1,4 @@
-var CalendarController =  function($scope, EventService) {
+var CalendarController =  function($scope, $modal, EventService) {
     var self = this;
 
     /* event source that contains custom events on the scope */
@@ -30,69 +30,40 @@ var CalendarController =  function($scope, EventService) {
     this.CalendarData = {
         eventSources: [this.eventData.events]
     };
+
+    // test modal stuff
+
+  this.items = ['item1', 'item2', 'item3'];
+
+  this.open = function (size) {
+
+    var modalInstance = $modal.open({
+      templateUrl: 'myModalContent.html',
+      controller: 'EventModalController',
+      size: size,
+      resolve: {
+        items: function () {
+          return self.items;
+        }
+      }
+    });
+
+    modalInstance.result.then(function (selectedItem) {
+      self.selected = selectedItem;
+      console.log(selectedItem);
+    }, function () {
+      console.log(self.selectedItem);
+    });
+    
+    };
+    // When a user clicks save you want to call your new service (which is currently
+    // just a copy of todo code) and then when that comes back, you'll want to either
+    // update the event the user clicked on with new information or if it's a new event
+    // You want to add it to self.eventData.events using push like I do in the above code.
+    //title start, end, all-day(boolean)
+    
+    //full cal api, on click of event
+    //vs create new event
 };
 angular.module("timeTable.controllers.calendar", [])
-.controller("CalendarController", ["$scope", "EventService", CalendarController]);
-
-
-// this controller as to be incorperated into the one above?
-angular.module('ui.bootstrap.demo').controller('ModalDemoCtrl', function ($scope, $modal, $log) {
-
-  $scope.items = ['item1', 'item2', 'item3'];
-
-  $scope.open = function (size) {
-
-    var modalInstance = $modal.open({
-      templateUrl: 'myModalContent.html',
-      controller: 'EventModalController',
-      size: size,
-      resolve: {
-        items: function () {
-          return $scope.items;
-        }
-      }
-    });
-
-    modalInstance.result.then(function (selectedItem) {
-      $scope.selected = selectedItem;
-    }, function () {
-      $log.info('Modal dismissed at: ' + new Date());
-    });
-  };
-});
-
-
-
-
-
-
-
-angular.module("timeTable.controllers.calendar", [])
-.controller("CalendarController", ["$scope", "EventService", CalendarController]);
-
-
-
-angular.module('ui.bootstrap.demo').controller('ModalDemoCtrl', function ($scope, $modal, $log) {
-
-  $scope.items = ['item1', 'item2', 'item3'];
-
-  $scope.open = function (size) {
-
-    var modalInstance = $modal.open({
-      templateUrl: 'myModalContent.html',
-      controller: 'EventModalController',
-      size: size,
-      resolve: {
-        items: function () {
-          return $scope.items;
-        }
-      }
-    });
-
-    modalInstance.result.then(function (selectedItem) {
-      $scope.selected = selectedItem;
-    }, function () {
-      $log.info('Modal dismissed at: ' + new Date());
-    });
-  };
-});
+.controller("CalendarController", ["$scope", "$modal", "EventService", CalendarController]);

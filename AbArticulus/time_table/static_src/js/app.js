@@ -5,11 +5,12 @@ var myApp = angular.module("TimeTableApp", [
     "ngRoute",
     "templates",
     "ui.calendar",
-    "ui-bootstrap",
+    "ui.bootstrap",
     "timeTable.controllers.calendar",
+    "timeTable.controllers.eventModal",
     "timeTable.services.event",
     "timeTable.constants",
-    "event.service.event"
+    "event.service.event" // placeholder, no idea what for though
 ])
 .config(["$httpProvider", "$routeProvider", function($httpProvider, $routeProvider) {
     $httpProvider.defaults.xsrfCookieName = "csrftoken";

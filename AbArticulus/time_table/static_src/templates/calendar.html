@@ -2,6 +2,28 @@
     <div class="container">
         <section id="directives-calendar" ng-controller="CalendarController as calCtrl">
             <div class="calendar" ng-model="calCtrl.CalendarData.eventSources" calendar="myCalendar1" config="calCtrl.uiConfig.calendar" ui-calendar="calCtrl.uiConfig.calendar"></div>
+                <script type="text/ng-template" id="myModalContent.html">
+                    <div class="modal-header">
+                        <h3 class="modal-title">I'm a modal!</h3>
+                    </div>
+                    <div class="modal-body">
+                        <ul>
+                            <li ng-repeat="item in items">
+                                <a ng-click="selected.item = item">{{ item }}</a>
+                            </li>
+                        </ul>
+                        Selected: <b>{{ selected.item }}</b>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" ng-click="ok()">OK</button>
+                        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+                    </div>
+                </script>
+
+                <button class="btn btn-default" ng-click="calCtrl.open()">Open me!</button>
+                <button class="btn btn-default" ng-click="calCtrl.open('lg')">Large modal</button>
+                <button class="btn btn-default" ng-click="calCtrl.open('sm')">Small modal</button>
+            <div ng-show="selected">Selection from a modal: {{ selected }}</div>
         </section>
     </div>
 </div>

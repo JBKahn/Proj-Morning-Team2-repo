@@ -1,8 +1,7 @@
-angular.module('ui.bootstrap.demo').controller('ModalInstanceCtrl', function ($scope, $modalInstance, items) {
-
+var eventModalController = function ($scope, $modalInstance, items) {
   $scope.items = items;
   $scope.selected = {
-    item: $scope.items[0]
+    item: items[0]
   };
 
   $scope.ok = function () {
@@ -12,4 +11,7 @@ angular.module('ui.bootstrap.demo').controller('ModalInstanceCtrl', function ($s
   $scope.cancel = function () {
     $modalInstance.dismiss('cancel');
   };
-});
+};
+
+angular.module("timeTable.controllers.eventModal", [])
+.controller("EventModalController", ["$scope", "$modalInstance", "items", eventModalController]);

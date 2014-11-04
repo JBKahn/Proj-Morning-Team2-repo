@@ -9,6 +9,6 @@
     "angular-ui-calendar": "0.8.1",
     "fullcalendar": "1.6.4",
     "moment": "2.8.3",
-    "ui-bootstrap": "0.11.2"
+    "angular-bootstrap": "0.11.2"
   }
 }
