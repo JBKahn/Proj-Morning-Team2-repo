@@ -1,22 +1,22 @@
-from django.shortcuts import render
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
-def get_name(request):
-    # if this is a POST request we need to process the form data
-    if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
-        form = NameForm(request.POST)
-        # check whether it's valid:
-        if form.is_valid():
-            # process the data in form.cleaned_data as required
-            # ...
-            # redirect to a new URL:
-            return HttpResponseRedirect('/thanks/')
+from rosi_parse.forms import ROSIForm
 
-    # if a GET (or any other method) we'll create a blank form
-    else:
-        form = NameForm()
 
-    return render(request, 'name.html', {'form': form})
+class RosiParseAPIView(APIView):
+    """
+    Accepts ROSI credentials and calls phantom JS and returns the course codes.
+    Only accepts post requests.
+    """
 
+    def post(self, request, format='JSON', *args, **kwargs):
+        form = ROSIForm(request.POST)
+
+        if not form.is_valid():
+            return Response(form.erors, status=status.HTTP_400_BAD_REQUEST)
+
+        # TODO: invoke your script here tp get the course codes.
+        course_codes = []
+        return Response({"course_codes": course_codes})
