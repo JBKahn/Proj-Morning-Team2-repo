@@ -11,7 +11,7 @@ regex_for_empt = re.compile(r'\xc2\xa0')
 def University_of_Toronto_Timetable():
     ''' Returns a dictionary of all the course offerings in the University of Toronto St. George Campus '''
     return parse_timetable()
-           
+
 def parse_timetable():
     ''' Returns a collection of courses offered by department. '''
     complete_uoft_timetable = {}
@@ -23,7 +23,7 @@ def parse_timetable():
         if url_dept.endswith('.html'):
             build_full_link = '/'.join([uoft_timetable_section_base, url_dept])
             if url_dept == "assem.html":
-                add_courses(complete_uoft_timetable,parse_seminar_offerings(build_full_link))     
+                add_courses(complete_uoft_timetable,parse_seminar_offerings(build_full_link))
             else:
                 add_courses(complete_uoft_timetable,parse_course_offerings(build_full_link))
 
@@ -179,12 +179,12 @@ def get_seminar_information(tr, course_semester):
 
 def get_lecture_info(course_list):
     ''' Returns a tuple containing information about a course (course_title, time, location, instructor). '''
-    course_title = course_list[2]
+    course_desc = course_list[1]
+    course_section = course_list[2]
     course_time = course_list[3]
-    course_loc = course_list[4] 
+    course_loc = course_list[4]
     course_instructor = course_list[5]
-    
-    return course_title, course_time, course_loc, course_instructor
 
-    
-    
+    return course_desc, course_section, course_time, course_loc, course_instructor
+
+

@@ -11,8 +11,8 @@ class Organization(models.Model):
 class Tag(models.Model):
     tag_type = models.CharField(max_length=25, choices=TAG_CHOICES)
     organization = models.ForeignKey(Organization)
-    number = models.IntegerField(default=1)
     class_section = models.CharField(max_length=25)
+    number = models.IntegerField(default=1, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.number < 0:
@@ -28,15 +28,8 @@ class Tag(models.Model):
 
 class Event(models.Model):
     gevent_id = models.CharField(max_length=255)  # Google event id
-    tag = models.ForeignKey(Tag)
+    tag = models.ForeignKey(Tag, default=None)
     user = models.ForeignKey('authentication.CustomUser')
-
-    def add_event_info(self,tag):
-
-      if tag.tag_type == 'LECTURE':
-
-    # if tag_choices=lecture, need to add lecture info
-    # (i.e SC, title, section, time, loc, instructor)
 
 
 class Comment(models.Model):
