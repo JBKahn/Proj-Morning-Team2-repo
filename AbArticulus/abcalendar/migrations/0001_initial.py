@@ -71,7 +71,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='event',
             name='tag',
-            field=models.ForeignKey(to='abcalendar.Tag', default=None, blank=True, null=True),
+            field=models.ForeignKey(to='abcalendar.Tag'),
             preserve_default=True,
         ),
         migrations.AddField(

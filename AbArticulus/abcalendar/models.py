@@ -4,9 +4,8 @@ from constants import TAG_CHOICES, VOTE_CHOICES
 
 
 class Organization(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     user = models.ForeignKey('authentication.CustomUser')
-
 
 class Tag(models.Model):
     tag_type = models.CharField(max_length=25, choices=TAG_CHOICES)
@@ -16,7 +15,7 @@ class Tag(models.Model):
     def save(self, *args, **kwargs):
         if self.number < 0:
             raise ValueError("number must be greater than -1")
-        super(Tag, self).save(*args, **kwargs)
+        super(Tag, self).save(*args, **kwargs)  
 
 
 class Event(models.Model):

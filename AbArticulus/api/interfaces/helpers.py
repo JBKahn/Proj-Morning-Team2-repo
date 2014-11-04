@@ -1,16 +1,20 @@
-import requests
-from dateutil.parser import parse
 import json
+from dateutil.parser import parse
+
+import requests
+
 
 def get_google_api_endpoint_url(api_name, **kwargs):
     if api_name == 'calendarList':
         return 'https://www.googleapis.com/calendar/v3/users/me/calendarList'
     if api_name == 'events':
         if kwargs.get('calendar_id') is None:
-            raise ValueError('Calendar id was not passing in `id_num`.')
-        if kwargs.get('event_id') is None:
-            return 'https://www.googleapis.com/calendar/v3/calendars/{}/events'.format(kwargs.get('calendar_id'))
-        return 'https://www.googleapis.com/calendar/v3/calendars/{}/events/{}'.format(kwargs.get('calendar_id'), kwargs.get('event_id'))
+            raise ValueError('Calendar id was not passed in.')
+        if kwargs.get('event_id'):
+            event_info = '/' + kwargs.get('event_id')
+        else:
+            event_info = ''
+        return 'https://www.googleapis.com/calendar/v3/calendars/{}/events{}'.format(kwargs.get('calendar_id'), event_info)
     raise ValueError('request api endpoint not defined.')
 
 
@@ -43,6 +47,8 @@ def make_request(user, url, params=None, method="GET", data=None):
             params=params,
             headers={"Content-Type": "application/json"}
         )
+    else:
+        raise ValueError("Only GET, DELETE, POST, and PUT are supported.")
     return response
 
 
@@ -52,11 +58,12 @@ def is_all_day_event(end):
     minute = parsed_time and parsed_time.minute
     return hour == minute == 0
 
+
 def json_to_dict(event):
     return {
-            'end': event.get('end') and event.get('end').get('dateTime'),
-            'start': event.get('start') and event.get('start').get('dateTime'),
-            'allDay': is_all_day_event(event.get('end')),
-            'title': event.get('summary'),
-            'id': event.get('id'),
-        }
+        'end': event.get('end') and event.get('end').get('dateTime'),
+        'start': event.get('start') and event.get('start').get('dateTime'),
+        'allDay': is_all_day_event(event.get('end')),
+        'title': event.get('summary'),
+        'id': event.get('id'),
+    }
