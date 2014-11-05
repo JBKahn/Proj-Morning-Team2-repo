@@ -1,4 +1,4 @@
-var CalendarController =  function($scope, EventService) {
+var CalendarController =  function($scope, $modal, EventService) {
     var self = this;
 
     /* event source that contains custom events on the scope */
@@ -30,6 +30,26 @@ var CalendarController =  function($scope, EventService) {
     this.CalendarData = {
         eventSources: [this.eventData.events]
     };
+
+    this.open = function (size, eventData) {
+
+        var modalInstance = $modal.open({
+            templateUrl: 'templates/eventModal.html',
+            controller: 'EventModalController',
+            size: size,
+            resolve: {
+                eventData: function () {
+                    return eventData || {};
+                }
+            }
+        });
+
+        modalInstance.result.then(function (newEvent) {
+            self.eventData.events.push(newEvent);
+        }, function () {
+            console.log("I failed to save the event");
+        });
+    };
 };
 angular.module("timeTable.controllers.calendar", [])
-.controller("CalendarController", ["$scope", "EventService", CalendarController]);
+.controller("CalendarController", ["$scope", "$modal", "EventService", CalendarController]);

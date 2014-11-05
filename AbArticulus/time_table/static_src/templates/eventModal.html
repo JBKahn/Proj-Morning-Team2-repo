@@ -1,0 +1,45 @@
+<div class="modal-header">
+    <h3 class="modal-title">Create A New Event</h3>
+</div>
+<form role="form">
+    <div class="form-group">
+        <label>Event Title</label>
+        <input ng-model="modalData.eventData.title" placeholder="Event Title" class="form-control" type="text">
+    </div>
+    <div class="form-group">
+        <label>Start Date</label>
+        <div class="dropdown">
+            <a class="dropdown-toggle" id="startDateDropdown" role="button" data-toggle="dropdown" data-target="#" href="#">
+                <div class="input-group">
+                    <input type="text" class="form-control" data-ng-model="modalData.eventData.startDate">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                </div>
+            </a>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <datetimepicker data-ng-model="modalData.eventData.startDate" data-datetimepicker-config="{ dropdownSelector: '#startDateDropdown' }"/>
+            </ul>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Start Date</label>
+        <div class="dropdown">
+            <a class="dropdown-toggle" id="endDateDropdown" role="button" data-toggle="dropdown" data-target="#" href="#">
+                <div class="input-group">
+                    <input type="text" class="form-control" data-ng-model="modalData.eventData.endDate">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                </div>
+            </a>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <datetimepicker data-ng-model="modalData.eventData.endDate" data-datetimepicker-config="{ dropdownSelector: '#endDateDropdown' }"/>
+            </ul>
+        </div>
+    </div>
+    <div class="checkbox">
+        <input type="checkbox" ng-model="modalData.eventData.allDay">All-day event
+    </div>
+</form>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="save()">Save</button>
+    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+</div>

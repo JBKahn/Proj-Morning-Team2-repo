@@ -27,7 +27,10 @@ module.exports = function(grunt) {
                     appConfig.path.bowerPath + 'angular/angular.js',
                     appConfig.path.bowerPath + 'angular-route/angular-route.js',
                     appConfig.path.bowerPath + "bootstrap/dist/js/bootstrap.min.js",
-                    appConfig.path.bowerPath + "angular-ui-calendar/src/calendar.js"
+                    appConfig.path.bowerPath + "angular-ui-calendar/src/calendar.js",
+                    appConfig.path.bowerPath + "angular-bootstrap/ui-bootstrap-tpls.min.js",
+                    appConfig.path.bowerPath + "ui-bootstrap/src/modal.js",
+                    appConfig.path.bowerPath + "angular-bootstrap-datetimepicker/src/js/datetimepicker.js"
                 ],
                 dest: appConfig.path.buildPath + "js/requirements.dist.js"
             },
@@ -35,7 +38,9 @@ module.exports = function(grunt) {
                 src: [
                     appConfig.path.bowerPath + "bootstrap/dist/css/bootstrap.min.css",
                     appConfig.path.bowerPath + "font-awesome/css/font-awesome.min.css",
-                    appConfig.path.bowerPath + "fullcalendar/fullcalendar.css"
+                    appConfig.path.bowerPath + "fullcalendar/fullcalendar.css",
+                    appConfig.path.bowerPath + "ui-bootstrap/docs/css/style.css",
+                    appConfig.path.bowerPath + "angular-bootstrap-datetimepicker/src/css/datetimepicker.css"
                 ],
                 dest: appConfig.path.buildPath + "css/deps.style.dist.css"
             },
@@ -126,7 +131,7 @@ module.exports = function(grunt) {
             templates: {
                 cwd: appConfig.path.appPath,
                 options: {
-                    module: "templates",
+                    module: "AppTemplates",
                     standalone: true
                 },
                 src: "templates/**.html",
