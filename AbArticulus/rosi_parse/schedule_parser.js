@@ -10,6 +10,8 @@ casper.then(function(){
     this.sendKeys('#pin', password);
 });
 
+casper.thenClick('.button[value="Login"]');
+
 casper.then(function(){
    this.capture('lol.png');
 })
