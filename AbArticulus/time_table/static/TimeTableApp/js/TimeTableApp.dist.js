@@ -32759,10 +32759,11 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
 
   $templateCache.put('templates/eventModal.html',
     "<div class=\"modal-header\">\n" +
-    "    <h3 class=\"modal-title\">Create Your Event Here</h3>\n" +
+    "    <h3 class=\"modal-title\">Create A New Event</h3>\n" +
     "</div>\n" +
     "<form role=\"form\">\n" +
     "    <div class=\"form-group\">\n" +
+    "        <label>Event Title</label>\n" +
     "        <input ng-model=\"modalData.eventData.title\" placeholder=\"Event Title\" class=\"form-control\" type=\"text\">\n" +
     "    </div>\n" +
     "    <div class=\"form-group\">\n" +
@@ -32801,7 +32802,6 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "<div class=\"modal-footer\">\n" +
     "    <button class=\"btn btn-primary\" ng-click=\"save()\">Save</button>\n" +
     "    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Cancel</button>\n" +
-    "    <button class=\"btn btn-success\" ng-click=\"ctrl.addNewTask()\">Save</button>\n" +
     "</div>\n"
   );
 
@@ -32950,7 +32950,8 @@ var eventModalController = function ($scope, $modalInstance, eventData) {
             'endDate': eventData.endDate || '',
             'allDay': eventData.title || false
         }
-    }
+    };
+
     $scope.save = function () {
         //$modalInstance.close($scope.selected.item);
     };
