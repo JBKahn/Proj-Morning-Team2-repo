@@ -32421,77 +32421,51 @@ angular.module('templates', []).run(['$templateCache', function($templateCache) 
     "                    <div class=\"modal-header\">\n" +
     "                        <h3 class=\"modal-title\">Create Your Event Here</h3>\n" +
     "                    </div>\n" +
-    "                    <div class=\"modal-body\">\n" +
-    "                        <ul>\n" +
-    "                            <li ng-repeat=\"item in items\">\n" +
-    "                                <a ng-click=\"selected.item = item\">{{ item }}</a>\n" +
-    "                            </li>\n" +
-    "                        </ul>\n" +
-    "                        Selected: <b>{{ selected.item }}</b>\n" +
-    "                    </div>\n" +
     "                    <div class=\"add-todo-group input-group input-group-lg\">\n" +
     "                        <span class=\"input-group-addon\">\n" +
     "                            <i class=\"glyphicon glyphicon-list-alt\"></i>\n" +
     "                        </span>\n" +
     "                        <input ng-model=\"ctrl.todoData.newTask\" placeholder=\"Event Title\" class=\"form-control\" type=\"text\"><!-- model  -->\n" +
-    "                        <span class=\"input-group-btn\">\n" +
-    "                        </span>\n" +
-    "                    </div>\n" +
-    "                    <div class=\"add-todo-group input-group input-group-lg\">\n" +
-    "                        <span class=\"input-group-addon\">\n" +
-    "                            <i class=\"glyphicon glyphicon-list-alt\"></i>\n" +
-    "                        </span>\n" +
-    "                        <input ng-model=\"ctrl.todoData.newTask\" placeholder=\"\" class=\"form-control\" type=\"text\"><!-- model  -->\n" +
-    "                        <span class=\"input-group-btn\">\n" +
-    "                        </span>\n" +
+    "                        <span class=\"input-group-btn\"></span>\n" +
     "                    </div>\n" +
     "                    <form>\n" +
     "                        Start:\n" +
-    "                        <input type=\"datetime-local\" name=\"startTime\">\n" +
-    "                    </form>\n" +
-    "                    <form>\n" +
-    "                        End:\n" +
-    "                        <input type=\"datetime-local\" name=\"endTime\">\n" +
-    "                    </form>\n" +
-    "                    <div>\n" +
-    "\t\t\t<form>\n" +
-    "                            <input type=\"checkbox\" name=\"vehicle\" value=\"Car\">All-day event\n" +
-    "                        </form>\n" +
-    "\t\t    </div>\n" +
-    "                    <div ng-controller=\"EventModalController\">\n" +
-    "                        <pre>Selected date is: <em>{{dt | date:'fullDate' }}</em></pre>\n" +
-    "                        <h4>Inline</h4>\n" +
-    "                        <div style=\"display:inline-block; min-height:290px;\">\n" +
-    "                            <datepicker ng-model=\"dt\" min-date=\"minDate\" show-weeks=\"true\" class=\"well well-sm\"></datepicker>\n" +
-    "                        </div>\n" +
-    "                        <h4>Popup</h4>\n" +
+    "\n" +
     "                        <div class=\"row\">\n" +
     "                            <div class=\"col-md-6\">\n" +
     "                                <p class=\"input-group\">\n" +
-    "                                    <input type=\"text\" class=\"form-control\" datepicker-popup=\"{{format}}\" ng-model=\"dt\" is-open=\"opened\" min-date=\"minDate\" max-date=\"'2015-06-22'\" datepicker-options=\"dateOptions\" date-disabled=\"disabled(date, mode)\" ng-required=\"true\" close-text=\"Close\" />\n" +
-    "                                    <span class=\"input-group-btn\">\n" +
-    "                                        <button type=\"button\" class=\"btn btn-default\" ng-click=\"open($event)\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
-    "                                    </span>\n" +
+    "                                  <input type=\"text\" class=\"form-control\" datepicker-popup=\"{{format}}\" ng-model=\"st\" is-open=\"opened\" min-date=\"minDate\" max-date=\"'2015-06-22'\" datepicker-options=\"dateOptions\" date-disabled=\"disabled(date, mode)\" ng-required=\"true\" close-text=\"Close\" />\n" +
+    "                                  <span class=\"input-group-btn\">\n" +
+    "                                    <button type=\"button\" class=\"btn btn-default\" ng-click=\"open($event)\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
+    "                                  </span>\n" +
     "                                </p>\n" +
     "                            </div>\n" +
     "                        </div>\n" +
+    "\n" +
+    "                    </form>\n" +
+    "                    <form>\n" +
+    "                        End:\n" +
     "                        <div class=\"row\">\n" +
     "                            <div class=\"col-md-6\">\n" +
-    "                                <label>Format:</label> <select class=\"form-control\" ng-model=\"format\" ng-options=\"f for f in formats\"><option></option></select>\n" +
+    "                                <p class=\"input-group\">\n" +
+    "                                  <input type=\"text\" class=\"form-control\" datepicker-popup=\"{{format}}\" ng-model=\"et\" is-open=\"opened\" min-date=\"minDate\" max-date=\"'2015-06-22'\" datepicker-options=\"dateOptions\" date-disabled=\"disabled(date, mode)\" ng-required=\"true\" close-text=\"Close\" />\n" +
+    "                                  <span class=\"input-group-btn\">\n" +
+    "                                    <button type=\"button\" class=\"btn btn-default\" ng-click=\"open($event)\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
+    "                                  </span>\n" +
+    "                                </p>\n" +
     "                            </div>\n" +
     "                        </div>\n" +
-    "                        <hr />\n" +
-    "                        <button type=\"button\" class=\"btn btn-sm btn-info\" ng-click=\"today()\">Today</button>\n" +
-    "                        <button type=\"button\" class=\"btn btn-sm btn-default\" ng-click=\"dt = '2009-08-24'\">2009-08-24</button>\n" +
-    "                        <button type=\"button\" class=\"btn btn-sm btn-danger\" ng-click=\"clear()\">Clear</button>\n" +
-    "                        <button type=\"button\" class=\"btn btn-sm btn-default\" ng-click=\"toggleMin()\" tooltip=\"After today restriction\">Min date</button>\n" +
+    "                    </form>\n" +
+    "                    <div>\n" +
+    "                        <form>\n" +
+    "                            <input type=\"checkbox\" name=\"vehicle\" value=\"Car\">All-day event\n" +
+    "                        </form>\n" +
     "                    </div>\n" +
     "                    <div class=\"modal-footer\">\n" +
     "                        <button class=\"btn btn-primary\" ng-click=\"save()\">Save</button>\n" +
     "                        <button class=\"btn btn-warning\" ng-click=\"cancel()\">Cancel</button>\n" +
     "                        <button class=\"btn btn-success\" ng-click=\"ctrl.addNewTask()\">Save</button>\n" +
     "                    </div>\n" +
-    "                    \n" +
     "                </script>\n" +
     "                <button class=\"btn btn-default\" ng-click=\"calCtrl.open('lg')\">Create Event</button>\n" +
     "            <div ng-show=\"selected\">Selection from a modal: {{ selected }}</div>\n" +
@@ -32642,14 +32616,14 @@ var eventModalController = function ($scope, $modalInstance, items) {
     item: items[0]
   };
 
-  $scope.save = function () {     
+  $scope.save = function () {
     $modalInstance.close($scope.selected.item);
   };
 
   $scope.cancel = function () {
     $modalInstance.dismiss('cancel');
   };
-  
+
   // DatePicker
   $scope.today = function() {
     $scope.dt = new Date();
@@ -32745,14 +32719,14 @@ var CalendarController =  function($scope, $modal, EventService) {
     }, function () {
       console.log(self.selectedItem);
     });
-    
+
     };
     // When a user clicks save you want to call your new service (which is currently
     // just a copy of todo code) and then when that comes back, you'll want to either
     // update the event the user clicked on with new information or if it's a new event
     // You want to add it to self.eventData.events using push like I do in the above code.
     //title start, end, all-day(boolean)
-    
+
     //full cal api, on click of event
     //vs create new event
 };

@@ -4,14 +4,14 @@ var eventModalController = function ($scope, $modalInstance, items) {
     item: items[0]
   };
 
-  $scope.save = function () {     
+  $scope.save = function () {
     $modalInstance.close($scope.selected.item);
   };
 
   $scope.cancel = function () {
     $modalInstance.dismiss('cancel');
   };
-  
+
   // DatePicker
   $scope.today = function() {
     $scope.dt = new Date();

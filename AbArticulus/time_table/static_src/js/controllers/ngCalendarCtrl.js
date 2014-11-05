@@ -54,14 +54,14 @@ var CalendarController =  function($scope, $modal, EventService) {
     }, function () {
       console.log(self.selectedItem);
     });
-    
+
     };
     // When a user clicks save you want to call your new service (which is currently
     // just a copy of todo code) and then when that comes back, you'll want to either
     // update the event the user clicked on with new information or if it's a new event
     // You want to add it to self.eventData.events using push like I do in the above code.
     //title start, end, all-day(boolean)
-    
+
     //full cal api, on click of event
     //vs create new event
 };
