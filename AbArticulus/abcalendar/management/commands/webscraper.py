@@ -11,14 +11,16 @@ from authentication.models import CustomUser
 class Command(BaseCommand):
     help = 'Adds a course in the timetable database.'
 
-    index = 0
-    customUser = CustomUser.objects.create(uoft_email='mitch.data@mail.utoronto.ca')
-
     def handle(self, *args, **options):
+        if CustomUser.objects.filter(is_staff=True).exists():
+            user = CustomUser.objects.filter(is_staff=True)[0]
+        else:
+            print "This command requires a staff account to exist. Please create one and try again"
+            return False
         timetable_info = self.timetable_information()
         for course, course_info in timetable_info.iteritems():
             # creates each class as an organization object
-            #class_org = Organization.objects.get_or_create(name=course, user=customUser)
+            # class_org = Organization.objects.get_or_create(name=course, user=customUser)
 
             # for each course, create a tag object
             for lecture in course_info:
@@ -44,6 +46,7 @@ class Command(BaseCommand):
                     #  time_table_event = Event.objects.create(gevent_id=cal_info['id'],tag=lecture_tags,user=customUser)
                     # else:
                     #  raise ValueError("Failed to retrieve gevent_id.")
+        return True
 
     def get_reccuring_time_until(self, time_period, day_of_week, hour_start, duration):
         if hour_start < 9:
