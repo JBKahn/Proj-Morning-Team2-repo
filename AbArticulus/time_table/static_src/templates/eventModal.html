@@ -1,0 +1,48 @@
+<div class="modal-header">
+    <h3 class="modal-title">Create Your Event Here</h3>
+</div>
+<div class="add-todo-group input-group input-group-lg">
+    <span class="input-group-addon">
+        <i class="glyphicon glyphicon-list-alt"></i>
+    </span>
+    <input ng-model="ctrl.todoData.newTask" placeholder="Event Title" class="form-control" type="text"><!-- model  -->
+    <span class="input-group-btn"></span>
+</div>
+<form>
+    Start:
+
+    <div class="row">
+        <div class="col-md-6">
+            <p class="input-group">
+              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="st" is-open="opened" min-date="minDate" max-date="'2015-06-22'" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
+            </p>
+        </div>
+    </div>
+
+</form>
+<form>
+    End:
+    <div class="row">
+        <div class="col-md-6">
+            <p class="input-group">
+              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="et" is-open="opened" min-date="minDate" max-date="'2015-06-22'" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
+            </p>
+        </div>
+    </div>
+</form>
+<div>
+    <form>
+        <input type="checkbox" name="vehicle" value="Car">All-day event
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="save()">Save</button>
+    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-success" ng-click="ctrl.addNewTask()">Save</button>
+</div>

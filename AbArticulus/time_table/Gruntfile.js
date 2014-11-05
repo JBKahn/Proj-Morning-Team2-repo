@@ -129,7 +129,7 @@ module.exports = function(grunt) {
             templates: {
                 cwd: appConfig.path.appPath,
                 options: {
-                    module: "templates",
+                    module: "AppTemplates",
                     standalone: true
                 },
                 src: "templates/**.html",

@@ -3,7 +3,7 @@
 Error.stackTraceLimit = Infinity;
 var myApp = angular.module("TimeTableApp", [
     "ngRoute",
-    "templates",
+    "AppTemplates",
     "ui.calendar",
     "ui.bootstrap",
     "timeTable.controllers.calendar",
