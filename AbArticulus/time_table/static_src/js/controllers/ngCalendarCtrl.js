@@ -46,11 +46,10 @@ var CalendarController =  function($scope, $modal, EventService) {
             }
         });
 
-        modalInstance.result.then(function (selectedItem) {
-            self.selected = selectedItem;
-            console.log(selectedItem);
+        modalInstance.result.then(function (newEvent) {
+            self.eventData.events.push(newEvent);
         }, function () {
-            console.log(self.selectedItem);
+            console.log("I failed to save the event");
         });
     };
     // When a user clicks save you want to call your new service (which is currently

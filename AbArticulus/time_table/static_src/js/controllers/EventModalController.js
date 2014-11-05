@@ -1,4 +1,4 @@
-var eventModalController = function ($scope, $modalInstance, eventData) {
+var eventModalController = function ($scope, $modalInstance, EventService, eventData) {
     $scope.modalData = {
         eventData: {
             'title': eventData.title || '',
@@ -8,8 +8,18 @@ var eventModalController = function ($scope, $modalInstance, eventData) {
         }
     };
 
+    $scope.addEvent = function() {
+        if (!$scope.modalData.eventData.title || !$scope.modalData.eventData.startDate || !$scope.modalData.eventData.endDate) {
+            return;
+        }
+        EventService.addEvent($scope.modalData.eventData.title, $scope.modalData.eventData.startDate, $scope.modalData.eventData.endDate, $scope.modalData.eventData.allDay)
+            .then(function(data) {
+                $modalInstance.close(data);
+            });
+    };
+
     $scope.save = function () {
-        //$modalInstance.close($scope.selected.item);
+        $scope.addEvent();
     };
 
     $scope.cancel = function () {
@@ -19,4 +29,4 @@ var eventModalController = function ($scope, $modalInstance, eventData) {
 };
 
 angular.module("timeTable.controllers.eventModal", [])
-.controller("EventModalController", ["$scope", "$modalInstance", "eventData", eventModalController]);
+.controller("EventModalController", ["$scope", "$modalInstance", "EventService", "eventData", eventModalController]);

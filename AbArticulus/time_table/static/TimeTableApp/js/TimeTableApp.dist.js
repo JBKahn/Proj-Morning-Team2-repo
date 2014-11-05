@@ -32822,12 +32822,11 @@ var myApp = angular.module("TimeTableApp", [
     "AppTemplates",
     "ui.calendar",
     "ui.bootstrap",
+    "ui.bootstrap.datetimepicker",
+    "timeTable.constants",
     "timeTable.controllers.calendar",
     "timeTable.controllers.eventModal",
-    "timeTable.services.event",
-    "timeTable.constants",
-    "ui.bootstrap.datetimepicker",
-    "event.service.event" // placeholder, no idea what for though
+    "timeTable.service.eventService"
 ])
 .config(["$httpProvider", "$routeProvider", function($httpProvider, $routeProvider) {
     $httpProvider.defaults.xsrfCookieName = "csrftoken";
@@ -32848,7 +32847,8 @@ angular.module("timeTable.constants", [])
 .factory("Constants", ["$window", function($window) {
     var jsBootstrap = $window.jsBootstrap || {};
     var constants = {
-        timeTableUrl: jsBootstrap.timeTableUrl || "",
+        eventListUrl: jsBootstrap.eventListUrl || "",
+        eventUpdateUrl: jsBootstrap.eventUpdateUrl || "",
         staticUrl: jsBootstrap.staticUrl || ""
     };
 
@@ -32859,11 +32859,11 @@ angular.module("timeTable.constants", [])
     };
 }]);
 
-angular.module("event.service.event", [])
-.factory("EventModalService", ["$q", "$http", "$window", function($q, $http, $window) {
+angular.module("timeTable.service.eventService", [])
+.factory("EventService", ["$q", "$http", "Constants", function($q, $http, Constants) {
     return {
         getEvents: function(){
-            var url = $window.jsBootstrap.todoListUrl; //what is URL for events?
+            var url = Constants.get('eventListUrl');
             var params = {};
 
             var defer = $q.defer();
@@ -32878,11 +32878,14 @@ angular.module("event.service.event", [])
 
             return defer.promise;
         },
-        addEvent: function(todoText){ //params? time, comment, tag etc
-            var url = $window.jsBootstrap.todoListUrl; // what is URL for events?
+
+        addEvent: function(title, startDate, endDate, allDay){
+            var url = Constants.get('eventListUrl');
             var params = {
-                item: todoText,
-                is_done: false
+                title: title,
+                start: startDate,
+                end: endDate,
+                all_day: allDay
             };
 
             var defer = $q.defer();
@@ -32896,53 +32899,11 @@ angular.module("event.service.event", [])
             });
 
             return defer.promise;
-        },
-        updateEvent: function(id, todoText, status){ //params? time, comment, tag etc
-            var url = $window.jsBootstrap.todoUpdateUrl.replace(/\/0\//, "/" + id + "/"); // eventUpdate instead of todoUpdateUrl
-            var params = {
-                id: id,
-                item: todoText,
-                is_done: status
-            };
-
-            var defer = $q.defer();
-
-            $http({method: "PUT", url: url, data: params})
-            .success(function(result){
-                defer.resolve(result);
-            })
-            .error(function(error){
-                defer.reject(error);
-            });
-
-            return defer.promise;
-        },
+        }
     };
 }]);
 
-angular.module("timeTable.services.event", [])
-.factory("EventService", ["$q", "$http", "Constants", function($q, $http, Constants) {
-    return {
-        getEvents: function(){
-            var url = Constants.get('timeTableUrl');
-            var params = {};
-
-            var defer = $q.defer();
-
-            $http({method: "GET", url: url, data: params})
-            .success(function(result){
-                defer.resolve(result);
-            })
-            .error(function(error){
-                defer.reject(error);
-            });
-
-            return defer.promise;
-        },
-    };
-}]);
-
-var eventModalController = function ($scope, $modalInstance, eventData) {
+var eventModalController = function ($scope, $modalInstance, EventService, eventData) {
     $scope.modalData = {
         eventData: {
             'title': eventData.title || '',
@@ -32952,8 +32913,18 @@ var eventModalController = function ($scope, $modalInstance, eventData) {
         }
     };
 
+    $scope.addEvent = function() {
+        if (!$scope.modalData.eventData.title || !$scope.modalData.eventData.startDate || !$scope.modalData.eventData.endDate) {
+            return;
+        }
+        EventService.addEvent($scope.modalData.eventData.title, $scope.modalData.eventData.startDate, $scope.modalData.eventData.endDate, $scope.modalData.eventData.allDay)
+            .then(function(data) {
+                $modalInstance.close(data);
+            })
+    };
+
     $scope.save = function () {
-        //$modalInstance.close($scope.selected.item);
+        $scope.addEvent();
     };
 
     $scope.cancel = function () {
@@ -32963,7 +32934,7 @@ var eventModalController = function ($scope, $modalInstance, eventData) {
 };
 
 angular.module("timeTable.controllers.eventModal", [])
-.controller("EventModalController", ["$scope", "$modalInstance", "eventData", eventModalController]);
+.controller("EventModalController", ["$scope", "$modalInstance", "EventService", "eventData", eventModalController]);
 
 var CalendarController =  function($scope, $modal, EventService) {
     var self = this;
@@ -33013,11 +32984,10 @@ var CalendarController =  function($scope, $modal, EventService) {
             }
         });
 
-        modalInstance.result.then(function (selectedItem) {
-            self.selected = selectedItem;
-            console.log(selectedItem);
+        modalInstance.result.then(function (newEvent) {
+            self.eventData.events.push(newEvent);
         }, function () {
-            console.log(self.selectedItem);
+            console.log("I failed to save the event");
         });
     };
     // When a user clicks save you want to call your new service (which is currently

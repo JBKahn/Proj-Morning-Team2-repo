@@ -1,9 +1,7 @@
 from datetime import datetime
 
-from abcalendar.models import Event
 from api.interfaces.google_api_interface import GoogleApiInterface
-from api.interfaces.helpers import is_all_day_event, json_to_dict, handle_models_for_event_creation, handle_models_for_event_delete
-from datetime import datetime
+from api.interfaces.helpers import json_to_dict, handle_models_for_event_creation, handle_models_for_event_delete
 
 from rest_framework import status
 
@@ -39,7 +37,7 @@ class ApiInterface(object):
         response = GoogleApiInterface.delete_event_from_calendar(user, calendar_id, event_id)
         if response.status_code != status.HTTP_204_NO_CONTENT:
             raise UnexpectedResponseError(response.status_code)
-        handle_models_for_event_delete(gevent_id)
+        handle_models_for_event_delete(event_id)
 
     @classmethod
     def post_event_to_calendar(cls, user, calendar_id, event, tag, org):
@@ -92,20 +90,21 @@ class ApiInterface(object):
         if description is not None:
             body['description'] = description
         if location is not None:
-            body['location'] = location 
+            body['location'] = location
         return body
 
     @classmethod
-    def create_event_from_request(cls, request):
-        return ApiInterface.create_event_json(
-            title=request.POST.get('title'),
-            start=request.POST.get('start'),
-            end=request.POST.get('end'),
-            all_day=request.POST.get('all_day'),
-            description=request.POST.get('description'),
-            location=request.POST.get('location'),
-            recur_until=request.POST.get('recur_until')
+    def create_event_from_dict(cls, info):
+        return ApiInterface.create_google_json(
+            title=info.get('title'),
+            start=info.get('start'),
+            end=info.get('end'),
+            all_day=info.get('all_day'),
+            description=info.get('description'),
+            location=info.get('location'),
+            recur_until=info.get('recur_until')
         )
+
 
 class UnexpectedResponseError(Exception):
     pass
