@@ -1,6 +1,6 @@
 import json
 from dateutil.parser import parse
-
+from abcalendar.models import Event, Tag, Organization
 import requests
 
 
@@ -67,3 +67,22 @@ def json_to_dict(event):
         'title': event.get('summary'),
         'id': event.get('id'),
     }
+
+
+def set_models(event, tag, org, user):
+    found_org = Organization.objects.get(name=org)
+    if found_org is None:
+        found_org = Organization.objects.create(name=org, user=user)
+    found_tag = Tag.objects.get(tag_type=tag)
+    if found_tag is None:
+        found_tag = Tag.objects.create(tag_type=tag, organization=org)
+    else:
+        found_tag.organization = found_org
+        found_tag.tag_type = tag
+        found_tag.save()
+    found_event = Event.objects.get(gevent_id=event['id'])
+    if found_event is None:
+        Event.objects.create(gevent_id=tag, tag=org, user=user)
+    else:
+        found_event.tag = found_tag
+        found_event.save()
