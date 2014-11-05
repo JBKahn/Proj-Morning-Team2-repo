@@ -10,6 +10,7 @@ var myApp = angular.module("TimeTableApp", [
     "timeTable.controllers.eventModal",
     "timeTable.services.event",
     "timeTable.constants",
+    "ui.bootstrap.datetimepicker",
     "event.service.event" // placeholder, no idea what for though
 ])
 .config(["$httpProvider", "$routeProvider", function($httpProvider, $routeProvider) {

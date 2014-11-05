@@ -33,28 +33,25 @@ var CalendarController =  function($scope, $modal, EventService) {
 
     // test modal stuff
 
-  this.items = ['item1', 'item2', 'item3'];
+    this.open = function (size, eventData) {
 
-  this.open = function (size) {
+        var modalInstance = $modal.open({
+            templateUrl: 'templates/eventModal.html',
+            controller: 'EventModalController',
+            size: size,
+            resolve: {
+                eventData: function () {
+                    return eventData || {};
+                }
+            }
+        });
 
-    var modalInstance = $modal.open({
-      templateUrl: 'templates/eventModal.html',
-      controller: 'EventModalController',
-      size: size,
-      resolve: {
-        items: function () {
-          return self.items;
-        }
-      }
-    });
-
-    modalInstance.result.then(function (selectedItem) {
-      self.selected = selectedItem;
-      console.log(selectedItem);
-    }, function () {
-      console.log(self.selectedItem);
-    });
-
+        modalInstance.result.then(function (selectedItem) {
+            self.selected = selectedItem;
+            console.log(selectedItem);
+        }, function () {
+            console.log(self.selectedItem);
+        });
     };
     // When a user clicks save you want to call your new service (which is currently
     // just a copy of todo code) and then when that comes back, you'll want to either

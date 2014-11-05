@@ -1,52 +1,22 @@
-var eventModalController = function ($scope, $modalInstance, items) {
-  $scope.items = items;
-  $scope.selected = {
-    item: items[0]
-  };
+var eventModalController = function ($scope, $modalInstance, eventData) {
+    $scope.modalData = {
+        eventData: {
+            'title': eventData.title || '',
+            'startDate': eventData.startDate || '',
+            'endDate': eventData.endDate || '',
+            'allDay': eventData.title || false
+        }
+    };
 
-  $scope.save = function () {
-    $modalInstance.close($scope.selected.item);
-  };
+    $scope.save = function () {
+        //$modalInstance.close($scope.selected.item);
+    };
 
-  $scope.cancel = function () {
-    $modalInstance.dismiss('cancel');
-  };
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
 
-  // DatePicker
-  $scope.today = function() {
-    $scope.dt = new Date();
-  };
-  $scope.today();
-
-  $scope.clear = function () {
-    $scope.dt = null;
-  };
-
-  // Disable weekend selection
-  $scope.disabled = function(date, mode) {
-    return ( mode === 'day' && ( date.getDay() === 0 || date.getDay() === 6 ) );
-  };
-
-  $scope.toggleMin = function() {
-    $scope.minDate = $scope.minDate ? null : new Date();
-  };
-  $scope.toggleMin();
-
-  $scope.open = function($event) {
-    $event.preventDefault();
-    $event.stopPropagation();
-
-    $scope.opened = true;
-  };
-
-  $scope.dateOptions = {
-    formatYear: 'yy',
-    startingDay: 1
-  };
-
-  $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
-  $scope.format = $scope.formats[0];
 };
 
 angular.module("timeTable.controllers.eventModal", [])
-.controller("EventModalController", ["$scope", "$modalInstance", "items", eventModalController]);
+.controller("EventModalController", ["$scope", "$modalInstance", "eventData", eventModalController]);
