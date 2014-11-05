@@ -1,18 +1,19 @@
 import re
 import collections
 import requests
-from datetime import datetime
-from datetime import tzinfo
 from bs4 import BeautifulSoup
+
 
 ''' Searches for the expressions below after parsing html codes '''
 uoft_timetable_website = "http://www.artsandscience.utoronto.ca/ofr/timetable/winter/sponsors.htm"
 regex_for_strip = re.compile(r'[\n\r\t]')
 regex_for_empt = re.compile(r'\xc2\xa0')
 
+
 def University_of_Toronto_Timetable():
     ''' Returns a dictionary of all the course offerings in the University of Toronto St. George Campus '''
     return parse_timetable()
+
 
 def parse_timetable():
     ''' Returns a collection of courses offered by department. '''
@@ -180,20 +181,3 @@ def get_lecture_info(course_list):
     course_instructor = course_list[5]
 
     return course_desc, course_section, course_time, course_loc, course_instructor
-
-
-def time_schedule(time_code):
-    ''' Helper for parsing and converting time lecture info '''
-    is_tba = time_code.upper() == 'TBA'
-
-    if not(is_tba):
-        detect_time = re.compile("([a-zA-Z]+)([0-9]+)([^ ]?)([0-9]?)")
-        returned_match = list(detect_time.match(time_code).groups())
-
-        if '' in returned_match:
-            returned_match=filter(None,returned_match)
-
-        if '-' in returned_match:
-                returned_match.remove('-')
-
-        return list(returned_match[0]) + map(int,returned_match[1:])
