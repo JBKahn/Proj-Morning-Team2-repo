@@ -1,16 +1,13 @@
 var casper = require('casper').create();
-var system = require('system');
 
-var studentID = system.args[1];
-var password = system.args[2];
+var studentID = casper.cli.raw.get(0);
+var password = casper.cli.raw.get(1);
 
-casper.start('http://www.rosi.utoronto.ca').thenClick('.rosi-login-content a', function(){
-    this.capture('yay.png');
-});
+casper.start('http://www.rosi.utoronto.ca').thenClick('.rosi-login-content a');
 
 casper.then(function(){
-    this.sendKeys('#personId', "996776494");
-    this.sendKeys('#pin', "abcdefg");
+    this.sendKeys('#personId', studentID);
+    this.sendKeys('#pin', password);
 });
 
 casper.then(function(){
