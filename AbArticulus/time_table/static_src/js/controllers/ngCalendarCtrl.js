@@ -31,8 +31,6 @@ var CalendarController =  function($scope, $modal, EventService) {
         eventSources: [this.eventData.events]
     };
 
-    // test modal stuff
-
     this.open = function (size, eventData) {
 
         var modalInstance = $modal.open({
