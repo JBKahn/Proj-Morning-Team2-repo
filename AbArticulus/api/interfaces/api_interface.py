@@ -1,5 +1,5 @@
 from api.interfaces.google_api_interface import GoogleApiInterface
-from api.interfaces.helpers import is_all_day_event, json_to_dict, set_models
+from api.interfaces.helpers import is_all_day_event, json_to_dict, handle_models_for_event_creation, handle_models_for_event_delete
 from datetime import datetime
 from rest_framework import status
 
@@ -34,7 +34,7 @@ class ApiInterface(object):
         response = GoogleApiInterface.delete_event_from_calendar(user, calendar_id, event_id)
         if response.status_code != status.HTTP_204_NO_CONTENT:
             raise Exception(response.status_code)
-        Event.objects.get(gevent_id=event_id).delete()
+        handle_models_for_event_delete(gevent_id)
 
     @classmethod
     def post_event_to_calendar(cls, user, calendar_id, event, tag, org):
@@ -43,18 +43,17 @@ class ApiInterface(object):
         if response.status_code != status.HTTP_200_OK:
             raise Exception(response.status_code)
         event = json_to_dict(response.json())
-        set_models(event, tag, org, user)
+        handle_models_for_event_creation(gevent_id=event['id'], tag_type=tag, organization_name=org, user=user)
         return event
 
 
     @classmethod
-    def put_event_to_calendar(cls, user, calendar_id, event_id, event, tag=None, org=None):
+    def put_event_to_calendar(cls, user, calendar_id, event_id, event):
         '''event is a JSON request body, can be populated via create_event_json()'''
         response = GoogleApiInterface.put_event_to_calendar(user, calendar_id, event_id, event)
         if response.status_code != status.HTTP_200_OK:
             raise Exception(response.status_code)
         event = json_to_dict(response.json())
-        set_models(event, tag, org, user)
         return event
 
     @classmethod

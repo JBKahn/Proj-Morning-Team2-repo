@@ -69,22 +69,14 @@ def json_to_dict(event):
         'id': event.get('id'),
     }
 
+def handle_models_for_event_creation(organization_name, tag_type, gevent_id, user):
+    if not Organization.objects.filter(name=organization_name).exists():
+        organization = Organization.objects.create(name=organization_name, user=user)
+    else:
+        organization = Organization.objects.get(name=organization_name)
 
-def set_models(event, tag, org, user):
-    try:
-        found_org = Organization.objects.get(name=org)
-    except ObjectDoesNotExist:
-        found_org = Organization.objects.create(name=org, user=user)
-    try:
-        found_tag = Tag.objects.get(tag_type=tag)
-        found_tag.organization = found_org
-        found_tag.tag_type = tag
-        found_tag.save()
-    except ObjectDoesNotExist:
-        found_tag = Tag.objects.create(tag_type=tag, organization=org)
-    try:
-        found_event = Event.objects.get(gevent_id=event['id'])
-        found_event.tag = found_tag
-        found_event.save()
-    except ObjectDoesNotExist:
-        Event.objects.create(gevent_id=tag, tag=org, user=user)
+    tag, _ = Tag.objects.get_or_create(tag_type=tag_type, organization=organization)
+    Event.objects.create(gevent_id=gevent_id, tag=tag, user=user)
+
+def handle_models_for_event_delete(gevent_id):
+    Event.objects.get(gevent_id=gevent_id).delete()
