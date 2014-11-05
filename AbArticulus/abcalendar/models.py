@@ -4,14 +4,14 @@ from constants import TAG_CHOICES, VOTE_CHOICES
 
 
 class Organization(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     user = models.ForeignKey('authentication.CustomUser')
 
 
 class Tag(models.Model):
     tag_type = models.CharField(max_length=25, choices=TAG_CHOICES)
     organization = models.ForeignKey(Organization)
-    number = models.IntegerField(default=1)
+    number = models.IntegerField(default=1, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.number < 0:
@@ -21,7 +21,7 @@ class Tag(models.Model):
 
 class Event(models.Model):
     gevent_id = models.CharField(max_length=255)  # Google event id
-    tag = models.ForeignKey(Tag)
+    tag = models.ForeignKey(Tag, default=None)
     user = models.ForeignKey('authentication.CustomUser')
 
 
