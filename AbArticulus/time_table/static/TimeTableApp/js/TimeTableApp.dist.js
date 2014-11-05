@@ -32446,27 +32446,52 @@ angular.module('templates', []).run(['$templateCache', function($templateCache) 
     "                        </span>\n" +
     "                    </div>\n" +
     "                    <form>\n" +
-    "                        Date:\n" +
-    "                        <input type=\"date\" name=\"date\">\n" +
-    "                    </form>\n" +
-    "                    <form>\n" +
     "                        Start:\n" +
-    "                        <input type=\"datetime-local\" name=\"bdaytime\">\n" +
+    "                        <input type=\"datetime-local\" name=\"startTime\">\n" +
     "                    </form>\n" +
     "                    <form>\n" +
     "                        End:\n" +
-    "                        <input type=\"datetime-local\" name=\"bdaytime\">\n" +
+    "                        <input type=\"datetime-local\" name=\"endTime\">\n" +
     "                    </form>\n" +
     "                    <div>\n" +
     "\t\t\t<form>\n" +
     "                            <input type=\"checkbox\" name=\"vehicle\" value=\"Car\">All-day event\n" +
     "                        </form>\n" +
     "\t\t    </div>\n" +
+    "                    <div ng-controller=\"EventModalController\">\n" +
+    "                        <pre>Selected date is: <em>{{dt | date:'fullDate' }}</em></pre>\n" +
+    "                        <h4>Inline</h4>\n" +
+    "                        <div style=\"display:inline-block; min-height:290px;\">\n" +
+    "                            <datepicker ng-model=\"dt\" min-date=\"minDate\" show-weeks=\"true\" class=\"well well-sm\"></datepicker>\n" +
+    "                        </div>\n" +
+    "                        <h4>Popup</h4>\n" +
+    "                        <div class=\"row\">\n" +
+    "                            <div class=\"col-md-6\">\n" +
+    "                                <p class=\"input-group\">\n" +
+    "                                    <input type=\"text\" class=\"form-control\" datepicker-popup=\"{{format}}\" ng-model=\"dt\" is-open=\"opened\" min-date=\"minDate\" max-date=\"'2015-06-22'\" datepicker-options=\"dateOptions\" date-disabled=\"disabled(date, mode)\" ng-required=\"true\" close-text=\"Close\" />\n" +
+    "                                    <span class=\"input-group-btn\">\n" +
+    "                                        <button type=\"button\" class=\"btn btn-default\" ng-click=\"open($event)\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
+    "                                    </span>\n" +
+    "                                </p>\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "                        <div class=\"row\">\n" +
+    "                            <div class=\"col-md-6\">\n" +
+    "                                <label>Format:</label> <select class=\"form-control\" ng-model=\"format\" ng-options=\"f for f in formats\"><option></option></select>\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "                        <hr />\n" +
+    "                        <button type=\"button\" class=\"btn btn-sm btn-info\" ng-click=\"today()\">Today</button>\n" +
+    "                        <button type=\"button\" class=\"btn btn-sm btn-default\" ng-click=\"dt = '2009-08-24'\">2009-08-24</button>\n" +
+    "                        <button type=\"button\" class=\"btn btn-sm btn-danger\" ng-click=\"clear()\">Clear</button>\n" +
+    "                        <button type=\"button\" class=\"btn btn-sm btn-default\" ng-click=\"toggleMin()\" tooltip=\"After today restriction\">Min date</button>\n" +
+    "                    </div>\n" +
     "                    <div class=\"modal-footer\">\n" +
     "                        <button class=\"btn btn-primary\" ng-click=\"save()\">Save</button>\n" +
     "                        <button class=\"btn btn-warning\" ng-click=\"cancel()\">Cancel</button>\n" +
     "                        <button class=\"btn btn-success\" ng-click=\"ctrl.addNewTask()\">Save</button>\n" +
     "                    </div>\n" +
+    "                    \n" +
     "                </script>\n" +
     "                <button class=\"btn btn-default\" ng-click=\"calCtrl.open('lg')\">Create Event</button>\n" +
     "            <div ng-show=\"selected\">Selection from a modal: {{ selected }}</div>\n" +
@@ -32624,10 +32649,46 @@ var eventModalController = function ($scope, $modalInstance, items) {
   $scope.cancel = function () {
     $modalInstance.dismiss('cancel');
   };
+  
+  // DatePicker
+  $scope.today = function() {
+    $scope.dt = new Date();
+  };
+  $scope.today();
+
+  $scope.clear = function () {
+    $scope.dt = null;
+  };
+
+  // Disable weekend selection
+  $scope.disabled = function(date, mode) {
+    return ( mode === 'day' && ( date.getDay() === 0 || date.getDay() === 6 ) );
+  };
+
+  $scope.toggleMin = function() {
+    $scope.minDate = $scope.minDate ? null : new Date();
+  };
+  $scope.toggleMin();
+
+  $scope.open = function($event) {
+    $event.preventDefault();
+    $event.stopPropagation();
+
+    $scope.opened = true;
+  };
+
+  $scope.dateOptions = {
+    formatYear: 'yy',
+    startingDay: 1
+  };
+
+  $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
+  $scope.format = $scope.formats[0];
 };
 
 angular.module("timeTable.controllers.eventModal", [])
 .controller("EventModalController", ["$scope", "$modalInstance", "items", eventModalController]);
+
 var CalendarController =  function($scope, $modal, EventService) {
     var self = this;
 
