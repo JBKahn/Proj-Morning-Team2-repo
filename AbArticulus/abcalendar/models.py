@@ -4,7 +4,7 @@ from constants import TAG_CHOICES, VOTE_CHOICES
 
 
 class Organization(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     user = models.ForeignKey('authentication.CustomUser')
 
 

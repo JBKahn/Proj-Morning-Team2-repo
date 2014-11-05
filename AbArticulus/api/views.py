@@ -1,5 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+import pytz
+import datetime as dt
 
 from api.interfaces.api_interface import ApiInterface
 
@@ -17,7 +19,16 @@ class EventAPIView(APIView):
         #calendar_id = "primary" #calendars[-1].get('id')
         #return Response(ApiInterface.get_events_from_calendar(user=request.user, calendar_id=calendar_id))
         calendar_id = "primary"
-        event = ApiInterface.create_event_json(title="Shit Works Even Better", start="2014-11-06T10:00:00-05:00", end="2014-11-06T12:00:00-05:00", all_day=False, description=None, location=None)
+        local = pytz.timezone("America/Toronto")
+        start = dt.datetime(2014, 11, 6, 12, 0)
+        end = dt.datetime(2014, 11, 6, 13, 0)
+        recur_until = dt.datetime(2014, 11, 14, 13, 0)
+        start = local.localize(start)
+        end = local.localize(end)
+        recur_until = local.localize(recur_until)
+
+
+        event = ApiInterface.create_google_json(title="fweuifhqewfiu", start=start, end=end, all_day=False, description=None, location=None, recur_until=recur_until)
         #return Response(ApiInterface.put_event_to_calendar(user=request.user, calendar_id=calendar_id, event=event, event_id="5su69nirj9n317s1nadchmq4mk"))
         return Response(ApiInterface.post_event_to_calendar(user=request.user, calendar_id=calendar_id, event=event))
         #return Response(ApiInterface.delete_event_from_calendar(user=request.user, calendar_id=calendar_id, event_id="rgpp3uibv8m3ks6namrdave7no"))
