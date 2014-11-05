@@ -13,14 +13,14 @@ class ApiInterface(object):
     def get_calendars_from_user(cls, user):
         response = GoogleApiInterface.get_calendars_from_user(user)
         if response.status_code != status.HTTP_200_OK:
-            raise Exception(response.status_code)
+            raise UnexpectedResponseError(response.status_code)
         return response.json()
 
     @classmethod
     def get_events_from_calendar(cls, user, calendar_id):
         response = GoogleApiInterface.get_events_from_calendar(user, calendar_id)
         if response.status_code != status.HTTP_200_OK:
-            raise Exception(response.status_code)
+            raise UnexpectedResponseError(response.status_code)
         formated_events = []
         for item in response.json().get('items'):
             formated_events.append(json_to_dict(item))
@@ -30,7 +30,7 @@ class ApiInterface(object):
     def get_event_from_calendar(cls, user, calendar_id, event_id):
         response = GoogleApiInterface.get_event_from_calendar(user, calendar_id, event_id)
         if response.status_code != status.HTTP_200_OK:
-            raise Exception(response.status_code)
+            raise UnexpectedResponseError(response.status_code)
         event = json_to_dict(response.json())
         return event
 
@@ -38,7 +38,7 @@ class ApiInterface(object):
     def delete_event_from_calendar(cls, user, calendar_id, event_id):
         response = GoogleApiInterface.delete_event_from_calendar(user, calendar_id, event_id)
         if response.status_code != status.HTTP_204_NO_CONTENT:
-            raise Exception(response.status_code)
+            raise UnexpectedResponseError(response.status_code)
         handle_models_for_event_delete(gevent_id)
 
     @classmethod
@@ -46,7 +46,7 @@ class ApiInterface(object):
         '''event is a JSON request body, can be populated via create_event_json()'''
         response = GoogleApiInterface.post_event_to_calendar(user, calendar_id, event)
         if response.status_code != status.HTTP_200_OK:
-            raise Exception(response.status_code)
+            raise UnexpectedResponseError(response.status_code)
         event = json_to_dict(response.json())
         handle_models_for_event_creation(gevent_id=event['id'], tag_type=tag, organization_name=org, user=user)
         return event
@@ -56,7 +56,7 @@ class ApiInterface(object):
         '''event is a JSON request body, can be populated via create_event_json()'''
         response = GoogleApiInterface.put_event_to_calendar(user, calendar_id, event_id, event)
         if response.status_code != status.HTTP_200_OK:
-            raise Exception(response.status_code)
+            raise UnexpectedResponseError(response.status_code)
         event = json_to_dict(response.json())
         return event
 
@@ -106,3 +106,6 @@ class ApiInterface(object):
             location=request.POST.get('location'),
             recur_until=request.POST.get('recur_until')
         )
+
+class UnexpectedResponseError(Exception):
+    pass
