@@ -1,7 +1,12 @@
+from datetime import datetime
+
+from abcalendar.models import Event
 from api.interfaces.google_api_interface import GoogleApiInterface
 from api.interfaces.helpers import is_all_day_event, json_to_dict, handle_models_for_event_creation, handle_models_for_event_delete
 from datetime import datetime
+
 from rest_framework import status
+
 
 class ApiInterface(object):
     @classmethod
@@ -45,7 +50,6 @@ class ApiInterface(object):
         event = json_to_dict(response.json())
         handle_models_for_event_creation(gevent_id=event['id'], tag_type=tag, organization_name=org, user=user)
         return event
-
 
     @classmethod
     def put_event_to_calendar(cls, user, calendar_id, event_id, event):
@@ -91,15 +95,14 @@ class ApiInterface(object):
             body['location'] = location 
         return body
 
-
     @classmethod
     def create_event_from_request(cls, request):
         return ApiInterface.create_event_json(
-            title=request.POST.get('title'), 
-            start=request.POST.get('start'), 
-            end=request.POST.get('end'), 
-            all_day=request.POST.get('all_day'), 
-            description=request.POST.get('description'), 
+            title=request.POST.get('title'),
+            start=request.POST.get('start'),
+            end=request.POST.get('end'),
+            all_day=request.POST.get('all_day'),
+            description=request.POST.get('description'),
             location=request.POST.get('location'),
             recur_until=request.POST.get('recur_until')
         )

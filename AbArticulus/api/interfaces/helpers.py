@@ -1,4 +1,5 @@
 import json
+import requests
 from dateutil.parser import parse
 from abcalendar.models import Event, Tag, Organization
 from django.core.exceptions import ObjectDoesNotExist
@@ -74,7 +75,6 @@ def handle_models_for_event_creation(organization_name, tag_type, gevent_id, use
         organization = Organization.objects.create(name=organization_name, user=user)
     else:
         organization = Organization.objects.get(name=organization_name)
-
     tag, _ = Tag.objects.get_or_create(tag_type=tag_type, organization=organization)
     Event.objects.create(gevent_id=gevent_id, tag=tag, user=user)
 
