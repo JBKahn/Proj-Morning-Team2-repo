@@ -11,19 +11,13 @@ class Organization(models.Model):
 class Tag(models.Model):
     tag_type = models.CharField(max_length=25, choices=TAG_CHOICES)
     organization = models.ForeignKey(Organization)
-    class_section = models.CharField(max_length=25)
+    class_section = models.CharField(max_length=25, null=True)
     number = models.IntegerField(default=1, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.number < 0:
             raise ValueError("number must be greater than -1")
         super(Tag, self).save(*args, **kwargs)
-
-    def add_course_info(self, section_code):
-        ''' Adds course section information to the Tag object. '''
-        if self.tag_type == 'LECTURE':
-            self.class_section = section_code
-
 
 
 class Event(models.Model):

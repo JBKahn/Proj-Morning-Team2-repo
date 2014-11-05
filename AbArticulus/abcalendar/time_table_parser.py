@@ -1,6 +1,8 @@
 import re
 import collections
 import requests
+from datetime import datetime
+from datetime import tzinfo
 from bs4 import BeautifulSoup
 
 ''' Searches for the expressions below after parsing html codes '''
@@ -23,9 +25,9 @@ def parse_timetable():
         if url_dept.endswith('.html'):
             build_full_link = '/'.join([uoft_timetable_section_base, url_dept])
             if url_dept == "assem.html":
-                add_courses(complete_uoft_timetable,parse_seminar_offerings(build_full_link))
+                complete_uoft_timetable.update(parse_seminar_offerings(build_full_link))
             else:
-                add_courses(complete_uoft_timetable,parse_course_offerings(build_full_link))
+                complete_uoft_timetable.update(parse_course_offerings(build_full_link))
 
     return complete_uoft_timetable
 
@@ -45,7 +47,7 @@ def parse_seminar_offerings(course_link):
 
         # parse course code row
         if len(table_rows[row].findAll('td')) == 1:
-            course_code_row = cleanText(table_rows[row].findAll('td')[0].findAll(text=True)[0].encode('utf-8'))
+            course_code_row = clean_text(table_rows[row].findAll('td')[0].findAll(text=True)[0].encode('utf-8'))
             course_code = course_code_row[:9]
             course_semester = course_code[-1]
             row += 1
@@ -59,7 +61,7 @@ def parse_seminar_offerings(course_link):
                 row += 1
 
             else:
-                if cleanText(table_rows[row].findAll('td')[0].findAll(text=True)[0].encode('utf-8')).find('Categories') == 0:
+                if clean_text(table_rows[row].findAll('td')[0].findAll(text=True)[0].encode('utf-8')).find('Categories') == 0:
                     row += 1
                     # false positive due to shitty table construction, just points out the categories
                     continue
@@ -102,15 +104,7 @@ def parse_course_offerings(course_link):
 
 
 # Helper functions
-
-def add_courses(complete_uoft_timetable,course_information):
-    ''' Adds a course in the timetable dictionary '''
-    for (course_code, info) in course_information.items():
-        if complete_uoft_timetable.has_key(course_code):
-            complete_uoft_timetable[course_code] = info
-        complete_uoft_timetable[course_code] = info
-
-def cleanText(text):
+def clean_text(text):
     ''' Returns a string of course description without the escape seq. characters (i.e \r,\n). '''
 
     regex = re.compile(r'[\n\r\t]')
@@ -147,12 +141,12 @@ def soupified(uoft_timetable_website, some_string):
 def get_course_information(tr):
     ''' Returns course code, courses schedule offerings, and status of sched.'''
     course_info = [", ".join(cell.findAll(text=True)) for cell in tr.findAll('td')]
-    course_code = cleanText(course_info[0].encode('utf-8'))
+    course_code = clean_text(course_info[0].encode('utf-8'))
     course_info_report = []
 
     for content in [1, 2, 3, 5, 6, 7]:
         if content < len(course_info):
-            course_info_report.append(cleanText(course_info[content].encode('utf-8')))
+            course_info_report.append(clean_text(course_info[content].encode('utf-8')))
         else:
             course_info_report.append('')
 
@@ -168,7 +162,7 @@ def get_seminar_information(tr, course_semester):
 
     for content in [0, 1, 3, 4, 5]:
         if content < len(course_info):
-            course_info_report.append(cleanText(course_info[content].encode('utf-8')))
+            course_info_report.append(clean_text(course_info[content].encode('utf-8')))
         else:
             course_info_report.append('')
 
@@ -188,3 +182,18 @@ def get_lecture_info(course_list):
     return course_desc, course_section, course_time, course_loc, course_instructor
 
 
+def time_schedule(time_code):
+    ''' Helper for parsing and converting time lecture info '''
+    is_tba = time_code.upper() == 'TBA'
+
+    if not(is_tba):
+        detect_time = re.compile("([a-zA-Z]+)([0-9]+)([^ ]?)([0-9]?)")
+        returned_match = list(detect_time.match(time_code).groups())
+
+        if '' in returned_match:
+            returned_match=filter(None,returned_match)
+
+        if '-' in returned_match:
+                returned_match.remove('-')
+
+        return list(returned_match[0]) + map(int,returned_match[1:])
