@@ -1,6 +1,6 @@
 from api.interfaces.google_api_interface import GoogleApiInterface
 from api.interfaces.helpers import is_all_day_event, json_to_dict, set_models
-import datetime as dt
+from datetime import datetime
 from rest_framework import status
 
 class ApiInterface(object):
@@ -57,7 +57,7 @@ class ApiInterface(object):
         set_models(event, tag, org, user)
         return event
 
-   @classmethod
+    @classmethod
     def create_google_json(cls, title, start, end, all_day=False, description=None, location=None, recur_until=None):
         '''creates JSON formatted event data to send to Google to create a Google Calendar event times should be datetime objects'''
         if not (isinstance(start, datetime) and isinstance(end, datetime)):
@@ -89,7 +89,7 @@ class ApiInterface(object):
         if description is not None:
             body['description'] = description
         if location is not None:
-            body['location'] = location
+            body['location'] = location 
         return body
 
 

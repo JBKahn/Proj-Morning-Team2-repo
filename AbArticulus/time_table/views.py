@@ -13,7 +13,7 @@ class EventCreateView(APIView):
     calendar_id = "primary"
     def post(self, request, format='JSON', *args, **kwargs):
         json_event = ApiInterface.create_event_from_request(request)
-        return Response(ApiInterface.post_event_to_calendar(user=request.user, calendar_id=self.calendar_id, event=json_event, tag=request.get("tag"), org=request.get("org"))
+        return Response(ApiInterface.post_event_to_calendar(user=request.user, calendar_id=self.calendar_id, event=json_event, tag=request.get("tag"), org=request.get("org")))
          
 class EventAccessView(APIView):
     calendar_id = "primary"

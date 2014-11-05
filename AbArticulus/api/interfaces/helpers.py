@@ -1,6 +1,7 @@
 import json
 from dateutil.parser import parse
 from abcalendar.models import Event, Tag, Organization
+from django.core.exceptions import ObjectDoesNotExist
 import requests
 
 
@@ -70,19 +71,20 @@ def json_to_dict(event):
 
 
 def set_models(event, tag, org, user):
-    found_org = Organization.objects.get(name=org)
-    if found_org is None:
+    try:
+        found_org = Organization.objects.get(name=org)
+    except ObjectDoesNotExist:
         found_org = Organization.objects.create(name=org, user=user)
-    found_tag = Tag.objects.get(tag_type=tag)
-    if found_tag is None:
-        found_tag = Tag.objects.create(tag_type=tag, organization=org)
-    else:
+    try:
+        found_tag = Tag.objects.get(tag_type=tag)
         found_tag.organization = found_org
         found_tag.tag_type = tag
         found_tag.save()
-    found_event = Event.objects.get(gevent_id=event['id'])
-    if found_event is None:
-        Event.objects.create(gevent_id=tag, tag=org, user=user)
-    else:
+    except ObjectDoesNotExist:
+        found_tag = Tag.objects.create(tag_type=tag, organization=org)
+    try:
+        found_event = Event.objects.get(gevent_id=event['id'])
         found_event.tag = found_tag
         found_event.save()
+    except ObjectDoesNotExist:
+        Event.objects.create(gevent_id=tag, tag=org, user=user)
