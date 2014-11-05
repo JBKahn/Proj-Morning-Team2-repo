@@ -26,6 +26,7 @@ class Command(BaseCommand):
             for lecture in course_info:
 
                 # returns course_desc, course_section, course_time, course_loc, course_instructor
+                # Michelle: this doesn't always work.
                 course_desc, course_sec, course_time, course_loc, instructor = get_lecture_info(lecture)
                 course_title = course + " : " + course_desc
                 lecture_times = self.convert_lecture_time_codes(course_time)
