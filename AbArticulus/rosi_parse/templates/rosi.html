@@ -1,0 +1,62 @@
+<html>
+<head>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js"></script>
+</head>
+
+<body>
+<form id="RosiLoginForm">
+    {% csrf_token %}
+    <input type="text" id="student_num" />
+    <input type="password" id="password" />
+    <input type="submit" value="submit" id="submitButton" />
+</form>
+
+<script>
+$.ajaxSetup({ 
+     beforeSend: function(xhr, settings) {
+         function getCookie(name) {
+             var cookieValue = null;
+             if (document.cookie && document.cookie != '') {
+                 var cookies = document.cookie.split(';');
+                 for (var i = 0; i < cookies.length; i++) {
+                     var cookie = jQuery.trim(cookies[i]);
+                     // Does this cookie string begin with the name we want?
+                 if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                     break;
+                 }
+             }
+         }
+         return cookieValue;
+         }
+         if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+             // Only send the token to relative URLs i.e. locally.
+             xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+         }
+     } 
+});
+
+$('#submitButton').click(function(event){
+     event.preventDefault();
+     $.ajax({
+         url: '{% url "rosi:get_courses" %}',
+         type: 'post',
+         dataType: 'json',
+         data: {
+            'student_num': $('#student_num').val(),
+            'password': $('#password').val()
+        },
+         success: function(data) {
+            for (i = 0; i < data.length; i++) { 
+                var course = data[i];
+                $('body').append("<p>" + course.course_code + '-' + course.lecture_section + "<\p>")
+            }
+
+
+           console.log(data);
+         }
+     });
+});
+</script>
+</body>
+</html>

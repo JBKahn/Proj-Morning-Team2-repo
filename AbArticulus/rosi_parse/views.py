@@ -5,6 +5,12 @@ from rest_framework.response import Response
 from rosi_parse.forms import ROSIForm
 from rosi_parse.utils import get_courses_from_rosi
 
+from django.views.generic import TemplateView
+
+
+class SimpleRosiFormView(TemplateView):
+    template_name = "rosi.html"
+
 
 class RosiParseAPIView(APIView):
     """
@@ -13,10 +19,10 @@ class RosiParseAPIView(APIView):
     """
 
     def post(self, request, format='JSON', *args, **kwargs):
-        form = ROSIForm(request.POST)
+        form = ROSIForm(request.DATA)
 
         if not form.is_valid():
-            return Response(form.erors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
 
         studentID = form.cleaned_data["student_num"]
         password = form.cleaned_data["password"]
