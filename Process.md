@@ -93,6 +93,22 @@ Feeling a bit better about Angular, going to starting the event creation this we
 **Allen** - 
 Chugging along. Going to push some code today/tomorrow and I plan to try to be done with this by the end of the weekend then I can join in to helpout with the frontend.
 
+#### Nov 4th 11:30
+**Joseph** - 
+Have become pull request gatekeeper, making sure code is up to snuff before getting merged to master
+
+**Taras** - 
+I now resent time formats and Google's Calendar API, but we have working Event creation. Some fixes left for tomorrow, but it works. 
+
+**Michelle** - 
+Scraped data is full of special cases that need to be handled, but it's looking to be in a state that can be demoed for Thursday!
+
+**Lyon** - 
+Waiting for Taras to finish his part to hook the UI up to, but the interface is chugging along. 
+
+**Allen** - 
+Some problems with getting the headless browser to use ROSI's UI, not likely to get in a demoable state, but this was a stretch goal anyway. 
+
 ## Description of how you used GitHub issue management system
 We didn't. We used Jira instead and you can checkout [our board](https://csc301.atlassian.net/secure/RapidBoard.jspa?rapidView=2). Joseph and Taras have used it before and so we decided as a team, based on their reccomendation, to try it for this phase. We'll be creating tickets for what we work on and assigning outselves to them. We'll attach the pull request and use it's sprint functionality to track what we plan to do and what we have done. Taras will be, awesomely, taking the lead and creating tickets after out sprint planning meetings. This will help us keep organized. We'll be using Jira's kanban board, instead of the agile one, because it's simpler for the team member who have yet to use JIRA but we'll be using sprints and simply creating tickets at the beginning of the sprint so that the backlog is composed of our current sprint. Each person is allowed to pick up any ticket as long as it's not assigned to anyone.
 
