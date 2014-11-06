@@ -27,11 +27,17 @@ casper.thenClick(x('//a[text()="Personal Timetable"]'));
 casper.thenClick('html body#subpage div#wrapper div#content.content div#right table tbody tr td.section table.decorated tbody tr td form#sessionForm input.button');
 
 casper.then(function(){
-    courses = this.getElementsInfo('tr[valign="top"] td:first-child');
-    //Get the course section
+    var rows = this.getElementsInfo('tr[valign="top"] td:first-child');
     
-    this.echo(courses);
-    require('utils').dump(courses);
+    this.each(rows, function(self, row){
+        course_name.push(row.html);
+    });
+    //Get the course section
+    //courses_section = this.getElementsInfo('')
+    
+    for(var i=0; i<course_name.length;i++){
+        require('utils').dump(course_name[i]);
+    }
 });
 
 /*
