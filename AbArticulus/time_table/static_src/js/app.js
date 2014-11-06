@@ -3,11 +3,14 @@
 Error.stackTraceLimit = Infinity;
 var myApp = angular.module("TimeTableApp", [
     "ngRoute",
-    "templates",
+    "AppTemplates",
     "ui.calendar",
+    "ui.bootstrap",
+    "ui.bootstrap.datetimepicker",
+    "timeTable.constants",
     "timeTable.controllers.calendar",
-    "timeTable.services.event",
-    "timeTable.constants"
+    "timeTable.controllers.eventModal",
+    "timeTable.service.eventService"
 ])
 .config(["$httpProvider", "$routeProvider", function($httpProvider, $routeProvider) {
     $httpProvider.defaults.xsrfCookieName = "csrftoken";
@@ -28,7 +31,8 @@ angular.module("timeTable.constants", [])
 .factory("Constants", ["$window", function($window) {
     var jsBootstrap = $window.jsBootstrap || {};
     var constants = {
-        timeTableUrl: jsBootstrap.timeTableUrl || "",
+        eventListUrl: jsBootstrap.eventListUrl || "",
+        eventUpdateUrl: jsBootstrap.eventUpdateUrl || "",
         staticUrl: jsBootstrap.staticUrl || ""
     };
 

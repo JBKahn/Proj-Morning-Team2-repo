@@ -1,5 +1,38 @@
-## A summary of our planning and review meetings for both sprints (i.e. 4 meetings in total)
-To be filled in.
+
+Summary of Planning Meeting (Iteration 1): 
+* Opted to use Atlassian's JIRA ticketing system instead of Github's issue tracker. Taras set up a project and an Agile tracking board for the team to use.
+* turned the user stories we planned to get done this phase into tech stories
+* focus on finding useful packages and libraries to minimize our work, learn to use Django + Angular
+* scheduled group meeting for Joseph to give us a crash course in the above
+* Joseph set up a template project for us to use as a starting ground
+* Tried our hand at estimating story points
+* Decided not to do daily scrums so long as we kept in touch via Slack and after classes. meeting every 4 days should be enough to keep things on track
+
+
+Summary of Sprint Retrospective (Iteration 1):
+* Team is feeling lost, lots to learn about Django and Angular
+* Application backbone is online, but handful of tickets pushed into next sprint
+* Everyone is busy with other coursework
+* Still hoping to complete target features, with some minor revisions
+* estimating is hard, blew some estimates
+
+[Reporting for sprint 1](https://csc301.atlassian.net/secure/RapidBoard.jspa?rapidView=4&view=reporting&chart=sprintRetrospective&sprint=1) The story points don't show up in the report because of issues with the conifgurable field and us having to reset it after sprint completion. Check the individial tickets to see their points.
+
+
+
+Summary of Planning Meeting (Iteration 2): 
+* After tasking, problem with dependancies immediately became clear, heavy bottlenecking from blocking tickets in event API creation without the option of multiple people working on same code
+* Brought in tickets for webscraping and ROSI integration to make sure everyone has something to do
+* Not too worried about meeting every goal of our plan after discussion with Anson about possibly cutting scope back now that we are a 5 person team
+
+
+Summary of Sprint Retrospective (Iteration 2): 
+* JIRA should be kept more up to date with what people are working on, though this wasn't much of a problem as we kept to our own branches and communicated on Slack
+* team is getting more confident with Djangular developement
+* application is in a demoable state
+* ran through topics to cover in presentation
+
+[Reporting for sprint 2](https://csc301.atlassian.net/secure/RapidBoard.jspa?rapidView=4&view=reporting&chart=sprintRetrospective&sprint=2)
 
 ## A summary of our "daily" scrum meetings
 #### Oct 17th 5:00
@@ -66,8 +99,24 @@ Feeling a bit better about Angular, going to starting the event creation this we
 **Allen** - 
 Chugging along. Going to push some code today/tomorrow and I plan to try to be done with this by the end of the weekend then I can join in to helpout with the frontend.
 
+#### Nov 4th 11:30
+**Joseph** - 
+Have become pull request gatekeeper, making sure code is up to snuff before getting merged to master
+
+**Taras** - 
+I now resent time formats and Google's Calendar API, but we have working Event creation. Some fixes left for tomorrow, but it works. 
+
+**Michelle** - 
+Scraped data is full of special cases that need to be handled, but it's looking to be in a state that can be demoed for Thursday!
+
+**Lyon** - 
+Waiting for Taras to finish his part to hook the UI up to, but the interface is chugging along. 
+
+**Allen** - 
+Some problems with getting the headless browser to use ROSI's UI, not likely to get in a demoable state, but this was a stretch goal anyway. 
+
 ## Description of how you used GitHub issue management system
-We didn't. We used Jira instead and you can checkout [our board](https://csc301.atlassian.net/secure/RapidBoard.jspa?rapidView=2). Joseph and Taras have used it before and so we decided as a team, based on their reccomendation, to try it for this phase. We'll be creating tickets for what we work on and assigning outselves to them. We'll attach the pull request and use it's sprint functionality to track what we plan to do and what we have done. Taras will be, awesomely, taking the lead and creating tickets after out sprint planning meetings. This will help us keep organized. We'll be using Jira's kanban board, instead of the agile one, because it's simpler for the team member who have yet to use JIRA but we'll be using sprints and simply creating tickets at the beginning of the sprint so that the backlog is composed of our current sprint. Each person is allowed to pick up any ticket as long as it's not assigned to anyone.
+We didn't. We used Jira instead and you can checkout [our board](https://csc301.atlassian.net/secure/RapidBoard.jspa?rapidView=4) ([Sprint Report View](https://csc301.atlassian.net/secure/RapidBoard.jspa?rapidView=4&view=reporting&chart=sprintRetrospective&sprint=2)). Joseph and Taras have used it before and so we decided as a team, based on their reccomendation, to try it for this phase. We'll be creating tickets for what we work on and assigning outselves to them. We'll attach the pull request and use it's sprint functionality to track what we plan to do and what we have done. Taras will be, awesomely, taking the lead and creating tickets after out sprint planning meetings. This will help us keep organized. We'll be using Jira's kanban board, instead of the agile one, because it's simpler for the team member who have yet to use JIRA but we'll be using sprints and simply creating tickets at the beginning of the sprint so that the backlog is composed of our current sprint. Each person is allowed to pick up any ticket as long as it's not assigned to anyone.
 
 ## Description of any other major decisions/conventions you may have made/used during the process
 The only ones I can think of are:
@@ -76,3 +125,5 @@ The only ones I can think of are:
 
 2) No scrum master
 Seems unnecessary for a project our size. We'd rather delegate small tasks to specific people than have their be a master in charge of them all.  We're also pretty busy so no one really wants the overhead of having to do it either. This will be simple if we keep it that way and if we found it had been a poor decision then we'd have elected one.
+
+3) No official daily scrum, but daily updates in Slack chat.
