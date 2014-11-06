@@ -13,10 +13,23 @@ casper.then(function(){
 
 var courses = [];
 
-casper.thenClick('.button[value="Login"]');
+//If login failed
+casper.thenClick('.button[value="Login"]', function(){
+    if(this.exists('#error')){
+         this.die("error found");
+    }
+
+});
 
 casper.thenClick(x('//a[text()="Personal Timetable"]'));
 
+//Fall term
+casper.thenClick('html body#subpage div#wrapper div#content.content div#right table tbody tr td.section table.decorated tbody tr td form#sessionForm input.button');
+
+
+
+
+//Winter term
 casper.thenClick('html body#subpage div#wrapper div#content.content div#right table tbody tr td.section table.decorated tbody tr td form#sessionForm input.button');
 
 
