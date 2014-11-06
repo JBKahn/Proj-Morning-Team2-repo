@@ -1,32 +1,32 @@
 
 Summary of Planning Meeting (Iteration 1): 
-*Opted to use Atlassian's JIRA ticketing system instead of Github's issue tracker. Taras set up a project and an Agile tracking board for the team to use.
-*turned the user stories we planned to get done this phase into tech stories
-*focus on finding useful packages and libraries to minimize our work, learn to use Django + Angular
-*scheduled group meeting for Joseph to give us a crash course in the above
-*Joseph set up a template project for us to use as a starting ground
-*Tried our hand at estimating story points
-*Decided not to do daily scrums so long as we kept in touch via Slack and after classes. meeting every 4 days should be enough to keep things on track
+* Opted to use Atlassian's JIRA ticketing system instead of Github's issue tracker. Taras set up a project and an Agile tracking board for the team to use.
+* turned the user stories we planned to get done this phase into tech stories
+* focus on finding useful packages and libraries to minimize our work, learn to use Django + Angular
+* scheduled group meeting for Joseph to give us a crash course in the above
+* Joseph set up a template project for us to use as a starting ground
+* Tried our hand at estimating story points
+* Decided not to do daily scrums so long as we kept in touch via Slack and after classes. meeting every 4 days should be enough to keep things on track
 
 
 Summary of Sprint Retrospective (Iteration 1):
-*Team is feeling lost, lots to learn about Django and Angular
-*Application backbone is online, but handful of tickets pushed into next sprint
-*Everyone is busy with other coursework
-*Still hoping to complete target features, with some minor revisions
-*estimating is hard, blew some estimates
+* Team is feeling lost, lots to learn about Django and Angular
+* Application backbone is online, but handful of tickets pushed into next sprint
+* Everyone is busy with other coursework
+* Still hoping to complete target features, with some minor revisions
+* estimating is hard, blew some estimates
 
 Summary of Planning Meeting (Iteration 2): 
-*After tasking, problem with dependancies immediately became clear, heavy bottlenecking from blocking tickets in event API creation without the option of multiple people working on same code
-*Brought in tickets for webscraping and ROSI integration to make sure everyone has something to do
-*Not too worried about meeting every goal of our plan after discussion with Anson about possibly cutting scope back now that we are a 5 person team
+* After tasking, problem with dependancies immediately became clear, heavy bottlenecking from blocking tickets in event API creation without the option of multiple people working on same code
+* Brought in tickets for webscraping and ROSI integration to make sure everyone has something to do
+* Not too worried about meeting every goal of our plan after discussion with Anson about possibly cutting scope back now that we are a 5 person team
 
 
 Summary of Sprint Retrospective (Iteration 2): 
-*JIRA should be kept more up to date with what people are working on, though this wasn't much of a problem as we kept to our own branches and communicated on Slack
-*team is getting more confident with Djangular developement
-*application is in a demoable state
-*ran through topics to cover in presentation
+* JIRA should be kept more up to date with what people are working on, though this wasn't much of a problem as we kept to our own branches and communicated on Slack
+* team is getting more confident with Djangular developement
+* application is in a demoable state
+* ran through topics to cover in presentation
 
 ## A summary of our "daily" scrum meetings
 #### Oct 17th 5:00
