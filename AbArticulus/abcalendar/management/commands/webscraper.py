@@ -31,15 +31,16 @@ class Command(BaseCommand):
                 course_title = course + " : " + course_desc
                 lecture_times = self.convert_lecture_time_codes(course_time)
 
+                print lecture
                 # Hard coding Y till I figure out where you put it.
                 for weekday, start_time, duration in lecture_times:
                     event_start, event_end, recur_until = self.get_reccuring_time_until('Y', weekday, start_time, duration)
-
-                    try:
-                        event = ApiInterface.create_google_json(title=course_title, start=event_start, end=event_end, all_day=False, description=None, location=None, recur_until=recur_until)
-                        ApiInterface.post_event_to_calendar(user=user, calendar_id=calendar_id, event=event, tag="LECTURE", org=course)
-                    except Exception:
-                        print "failed to add course: {}".format(course_title)
+                    print weekday, start_time, duration
+#                    try:
+#                        event = ApiInterface.create_google_json(title=course_title, start=event_start, end=event_end, all_day=False, description=None, location=None, recur_until=recur_until)
+#                        ApiInterface.post_event_to_calendar(user=user, calendar_id=calendar_id, event=event, tag="LECTURE", org=course)
+#                    except Exception:
+#                        print "failed to add course: {}".format(course_title)
         return
 
     def get_reccuring_time_until(self, time_period, day_of_week, hour_start, duration):
