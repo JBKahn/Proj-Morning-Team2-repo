@@ -21,7 +21,7 @@ casper.then(function(){
 //If login failed
 casper.thenClick('.button[value="Login"]', function(){
     if(this.exists('#error')){
-         this.die("error found");
+         this.die("bad credentials");
     }
 
 });
