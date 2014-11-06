@@ -4,14 +4,19 @@ var x = require('casper').selectXPath;
 var studentID = casper.cli.raw.get(0);
 var password = casper.cli.raw.get(1);
 
+function getCourses() {
+    var courses = document.querySelectorAll('#APPTable tr[valign="top"]');
+    return Array.prototype.map.call(courses, function(e) {
+        return e.querySelector('b').innerHTML.substring(0, 10) + '-' + e.querySelector('td').innerText.split('\n')[1];
+    });
+}
+
 casper.start('http://www.rosi.utoronto.ca').thenClick('.rosi-login-content a');
 
 casper.then(function(){
     this.sendKeys('#personId', studentID);
     this.sendKeys('#pin', password);
 });
-
-var courses = [];
 
 //If login failed
 casper.thenClick('.button[value="Login"]', function(){
@@ -21,20 +26,14 @@ casper.thenClick('.button[value="Login"]', function(){
 
 });
 
-casper.thenClick(x('//a[text()="Personal Timetable"]'));
+// Go to list courses page
+casper.thenClick(x('//a[text()="Course Enrolment"]'));
+casper.thenClick(x('//a[text()="List Courses"]'));
 
-//Fall term
-casper.thenClick('html body#subpage div#wrapper div#content.content div#right table tbody tr td.section table.decorated tbody tr td form#sessionForm input.button');
-
-
-
-
-//Winter term
-casper.thenClick('html body#subpage div#wrapper div#content.content div#right table tbody tr td.section table.decorated tbody tr td form#sessionForm input.button');
-
-
+// Print the courses, comma seperated as Course-Section.
 casper.then(function(){
-   this.capture('lol.png');
-})
+   var courses = this.evaluate(getCourses);
+   this.echo(courses);
+});
 
 casper.run();
