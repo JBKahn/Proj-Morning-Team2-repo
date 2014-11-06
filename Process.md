@@ -16,6 +16,8 @@ Summary of Sprint Retrospective (Iteration 1):
 * Still hoping to complete target features, with some minor revisions
 * estimating is hard, blew some estimates
 
+[Reporting for sprint 1](https://csc301.atlassian.net/secure/RapidBoard.jspa?rapidView=4&view=reporting&chart=sprintRetrospective&sprint=1)
+
 Summary of Planning Meeting (Iteration 2): 
 * After tasking, problem with dependancies immediately became clear, heavy bottlenecking from blocking tickets in event API creation without the option of multiple people working on same code
 * Brought in tickets for webscraping and ROSI integration to make sure everyone has something to do
@@ -27,6 +29,8 @@ Summary of Sprint Retrospective (Iteration 2):
 * team is getting more confident with Djangular developement
 * application is in a demoable state
 * ran through topics to cover in presentation
+
+[Reporting for sprint 2](https://csc301.atlassian.net/secure/RapidBoard.jspa?rapidView=4&view=reporting&chart=sprintRetrospective&sprint=2)
 
 ## A summary of our "daily" scrum meetings
 #### Oct 17th 5:00
