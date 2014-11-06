@@ -13,5 +13,5 @@ urlpatterns = patterns(
     url(r'^api/', include('api.urls', namespace="api")),
     url('', include('social.apps.django_app.urls', namespace='social')),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^rosi_parse/', include('rosi_parse.urls', namespace='rosi_parse')),
+    url(r'^rosi_parse/', include('rosi_parse.urls', namespace='rosi')),
 )
