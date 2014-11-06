@@ -16,7 +16,9 @@ Summary of Sprint Retrospective (Iteration 1):
 * Still hoping to complete target features, with some minor revisions
 * estimating is hard, blew some estimates
 
-[Reporting for sprint 1](https://csc301.atlassian.net/secure/RapidBoard.jspa?rapidView=4&view=reporting&chart=sprintRetrospective&sprint=1)
+[Reporting for sprint 1](https://csc301.atlassian.net/secure/RapidBoard.jspa?rapidView=4&view=reporting&chart=sprintRetrospective&sprint=1) The story points don't show up in the report because of issues with the conifgurable field and us having to reset it after sprint completion. Check the individial tickets to see their points.
+
+
 
 Summary of Planning Meeting (Iteration 2): 
 * After tasking, problem with dependancies immediately became clear, heavy bottlenecking from blocking tickets in event API creation without the option of multiple people working on same code
