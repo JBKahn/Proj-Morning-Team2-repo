@@ -1,6 +1,5 @@
 import json
 import requests
-from dateutil.parser import parse
 from datetime import datetime
 
 from abcalendar.models import Event, Tag, Organization
@@ -52,13 +51,6 @@ def make_request(user, url, params=None, method="GET", data=None):
     else:
         raise ValueError("Only GET, DELETE, POST, and PUT are supported.")
     return response
-
-
-def is_all_day_event(end):
-    parsed_time = end and end.get('dateTime') and parse(end.get('dateTime'))
-    hour = parsed_time and parsed_time.hour
-    minute = parsed_time and parsed_time.minute
-    return hour == minute == 0
 
 
 def json_to_dict(event):
