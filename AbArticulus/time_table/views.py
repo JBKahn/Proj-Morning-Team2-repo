@@ -14,11 +14,14 @@ class TimeTableHomeView(TemplateView):
 class EventCreateView(APIView):
     calendar_id = "primary"
 
+    def get(self, request, format='JSON', *args, **kwargs):
+        return Response(ApiInterface.get_events_from_calendar(user=request.user, calendar_id=self.calendar_id))
+
     def post(self, request, format='JSON', *args, **kwargs):
         serializer = SimpleEventSerializer(data=request.DATA)
         if serializer.is_valid():
-            json_event = ApiInterface.create_event_from_dict(request.DATA)
-            return Response(ApiInterface.post_event_to_calendar(user=request.user, calendar_id=self.calendar_id, event=json_event, tag="ASSIGNMENT", org="BEST ORG"))
+            json_event = ApiInterface.create_event_from_dict(dict(serializer.data))
+            return Response(ApiInterface.post_event_to_calendar(user=request.user, calendar_id=self.calendar_id, event=json_event, tag="ASSIGNMENT", org="Best Org"))
 
 
 class EventAccessView(APIView):

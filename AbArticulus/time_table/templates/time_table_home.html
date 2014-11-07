@@ -18,7 +18,8 @@
 <script>
     // Bootstrap Django data for angular
     window.jsBootstrap = {};
-    window.jsBootstrap.timeTableUrl = "{% url "api:events" %}";
+    window.jsBootstrap.eventListUrl = "{% url "time_table:event_create" %}";
+    window.jsBootstrap.eventUpdateUrl = "{% url "time_table:event_access" event_id=0 %}";
     window.jsBootstrap.staticUrl = "{% static "" %}";
 </script>
 {% endblock %}

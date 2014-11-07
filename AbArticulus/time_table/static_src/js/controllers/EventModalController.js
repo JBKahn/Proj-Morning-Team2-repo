@@ -4,7 +4,7 @@ var eventModalController = function ($scope, $modalInstance, EventService, event
             'title': eventData.title || '',
             'startDate': eventData.start || '',
             'endDate': eventData.end || '',
-            'allDay': eventData.title || false,
+            'allDay': eventData.allDay || false,
             'id': eventData.id || '',
             'sequence': eventData.sequence || 0
         }
@@ -15,21 +15,20 @@ var eventModalController = function ($scope, $modalInstance, EventService, event
         if (!eventData.title || !eventData.startDate || !eventData.endDate) {
             return;
         }
+        var promise;
         if (eventData.id === '') {
-            EventService.addEvent(eventData.title, eventData.startDate, eventData.endDate, eventData.allDay)
-                .then(function(data) {
-                    $modalInstance.close(data);
-                });
+            promise = EventService.addEvent(eventData.title, eventData.startDate, eventData.endDate, eventData.allDay);
         } else {
-            EventService.updateEvent(eventData.id, eventData.sequence, eventData.title, eventData.startDate, eventData.endDate, eventData.allDay)
-                .then(
-                    function (data) {
-                        $modalInstance.close(data);
-                    }, function (reason) {
-                        // Do nothing. The update failed.
-                    }
-                );
+            promise = EventService.updateEvent(eventData.id, eventData.sequence, eventData.title, eventData.startDate, eventData.endDate, eventData.allDay);
         }
+
+        promise.then(
+            function (data) {
+                $modalInstance.close(data);
+            }, function (reason) {
+                // Do nothing. The update failed.
+            }
+        );
     };
 
     $scope.save = function () {
