@@ -2,8 +2,6 @@ import json
 import requests
 from dateutil.parser import parse
 from abcalendar.models import Event, Tag, Organization
-from django.core.exceptions import ObjectDoesNotExist
-import requests
 
 
 def get_google_api_endpoint_url(api_name, **kwargs):
@@ -63,12 +61,14 @@ def is_all_day_event(end):
 
 def json_to_dict(event):
     return {
-        'end': event.get('end') and event.get('end').get('dateTime'),
-        'start': event.get('start') and event.get('start').get('dateTime'),
-        'allDay': is_all_day_event(event.get('end')),
+        'end': event.get('end') and (event.get('end').get('dateTime') or event.get('end').get('date')),
+        'start': event.get('start') and (event.get('start').get('dateTime') or event.get('start').get('date')),
+        'allDay': (event.get('start') and event.get('end').get('date')) or (event.get('start') and event.get('start').get('date')),
         'title': event.get('summary'),
         'id': event.get('id'),
+        'sequence': event.get('sequence'),
     }
+
 
 def handle_models_for_event_creation(organization_name, tag_type, gevent_id, user):
     if not Organization.objects.filter(name=organization_name).exists():
@@ -77,6 +77,7 @@ def handle_models_for_event_creation(organization_name, tag_type, gevent_id, use
         organization = Organization.objects.get(name=organization_name)
     tag, _ = Tag.objects.get_or_create(tag_type=tag_type, organization=organization)
     Event.objects.create(gevent_id=gevent_id, tag=tag, user=user)
+
 
 def handle_models_for_event_delete(gevent_id):
     Event.objects.get(gevent_id=gevent_id).delete()
