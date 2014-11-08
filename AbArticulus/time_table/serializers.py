@@ -6,3 +6,8 @@ class SimpleEventSerializer(serializers.Serializer):
     start = serializers.DateTimeField()
     end = serializers.DateTimeField()
     all_day = serializers.BooleanField()
+
+
+class SimpleEventUpdateSerializer(SimpleEventSerializer):
+    id = serializers.CharField(max_length=100)
+    sequence = serializers.IntegerField()
