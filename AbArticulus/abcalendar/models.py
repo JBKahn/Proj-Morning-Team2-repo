@@ -3,14 +3,13 @@ from django.db import models
 from constants import TAG_CHOICES, VOTE_CHOICES
 
 
-class Organization(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    user = models.ForeignKey('authentication.CustomUser')
+class Calendar(models.Model):
+    name = models.CharField(max_length=255, unique=True)  # e.g. `CSC301H1S-L0101`
 
 
 class Tag(models.Model):
+    calendar = models.ForeignKey(Calendar)
     tag_type = models.CharField(max_length=25, choices=TAG_CHOICES)
-    organization = models.ForeignKey(Organization)
     number = models.IntegerField(default=1, blank=True, null=True)
 
     def save(self, *args, **kwargs):
@@ -19,14 +18,40 @@ class Tag(models.Model):
         super(Tag, self).save(*args, **kwargs)
 
 
+class GoogleEvent(models.Model):
+    gid = models.CharField(max_length=255, unique=True)
+    revision = models.IntegerField()
+
+    def generate_description(self):
+        gevent_info = {
+            'events': [],
+            'comments': []
+        }
+        for proposed_event in self.event_set.all():
+            event_info = {
+                'votes': [],
+                # serialize event.
+            }
+            event_info['votes'] = []
+            for vote in proposed_event.vote_set.all():
+                event_info['votes'].append('')  # serialize votes
+            gevent_info['events'].append(event_info)
+        for comment in self.comment_set.all():
+            gevent_info['comments'].append('')  # serialize comments
+        return gevent_info
+
+
 class Event(models.Model):
-    gevent_id = models.CharField(max_length=255)  # Google event id
-    tag = models.ForeignKey(Tag, default=None)
-    user = models.ForeignKey('authentication.CustomUser')
+    tag = models.ForeignKey(Tag)
+    gevent = models.ForeignKey(GoogleEvent)
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+    reccur_until = models.DateTimeField(blank=True, null=True)
+    all_day = models.BooleanField(default=False)
 
 
 class Comment(models.Model):
-    event = models.ForeignKey(Event)
+    gevent = models.ForeignKey(GoogleEvent)
     user = models.ForeignKey('authentication.CustomUser')
     comment = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)

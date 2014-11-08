@@ -1,9 +1,6 @@
 import json
 import requests
 from dateutil.parser import parse
-from abcalendar.models import Event, Tag, Organization
-from django.core.exceptions import ObjectDoesNotExist
-import requests
 
 
 def get_google_api_endpoint_url(api_name, **kwargs):
@@ -69,14 +66,3 @@ def json_to_dict(event):
         'title': event.get('summary'),
         'id': event.get('id'),
     }
-
-def handle_models_for_event_creation(organization_name, tag_type, gevent_id, user):
-    if not Organization.objects.filter(name=organization_name).exists():
-        organization = Organization.objects.create(name=organization_name, user=user)
-    else:
-        organization = Organization.objects.get(name=organization_name)
-    tag, _ = Tag.objects.get_or_create(tag_type=tag_type, organization=organization)
-    Event.objects.create(gevent_id=gevent_id, tag=tag, user=user)
-
-def handle_models_for_event_delete(gevent_id):
-    Event.objects.get(gevent_id=gevent_id).delete()

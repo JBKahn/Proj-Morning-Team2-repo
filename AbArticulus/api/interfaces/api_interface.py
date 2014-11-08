@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from api.interfaces.google_api_interface import GoogleApiInterface
-from api.interfaces.helpers import json_to_dict, handle_models_for_event_creation, handle_models_for_event_delete
+from api.interfaces.helpers import json_to_dict
 
 from rest_framework import status
 
@@ -37,26 +37,50 @@ class ApiInterface(object):
         response = GoogleApiInterface.delete_event_from_calendar(user, calendar_id, event_id)
         if response.status_code != status.HTTP_204_NO_CONTENT:
             raise UnexpectedResponseError(response.status_code)
-        handle_models_for_event_delete(event_id)
 
     @classmethod
     def post_event_to_calendar(cls, user, calendar_id, event, tag, org):
         '''event is a JSON request body, can be populated via create_event_json()'''
+        # We need to instantiate a new google event object after creating the Tag, Vote and Event on our side.
+        # None of these models are saved.
+        # By doing that, we can attach the serialized version of our event, using the model serializer and
+        # save ourselves any work, onto the description field the first time.
+
+        # Check if the Tag exsists for our Calendar. If it does then check if an event with the same event info exists.
+        # If it does, respond with such a message. Otherwise Continue.
         response = GoogleApiInterface.post_event_to_calendar(user, calendar_id, event)
         if response.status_code != status.HTTP_200_OK:
             raise UnexpectedResponseError(response.status_code)
+        # we save the Google Event with the google id. Then we save the other models.
         event = json_to_dict(response.json())
-        handle_models_for_event_creation(gevent_id=event['id'], tag_type=tag, organization_name=org, user=user)
         return event
 
     @classmethod
     def put_event_to_calendar(cls, user, calendar_id, event_id, event):
         '''event is a JSON request body, can be populated via create_event_json()'''
+        # get the GoogleEvent model and use the serializer to generate the description.
         response = GoogleApiInterface.put_event_to_calendar(user, calendar_id, event_id, event)
         if response.status_code != status.HTTP_200_OK:
             raise UnexpectedResponseError(response.status_code)
         event = json_to_dict(response.json())
         return event
+
+    @classmethod
+    def add_user_event(cls, user, calendar_id, event, tag, org):
+        # If an event with the same info already exists:
+        #   Add my vote.
+        # otherwise:
+        #   Add another event to our DB along with a vote. Create the Tag if it does not exists.
+        # If it is for a new tag:
+        #   post_event_to_calendar.
+        # Otherwise:
+        #   Take the most unvoted thing
+        #   if it has 0 or more votes:
+        #       if the second place has les than 0 votes we need to get the old GoogleEvent and update the gevent_id.
+        #       put_event_to_calendar with that info
+        #   else:
+        #       delete_event_from_calendar
+        pass
 
     @classmethod
     def create_google_json(cls, title, start, end, all_day=False, description=None, location=None, recur_until=None):
