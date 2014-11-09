@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from api.interfaces.api_interface import ApiInterface
-from time_table.serializers import SimpleEventSerializer
+from time_table.serializers import SimpleEventSerializer, SimpleEventUpdateSerializer
 
 from django.views.generic import TemplateView
 
@@ -31,8 +31,10 @@ class EventAccessView(APIView):
         return Response(ApiInterface.get_event_from_calendar(user=request.user, calendar_id=self.calendar_id, event_id=event_id))
 
     def put(self, request, event_id, format='JSON', *args, **kwargs):
-        json_event = ApiInterface.create_event_from_dict(request.DATA)
-        return Response(ApiInterface.put_event_to_calendar(user=request.user, calendar_id=self.calendar_id, event=json_event, event_id=event_id, tag=request.get("tag"), org=request.get("org")))
+        serializer = SimpleEventUpdateSerializer(data=request.DATA)
+        if serializer.is_valid():
+            json_event = ApiInterface.create_event_from_dict(dict(serializer.data))
+            return Response(ApiInterface.put_event_to_calendar(user=request.user, calendar_id=self.calendar_id, event=json_event, event_id=serializer.data.get('id')))
 
     def delete(self, request, event_id, format='JSON', *args, **kwargs):
         return Response(ApiInterface.get_event_from_calendar(user=request.user, calendar_id=self.calendar_id, event_id=event_id))

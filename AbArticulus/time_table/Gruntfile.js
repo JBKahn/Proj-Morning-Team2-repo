@@ -23,6 +23,7 @@ module.exports = function(grunt) {
                 src: [
                     appConfig.path.bowerPath + 'moment/min/moment-with-locales.js',
                     appConfig.path.bowerPath + "jquery/dist/jquery.min.js",
+                    appConfig.path.bowerPath + "jquery-ui/ui/jquery-ui.js",
                     appConfig.path.bowerPath + "fullcalendar/fullcalendar.min.js",
                     appConfig.path.bowerPath + 'angular/angular.js',
                     appConfig.path.bowerPath + 'angular-route/angular-route.js',
@@ -110,7 +111,7 @@ module.exports = function(grunt) {
                 files: [
                     appPath + "sass/*",
                     appPath + "js/*",
-                    appPath + "html/*",
+                    appPath + "templates/*",
                 ],
                 tasks: ['default']
             }

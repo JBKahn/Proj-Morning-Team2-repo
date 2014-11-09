@@ -2,7 +2,7 @@
     <div class="container">
         <section id="directives-calendar" ng-controller="CalendarController as calCtrl">
             <button class="btn btn-default" ng-click="calCtrl.open('lg')">Create Event</button>
-            <div class="calendar" ng-model="calCtrl.CalendarData.eventSources" calendar="myCalendar1" config="calCtrl.uiConfig.calendar" ui-calendar="calCtrl.uiConfig.calendar"></div>
+            <div class="calendar" ng-model="calCtrl.CalendarData.eventSources" calendar="myCalendar1" config="calCtrl.eventData.uiConfig.calendar" ui-calendar="calCtrl.eventData.uiConfig.calendar"></div>
         </section>
     </div>
 </div>

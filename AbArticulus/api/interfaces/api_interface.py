@@ -55,7 +55,7 @@ class ApiInterface(object):
     @classmethod
     def put_event_to_calendar(cls, user, calendar_id, gevent_id, event_data, revision):
         '''event is a JSON request body, can be populated via create_event_json()'''
-        event_data['revision'] = revision
+        event_data['sequence'] = revision
         response = GoogleApiInterface.put_event_to_calendar(user, calendar_id, gevent_id, event_data)
         if response.status_code != status.HTTP_200_OK:
             raise UnexpectedResponseError(response.status_code)
@@ -119,27 +119,32 @@ class ApiInterface(object):
             return cls.post_event_to_calendar(user=user, calendar_id=calendar_id, event_data=event_data)
 
     @classmethod
-    def create_google_json(cls, title, start, end, all_day=False, description=None, location=None, recur_until=None):
+    def create_google_json(cls, title, start, end, all_day=False, description=None, location=None, recur_until=None, sequence=None):
         '''creates JSON formatted event data to send to Google to create a Google Calendar event times should be datetime objects'''
         if not (isinstance(start, datetime) and isinstance(end, datetime)):
             raise ValueError("Times must be instances of datetime.datetime")
 
         if all_day:
             time_format = "%Y-%m-%d"
+            time_key = 'date'
         else:
             time_format = "%Y-%m-%dT%H:%M:%S%z"
+            time_key = 'dateTime'
 
         body = {
             'summary': title,
             'start': {
-                'dateTime': start.strftime(time_format),
+                time_key: start.strftime(time_format),
                 'timeZone': str(start.tzinfo)
             },
             'end': {
-                'dateTime': end.strftime(time_format),
+                time_key: end.strftime(time_format),
                 'timeZone': str(start.tzinfo)
             },
         }
+
+        if sequence is not None:
+            body['sequence'] = sequence
 
         if recur_until is not None:
             if not isinstance(recur_until, datetime):
@@ -162,7 +167,8 @@ class ApiInterface(object):
             all_day=info.get('all_day'),
             description=info.get('description'),
             location=info.get('location'),
-            recur_until=info.get('recur_until')
+            recur_until=info.get('recur_until'),
+            sequence=info.get('sequence')
         )
 
 

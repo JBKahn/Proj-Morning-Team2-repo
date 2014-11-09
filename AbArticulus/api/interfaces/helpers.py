@@ -1,7 +1,7 @@
 import json
+from datetime import datetime
 
 import requests
-from dateutil.parser import parse
 from rest_framework import status
 from social.apps.django_app.utils import load_strategy
 
@@ -64,18 +64,12 @@ def make_request(user, url, params=None, method="GET", data=None):
     return response
 
 
-def is_all_day_event(end):
-    parsed_time = end and end.get('dateTime') and parse(end.get('dateTime'))
-    hour = parsed_time and parsed_time.hour
-    minute = parsed_time and parsed_time.minute
-    return hour == minute == 0
-
-
 def json_to_dict(event):
     return {
-        'end': event.get('end') and event.get('end').get('dateTime'),
-        'start': event.get('start') and event.get('start').get('dateTime'),
-        'allDay': is_all_day_event(event.get('end')),
+        'end': event.get('end') and (event.get('end').get('dateTime') or (datetime.strptime(event.get('end').get('date'), "%Y-%m-%d").isoformat())),
+        'start': event.get('start') and (event.get('start').get('dateTime') or (datetime.strptime(event.get('start').get('date'), "%Y-%m-%d").isoformat())),
+        'allDay': ('end' in event and 'date' in event.get('end')) or ('start' in event and 'date' in event.get('start')),
         'title': event.get('summary'),
         'id': event.get('id'),
+        'sequence': event.get('sequence'),
     }
