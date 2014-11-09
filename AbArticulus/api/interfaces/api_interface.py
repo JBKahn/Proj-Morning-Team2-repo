@@ -1,9 +1,13 @@
 from datetime import datetime
 
+from rest_framework import status
+
+from django.db.models import Sum
+
+from abcalendar.models import Tag, Calendar, Event, GoogleEvent, Vote
+from abcalendar.serializers import GoogleEventSerializer, EventSerializer, VoteSerializer
 from api.interfaces.google_api_interface import GoogleApiInterface
 from api.interfaces.helpers import json_to_dict
-
-from rest_framework import status
 
 
 class ApiInterface(object):
@@ -39,16 +43,9 @@ class ApiInterface(object):
             raise UnexpectedResponseError(response.status_code)
 
     @classmethod
-    def post_event_to_calendar(cls, user, calendar_id, event, tag, org):
+    def post_event_to_calendar(cls, user, calendar_id, event_data):
         '''event is a JSON request body, can be populated via create_event_json()'''
-        # We need to instantiate a new google event object after creating the Tag, Vote and Event on our side.
-        # None of these models are saved.
-        # By doing that, we can attach the serialized version of our event, using the model serializer and
-        # save ourselves any work, onto the description field the first time.
-
-        # Check if the Tag exsists for our Calendar. If it does then check if an event with the same event info exists.
-        # If it does, respond with such a message. Otherwise Continue.
-        response = GoogleApiInterface.post_event_to_calendar(user, calendar_id, event)
+        response = GoogleApiInterface.post_event_to_calendar(user, calendar_id, event_data)
         if response.status_code != status.HTTP_200_OK:
             raise UnexpectedResponseError(response.status_code)
         # we save the Google Event with the google id. Then we save the other models.
@@ -56,31 +53,70 @@ class ApiInterface(object):
         return event
 
     @classmethod
-    def put_event_to_calendar(cls, user, calendar_id, event_id, event):
+    def put_event_to_calendar(cls, user, calendar_id, gevent_id, event_data, revision):
         '''event is a JSON request body, can be populated via create_event_json()'''
-        # get the GoogleEvent model and use the serializer to generate the description.
-        response = GoogleApiInterface.put_event_to_calendar(user, calendar_id, event_id, event)
+        event_data['revision'] = revision
+        response = GoogleApiInterface.put_event_to_calendar(user, calendar_id, gevent_id, event_data)
         if response.status_code != status.HTTP_200_OK:
             raise UnexpectedResponseError(response.status_code)
         event = json_to_dict(response.json())
         return event
 
     @classmethod
-    def add_user_event(cls, user, calendar_id, event, tag, org):
-        # If an event with the same info already exists:
-        #   Add my vote.
-        # otherwise:
-        #   Add another event to our DB along with a vote. Create the Tag if it does not exists.
-        # If it is for a new tag:
-        #   post_event_to_calendar.
-        # Otherwise:
-        #   Take the most unvoted thing
-        #   if it has 0 or more votes:
-        #       if the second place has les than 0 votes we need to get the old GoogleEvent and update the gevent_id.
-        #       put_event_to_calendar with that info
-        #   else:
-        #       delete_event_from_calendar
-        pass
+    def add_user_event(cls, user, calendar_id, event_data, tag_data):
+        # If the calendar isn't one of ours, we don't care about this.
+        if Calendar.objects.filter(gid=calendar_id).exists():
+            calendar_object = Calendar.objects.get(gid=calendar_id)
+            tag_object, _ = Tag.objects.get_or_create(calendar=calendar_object, **tag_data)
+
+            if Event.objects.filter(tag=tag_object, **event_data).exists():
+                event_object = Event.objects.get(tag=tag_object, **event_data)
+                gevent = event_object.gevent
+            else:
+                event_object = Event(tag=tag_object, **event_data)
+                gevent = None
+
+            vote_object = None
+            if not Vote.objects.filter(user=user, event=event_object).exists():
+                vote_object = Vote(user=user, event=event_object)
+
+            if gevent is None:
+                gevent = GoogleEvent(revision=0)
+                description = GoogleEventSerializer(gevent).data
+                description['events'].append(EventSerializer(event_object).data)
+                description['events'][0]['votes'].append(VoteSerializer(vote_object).data)
+                response = cls.post_event_to_calendar(user=user, calendar_id=calendar_id, event_data=event_data)
+                if response.status_code == status.HTTP_200_OK:
+                    gid = response.json().get('id')
+                    gevent.gid = gid
+                    gevent.save()
+                    event_object.gevent = gevent
+                    event_object.save()
+                    vote_object.save()
+                    return response
+            else:
+                event_object.save()
+                vote_object.save()
+                events = gevent.event_set.all().selected_related('vote').annotate(num_votes=Sum('vote__number'))
+                most_upvoted_event = max(events, key=lambda e: e.num_votes)
+                vote_count = most_upvoted_event.num_votes
+                if vote_count >= 0:
+                    event_data = {
+                        'start': most_upvoted_event.start,
+                        'end': most_upvoted_event.end,
+                        'recur_until': most_upvoted_event.reccur_until,
+                        'description': GoogleEventSerializer(gevent)
+                    }
+                    response = cls.put_event_to_calendar(user=user, calendar_id=calendar_id, gevent_id=gevent.gid, event_data=event_data, revision=gevent.revision + 1)
+                    if response.status_code == status.HTTP_200_OK:
+                        gevent.revision = gevent.revision + 1
+                        gevent.save()
+                        return response
+                else:
+                    return cls.delete_event_from_calendar(user=user, calendar_id=calendar_id, event_id=gevent.gid)
+            raise UnexpectedResponseError('Could not add event')
+        else:
+            return cls.post_event_to_calendar(user=user, calendar_id=calendar_id, event_data=event_data)
 
     @classmethod
     def create_google_json(cls, title, start, end, all_day=False, description=None, location=None, recur_until=None):

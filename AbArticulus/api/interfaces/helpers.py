@@ -1,6 +1,9 @@
 import json
+
 import requests
 from dateutil.parser import parse
+from rest_framework import status
+from social.apps.django_app.utils import load_strategy
 
 
 def get_google_api_endpoint_url(api_name, **kwargs):
@@ -18,36 +21,46 @@ def get_google_api_endpoint_url(api_name, **kwargs):
 
 
 def make_request(user, url, params=None, method="GET", data=None):
-    # Default params will pass other params if we need more.
-    if params is None:
-        social = user.social_auth.get(provider='google-oauth2')
-        params = {'access_token': social.extra_data['access_token']}
-    if method == "GET":
-        response = requests.get(
-            url=url,
-            params=params
-        )
-    elif method == "DELETE":
-        response = requests.delete(
-            url=url,
-            params=params
-        )
-    elif method == "POST":
-        response = requests.post(
-            url=url,
-            data=json.dumps(data),
-            params=params,
-            headers={"Content-Type": "application/json"}
-        )
-    elif method == "PUT":
-        response = requests.put(
-            url=url,
-            data=json.dumps(data),
-            params=params,
-            headers={"Content-Type": "application/json"}
-        )
-    else:
-        raise ValueError("Only GET, DELETE, POST, and PUT are supported.")
+    retries = 2
+    response = None
+    while retries > 0 and (response is None or response.status_code != 200):
+        if response is not None and response.status_code == status.HTTP_401_UNAUTHORIZED:
+            # Our access token is likely the issue. We can use the refrest token to reauthorize ourselves.
+            social = user.social_auth.get(provider='google-oauth2')
+            strategy = load_strategy('google-oauth2')
+            social.refresh_token(strategy=strategy)
+        # Default params will pass other params if we need more.
+        if params is None:
+            social = user.social_auth.get(provider='google-oauth2')
+            params = {'access_token': social.extra_data['access_token']}
+        if method == "GET":
+            response = requests.get(
+                url=url,
+                params=params
+            )
+        elif method == "DELETE":
+            response = requests.delete(
+                url=url,
+                params=params
+            )
+        elif method == "POST":
+            response = requests.post(
+                url=url,
+                data=json.dumps(data),
+                params=params,
+                headers={"Content-Type": "application/json"}
+            )
+        elif method == "PUT":
+            response = requests.put(
+                url=url,
+                data=json.dumps(data),
+                params=params,
+                headers={"Content-Type": "application/json"}
+            )
+        else:
+            raise ValueError("Only GET, DELETE, POST, and PUT are supported.")
+        retries = retries - 1
+
     return response
 
 

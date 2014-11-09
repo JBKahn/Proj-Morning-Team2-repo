@@ -102,6 +102,9 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
     'https://www.googleapis.com/auth/plus.login',
     'https://www.googleapis.com/auth/calendar',
 ]
+SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {'access_type': 'offline'}
+SOCIAL_AUTH_REVOKE_TOKENS_ON_DISCONNECT = True
+
 # Uncomment when new release is made
 # TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
