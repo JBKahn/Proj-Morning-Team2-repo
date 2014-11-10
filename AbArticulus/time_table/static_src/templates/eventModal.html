@@ -61,7 +61,10 @@
     <div class="checkbox">
         <input type="checkbox" ng-required="true" ng-disabled="!modalData.editable" ng-model="modalData.eventData.allDay">All-day event
     </div>
-    <p>{{ modalData.eventData.description }}</p>
+    <p>events</p>
+    <p>{{ modalData.alternateTimes }}</p>
+    <p>comments</p>
+    <p>{{ modalData.comments }}</p>
 </form>
 <div class="modal-footer">
     <button class="btn btn-primary" ng-disabled="!modalData.editable" ng-click="save()">Save</button>

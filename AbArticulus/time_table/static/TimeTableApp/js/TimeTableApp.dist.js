@@ -47830,7 +47830,10 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "    <div class=\"checkbox\">\n" +
     "        <input type=\"checkbox\" ng-required=\"true\" ng-disabled=\"!modalData.editable\" ng-model=\"modalData.eventData.allDay\">All-day event\n" +
     "    </div>\n" +
-    "    <p>{{ modalData.eventData.description }}</p>\n" +
+    "    <p>events</p>\n" +
+    "    <p>{{ modalData.alternateTimes }}</p>\n" +
+    "    <p>comments</p>\n" +
+    "    <p>{{ modalData.comments }}</p>\n" +
     "</form>\n" +
     "<div class=\"modal-footer\">\n" +
     "    <button class=\"btn btn-primary\" ng-disabled=\"!modalData.editable\" ng-click=\"save()\">Save</button>\n" +
@@ -48001,12 +48004,14 @@ var eventModalController = function ($scope, $modalInstance, Constants, EventSer
             'sequence': eventData.sequence || 0,
             'description': eventData.description || '',
             'calendar': eventData.calendar && $scope.getCalendarOption(calendars, eventData.calendar.id) || '',
-            'tagType': eventData.tag_type || JSON.parse(eventData.description).tag.tag_type.charAt(0).toUpperCase() + JSON.parse(eventData.description).tag.tag_type.slice(1).toLowerCase() || Constants.get('tagTypes')[0],
-            'tagNumber': eventData.tag_number || JSON.parse(eventData.description).tag.number  || 0
+            'tagType': eventData.tag_type || eventData.description && JSON.parse(eventData.description).tag.tag_type.charAt(0).toUpperCase() + JSON.parse(eventData.description).tag.tag_type.slice(1).toLowerCase() || Constants.get('tagTypes')[0],
+            'tagNumber': eventData.tag_number || eventData.description && JSON.parse(eventData.description).tag.number || 0
         },
         'calendars': calendars,
         'tagTypes': Constants.get('tagTypes'),
         'editable': !eventData.calendar || eventData.calendar.editable,
+        'alternateTimes': eventData.description && JSON.parse(eventData.description).events,
+        'comments': eventData.description && JSON.parse(eventData.description).comments,
         'initialData': eventData
     };
 
