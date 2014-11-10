@@ -30,8 +30,7 @@ class EventCreateView(APIView):
     def post(self, request, format='JSON', *args, **kwargs):
         serializer = SimpleEventSerializer(data=request.DATA)
         if serializer.is_valid():
-            json_event = ApiInterface.create_event_from_dict(dict(serializer.data))
-            new_event_data = ApiInterface.add_user_event(user=request.user, calendar_id=request.DATA.get('calendar'), event_data=json_event, tag_data='')
+            new_event_data = ApiInterface.add_user_event(user=request.user, calendar_id=request.DATA.get('calendar'), event_data=serializer.data, tag_data='')
             new_event_data['calendar_id'] = request.DATA.get('calendar')
             return Response(new_event_data)
 

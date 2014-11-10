@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from rest_framework import status
+from rest_framework.renderers import JSONRenderer
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -98,14 +99,23 @@ class ApiInterface(object):
         # If the calendar isn't one of ours, we don't care about this.
         if Calendar.objects.filter(gid=calendar_id).exists():
             calendar_object = Calendar.objects.get(gid=calendar_id)
+            # TODO: Add tag data to form.
+            tag_data = {
+                'tag_type': "ASSIGNMENT",
+                'number': 1
+            }
             tag_object, _ = Tag.objects.get_or_create(calendar=calendar_object, **tag_data)
 
+            # TODO: Should the title be combination of the tag info?
+            title = event_data['title']
+            del event_data['title']
             if Event.objects.filter(tag=tag_object, **event_data).exists():
                 event_object = Event.objects.get(tag=tag_object, **event_data)
                 gevent = event_object.gevent
             else:
                 event_object = Event(tag=tag_object, **event_data)
                 gevent = None
+            event_data['title'] = title
 
             vote_object = None
             if not Vote.objects.filter(user=user, event=event_object).exists():
@@ -119,19 +129,28 @@ class ApiInterface(object):
                 description['events'].append(EventSerializer(event_object).data)
                 description['events'][0]['votes'].append(VoteSerializer(vote_object).data)
                 description['events'][0]['tag'] = TagSerializer(tag_object).data
-                response = cls.post_event_to_calendar(user=user, calendar_id=calendar_id, event_data=event_data)
+                event_data = cls.create_event_from_dict(event_data)
+                event_data['description'] = JSONRenderer().render(description)
+                calendar_user = get_user_model().objects.get(email=settings.EMAIL_OF_USER_WITH_CALENDARS)
+
+                response = GoogleApiInterface.post_event_to_calendar(user=calendar_user, calendar_id=calendar_id, event=event_data)
+
                 if response.status_code == status.HTTP_200_OK:
                     gid = response.json().get('id')
                     gevent.gid = gid
                     gevent.save()
                     event_object.gevent = gevent
                     event_object.save()
+                    vote_object.event_id = event_object.id
                     vote_object.save()
-                    return response
+                    return json_to_dict(response.json())
             else:
                 event_object.save()
+                # TODO: Bail if the user has  previosuly voted for this event.
+                # TODO: Remove conflicting vote otherwise
+                vote_object.event_id = event_object.id
                 vote_object.save()
-                events = gevent.event_set.all().selected_related('vote').annotate(num_votes=Sum('vote__number'))
+                events = gevent.events.annotate(num_votes=Sum('votes__number'))
                 most_upvoted_event = max(events, key=lambda e: e.num_votes)
                 vote_count = most_upvoted_event.num_votes
                 if vote_count >= -1:
@@ -139,17 +158,24 @@ class ApiInterface(object):
                         'start': most_upvoted_event.start,
                         'end': most_upvoted_event.end,
                         'recur_until': most_upvoted_event.reccur_until,
-                        'description': GoogleEventSerializer(gevent)
+                        'description': JSONRenderer().render(GoogleEventSerializer(gevent).data)
                     }
-                    response = cls.put_event_to_calendar(user=user, calendar_id=calendar_id, gevent_id=gevent.gid, event_data=event_data, revision=gevent.revision + 1)
+                    event_data = cls.create_event_from_dict(event_data)
+                    calendar_user = get_user_model().objects.get(email=settings.EMAIL_OF_USER_WITH_CALENDARS)
+                    # TODO: remove. for testing only as we won't share the primary calendar
+                    if calendar_id == settings.EMAIL_OF_USER_WITH_CALENDARS:
+                        calendar_id = 'primary'
+                    event_data['sequence'] = gevent.revision + 1
+                    response = GoogleApiInterface.put_event_to_calendar(user=calendar_user, calendar_id=calendar_id, event_id=gevent.gid, event=event_data)
                     if response.status_code == status.HTTP_200_OK:
                         gevent.revision = gevent.revision + 1
                         gevent.save()
-                        return response
+                        return json_to_dict(response.json())
                 else:
                     return cls.delete_event_from_calendar(user=user, calendar_id=calendar_id, event_id=gevent.gid)
             raise UnexpectedResponseError('Could not add event')
         else:
+            event_data = cls.create_event_from_dict(event_data)
             return cls.post_event_to_calendar(user=user, calendar_id=calendar_id, event_data=event_data)
 
     @classmethod

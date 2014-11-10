@@ -18,6 +18,7 @@ var eventModalController = function ($scope, $modalInstance, EventService, event
             'allDay': eventData.allDay || false,
             'id': eventData.id || '',
             'sequence': eventData.sequence || 0,
+            'description': eventData.description || '',
             'calendar': eventData.calendar && $scope.getCalendarOption(calendars, eventData.calendar.id) || '',
         },
         'calendars': calendars,

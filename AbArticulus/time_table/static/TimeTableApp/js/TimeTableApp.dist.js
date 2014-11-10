@@ -47811,6 +47811,7 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "    <div class=\"checkbox\">\n" +
     "        <input type=\"checkbox\" ng-disabled=\"!modalData.editable\" ng-model=\"modalData.eventData.allDay\">All-day event\n" +
     "    </div>\n" +
+    "    <p>{{ modalData.eventData.description }}</p>\n" +
     "</form>\n" +
     "<div class=\"modal-footer\">\n" +
     "    <button class=\"btn btn-primary\" ng-disabled=\"!modalData.editable\" ng-click=\"save()\">Save</button>\n" +
@@ -47962,6 +47963,7 @@ var eventModalController = function ($scope, $modalInstance, EventService, event
             'allDay': eventData.allDay || false,
             'id': eventData.id || '',
             'sequence': eventData.sequence || 0,
+            'description': eventData.description || '',
             'calendar': eventData.calendar && $scope.getCalendarOption(calendars, eventData.calendar.id) || '',
         },
         'calendars': calendars,
