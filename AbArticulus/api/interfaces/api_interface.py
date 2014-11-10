@@ -72,7 +72,7 @@ class ApiInterface(object):
         event_data['sequence'] = revision
         response = GoogleApiInterface.put_event_to_calendar(user, calendar_id, gevent_id, event_data)
         if response.status_code != status.HTTP_200_OK:
-            raise UnexpectedResponseError(response.status_code)
+            raise UnexpectedResponseError(response.json())
         event = json_to_dict(response.json())
         return event
 
@@ -185,13 +185,16 @@ class ApiInterface(object):
                     if calendar_id == settings.EMAIL_OF_USER_WITH_CALENDARS:
                         calendar_id = 'primary'
                     event_data['sequence'] = gevent.revision + 1
+                    gevent.revision = gevent.revision + 1
+                    gevent.save()
                     response = GoogleApiInterface.put_event_to_calendar(user=calendar_user, calendar_id=calendar_id, event_id=gevent.gid, event=event_data)
                     if response.status_code == status.HTTP_200_OK:
-                        gevent.revision = gevent.revision + 1
-                        gevent.save()
                         newEventData = json_to_dict(response.json())
                         newEventData['existing'] = True
                         return newEventData
+                    else:
+                        gevent.revision = gevent.revision - 1
+                        gevent.save()
                 else:
                     return cls.delete_event_from_calendar(user=user, calendar_id=calendar_id, event_id=gevent.gid)
             raise UnexpectedResponseError('Could not add event')

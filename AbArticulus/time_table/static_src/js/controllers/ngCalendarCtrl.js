@@ -40,7 +40,8 @@ var CalendarController =  function($scope, $modal, EventService) {
                 self.eventData.events[i] = {
                     color: eventColors[i],
                     events: [],
-                    editable: ['writer', 'owner'].indexOf(data[source].role) > -1
+                    editable: ['writer', 'owner'].indexOf(data[source].role) > -1,
+                    calendar_id: data[source].id
                 };
                 for (var j = 0; j < data[source].events.length; j++) {
                     var calEvent = data[source].events[j];
@@ -67,8 +68,17 @@ var CalendarController =  function($scope, $modal, EventService) {
     $scope.dropEvent = function (event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
         EventService.updateEvent(event.calendar.id, event.id, event.sequence, event.title, event.start, event.end, event.allDay)
             .then(
-                function (data) {
-                    // Success case, fullcalendar moved the event so nothing more.
+                function (data, test) {
+                    for (var i = 0; i < self.CalendarData.eventSources.length; i++) {
+                        if (self.CalendarData.eventSources[i].calendar_id !== data.calendar_id) {
+                            continue;
+                        }
+                        for (var j = 0; j < self.CalendarData.eventSources[i].events.length; j++) {
+                            if (self.CalendarData.eventSources[i].events[j].id === data.id) {
+                                self.CalendarData.eventSources[i].events[j].sequence = data.sequence;
+                            }
+                        }
+                    }
                 }, function (reason) {
                     revertFunc();
                 }

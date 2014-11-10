@@ -32,7 +32,7 @@ angular.module("timeTable.service.eventService", [])
 
             $http({method: "POST", url: url, data: params})
             .success(function(result){
-                defer.resolve(result);
+                defer.resolve(result, 1);
             })
             .error(function(error){
                 defer.reject(error);
@@ -57,7 +57,7 @@ angular.module("timeTable.service.eventService", [])
 
             $http({method: "PUT", url: url, data: params})
             .success(function(result){
-                defer.resolve(result);
+                defer.resolve(result, 1);
             })
             .error(function(error){
                 defer.reject(error);
