@@ -48121,6 +48121,19 @@ var CalendarController =  function($scope, $modal, EventService) {
                         break;
                     }
                 }
+                if (newEvent.existing === true) {
+                    for (var j = 0; j < self.eventData.events[i].events.length; j++) {
+                        if (self.eventData.events[i].events[j].id == newEvent.id) {
+                            self.eventData.events[i].events[j].title = newEvent.title;
+                            self.eventData.events[i].events[j].start = newEvent.start;
+                            self.eventData.events[i].events[j].end = newEvent.end;
+                            self.eventData.events[i].events[j].sequence = newEvent.sequence;
+                            self.eventData.events[i].events[j].allDay = newEvent.allDay;
+                            self.eventData.events[i].events[j].description = newEvent.description;
+                            return;
+                        }
+                    }
+                }
                 if (!eventData.id) {
                     newEvent.start = new Date(newEvent.start);
                     newEvent.end = new Date(newEvent.end);

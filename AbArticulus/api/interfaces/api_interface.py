@@ -163,8 +163,10 @@ class ApiInterface(object):
             else:
                 event_object.gevent = gevent
                 event_object.save()
-                # TODO: Bail if the user has  previosuly voted for this event.
-                # TODO: Remove conflicting vote otherwise
+                for potentual_voted_on_event in gevent.events.all():
+                    if potentual_voted_on_event.id == event_object.id:
+                        continue
+                    Vote.objects.filter(user=user, event=potentual_voted_on_event).delete()
                 vote_object.event_id = event_object.id
                 vote_object.save()
                 events = gevent.events.annotate(num_votes=Sum('votes__number'))
