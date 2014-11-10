@@ -109,7 +109,9 @@ class ApiInterface(object):
 
             vote_object = None
             if not Vote.objects.filter(user=user, event=event_object).exists():
-                vote_object = Vote(user=user, event=event_object)
+                vote_object = Vote(user=user, event=event_object, number=1)
+            else:
+                vote_object = Vote.objects.get(user=user, event=event_object)
 
             if gevent is None:
                 gevent = GoogleEvent(revision=0)
@@ -132,7 +134,7 @@ class ApiInterface(object):
                 events = gevent.event_set.all().selected_related('vote').annotate(num_votes=Sum('vote__number'))
                 most_upvoted_event = max(events, key=lambda e: e.num_votes)
                 vote_count = most_upvoted_event.num_votes
-                if vote_count >= 0:
+                if vote_count >= -1:
                     event_data = {
                         'start': most_upvoted_event.start,
                         'end': most_upvoted_event.end,
