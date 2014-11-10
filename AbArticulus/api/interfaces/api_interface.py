@@ -111,11 +111,6 @@ class ApiInterface(object):
         # If the calendar isn't one of ours, we don't care about this.
         if Calendar.objects.filter(gid=calendar_id).exists():
             calendar_object = Calendar.objects.get(gid=calendar_id)
-            # TODO: Add tag data to form.
-            tag_data = {
-                'tag_type': "ASSIGNMENT",
-                'number': 1
-            }
             tag_object, _ = Tag.objects.get_or_create(**tag_data)
 
             # TODO: Should the title be combination of the tag info?

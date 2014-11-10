@@ -18,14 +18,16 @@ angular.module("timeTable.service.eventService", [])
             return defer.promise;
         },
 
-        addEvent: function(calendar, title, startDate, endDate, allDay){
+        addEvent: function(calendar, title, startDate, endDate, allDay, tagType, tagNumber){
             var url = Constants.get('eventListUrl');
             var params = {
                 calendar: calendar,
                 title: title,
                 start: startDate,
                 end: endDate,
-                all_day: allDay
+                all_day: allDay,
+                tag_type: tagType.toUpperCase(),
+                number: tagNumber
             };
 
             var defer = $q.defer();

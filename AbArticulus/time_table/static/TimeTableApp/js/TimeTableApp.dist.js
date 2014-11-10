@@ -47913,14 +47913,16 @@ angular.module("timeTable.service.eventService", [])
             return defer.promise;
         },
 
-        addEvent: function(calendar, title, startDate, endDate, allDay){
+        addEvent: function(calendar, title, startDate, endDate, allDay, tagType, tagNumber){
             var url = Constants.get('eventListUrl');
             var params = {
                 calendar: calendar,
                 title: title,
                 start: startDate,
                 end: endDate,
-                all_day: allDay
+                all_day: allDay,
+                tag_type: tagType.toUpperCase(),
+                number: tagNumber
             };
 
             var defer = $q.defer();
@@ -47999,8 +48001,8 @@ var eventModalController = function ($scope, $modalInstance, Constants, EventSer
             'sequence': eventData.sequence || 0,
             'description': eventData.description || '',
             'calendar': eventData.calendar && $scope.getCalendarOption(calendars, eventData.calendar.id) || '',
-            'tagType': eventData.tag_type || Constants.get('tagTypes')[0],
-            'tagNumber': eventData.tag_number || 0
+            'tagType': eventData.tag_type || JSON.parse(eventData.description).tag.tag_type.charAt(0).toUpperCase() + JSON.parse(eventData.description).tag.tag_type.slice(1).toLowerCase() || Constants.get('tagTypes')[0],
+            'tagNumber': eventData.tag_number || JSON.parse(eventData.description).tag.number  || 0
         },
         'calendars': calendars,
         'tagTypes': Constants.get('tagTypes'),
@@ -48022,7 +48024,7 @@ var eventModalController = function ($scope, $modalInstance, Constants, EventSer
 
         var promise;
         if (eventData.id === '') {
-            promise = EventService.addEvent(eventData.calendar.id, eventData.title, startDate, endDate, eventData.allDay);
+            promise = EventService.addEvent(eventData.calendar.id, eventData.title, startDate, endDate, eventData.allDay, eventData.tagType, eventData.tagNumber);
         } else {
             promise = EventService.updateEvent(eventData.calendar.id, eventData.id, eventData.sequence, eventData.title, startDate, endDate, eventData.allDay);
         }
