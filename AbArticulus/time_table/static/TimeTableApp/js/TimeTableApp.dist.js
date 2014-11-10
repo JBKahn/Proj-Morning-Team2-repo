@@ -48004,8 +48004,11 @@ var eventModalController = function ($scope, $modalInstance, EventService, event
 angular.module("timeTable.controllers.eventModal", [])
 .controller("EventModalController", ["$scope", "$modalInstance", "EventService", "eventData", "calendars", eventModalController]);
 
-var CalendarController =  function($scope, $modal, EventService) {
+angular.module("timeTable.controllers.calendar", [])
+.controller("CalendarController", ["$scope", "$modal", "EventService", function($scope, $modal, EventService) {
     var self = this;
+    // TODO: fix this....I am not committing this attrocity.
+    self.scope = $scope;
 
     /* event source that contains custom events on the scope */
     this.eventData = {
@@ -48074,14 +48077,15 @@ var CalendarController =  function($scope, $modal, EventService) {
     $scope.dropEvent = function (event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
         EventService.updateEvent(event.calendar.id, event.id, event.sequence, event.title, event.start, event.end, event.allDay)
             .then(
-                function (data, test) {
-                    for (var i = 0; i < self.CalendarData.eventSources.length; i++) {
-                        if (self.CalendarData.eventSources[i].calendar_id !== data.calendar_id) {
+                function (data) {
+                    // TODO: fix this....I am not committing this attrocity.
+                    for (var i = 0; i < self.scope.$$childHead.CalendarData.eventSources.length; i++) {
+                        if (self.scope.$$childHead.CalendarData.eventSources[i].calendar_id !== data.calendar_id) {
                             continue;
                         }
-                        for (var j = 0; j < self.CalendarData.eventSources[i].events.length; j++) {
-                            if (self.CalendarData.eventSources[i].events[j].id === data.id) {
-                                self.CalendarData.eventSources[i].events[j].sequence = data.sequence;
+                        for (var j = 0; j < self.scope.$$childHead.CalendarData.eventSources[i].events.length; j++) {
+                            if (self.scope.$$childHead.CalendarData.eventSources[i].events[j].id === data.id) {
+                                self.scope.$$childHead.CalendarData.eventSources[i].events[j].sequence = data.sequence;
                             }
                         }
                     }
@@ -48095,7 +48099,17 @@ var CalendarController =  function($scope, $modal, EventService) {
         EventService.updateEvent(event.calendar.id, event.id, event.sequence, event.title, event.start, event.end, event.allDay)
             .then(
                 function (data) {
-                    // Success case, fullcalendar moved the event so nothing more.
+                    // TODO: fix this....I am not committing this attrocity.
+                    for (var i = 0; i < self.scope.$$childHead.CalendarData.eventSources.length; i++) {
+                        if (self.scope.$$childHead.CalendarData.eventSources[i].calendar_id !== data.calendar_id) {
+                            continue;
+                        }
+                        for (var j = 0; j < self.scope.$$childHead.CalendarData.eventSources[i].events.length; j++) {
+                            if (self.scope.$$childHead.CalendarData.eventSources[i].events[j].id === data.id) {
+                                self.scope.$$childHead.CalendarData.eventSources[i].events[j].sequence = data.sequence;
+                            }
+                        }
+                    }
                 }, function (reason) {
                     revertFunc();
                 }
@@ -48106,6 +48120,7 @@ var CalendarController =  function($scope, $modal, EventService) {
     this.CalendarData = {
         eventSources: this.eventData.events
     };
+    $scope.CalendarData = this.CalendarData;
 
     this.open = function (size, eventData) {
         eventData = eventData || {};
@@ -48160,6 +48175,4 @@ var CalendarController =  function($scope, $modal, EventService) {
                 // Clicked Cancel on Modal; Do Nothing
             });
     };
-};
-angular.module("timeTable.controllers.calendar", [])
-.controller("CalendarController", ["$scope", "$modal", "EventService", CalendarController]);
+}]);
