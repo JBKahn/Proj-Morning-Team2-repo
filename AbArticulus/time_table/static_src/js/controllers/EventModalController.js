@@ -18,10 +18,10 @@ var eventModalController = function ($scope, $modalInstance, EventService, event
             'allDay': eventData.allDay || false,
             'id': eventData.id || '',
             'sequence': eventData.sequence || 0,
-            'calendar': $scope.getCalendarOption(calendars, eventData.calendar.id),
+            'calendar': eventData.calendar && $scope.getCalendarOption(calendars, eventData.calendar.id) || '',
         },
         'calendars': calendars,
-        'editable': eventData.calendar.editable
+        'editable': !eventData.calendar || eventData.calendar.editable
     };
 
     $scope.addEvent = function() {
