@@ -48069,7 +48069,7 @@ var CalendarController =  function($scope, $modal, EventService) {
     };
 
     $scope.dropEvent = function (event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
-        EventService.updateEvent(event.id, event.sequence, event.title, event.start, event.end, event.allDay)
+        EventService.updateEvent(event.calendar.id, event.id, event.sequence, event.title, event.start, event.end, event.allDay)
             .then(
                 function (data) {
                     // Success case, fullcalendar moved the event so nothing more.
@@ -48080,7 +48080,7 @@ var CalendarController =  function($scope, $modal, EventService) {
     };
 
     $scope.resizeEvent = function (event, dayDelta, minuteDelta, revertFunc, jsEvent, ui, view) {
-        EventService.updateEvent(event.id, event.sequence, event.title, event.start, event.end, event.allDay)
+        EventService.updateEvent(event.calendar.id, event.id, event.sequence, event.title, event.start, event.end, event.allDay)
             .then(
                 function (data) {
                     // Success case, fullcalendar moved the event so nothing more.
