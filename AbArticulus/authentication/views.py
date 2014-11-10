@@ -57,3 +57,16 @@ class ValidationCodeSentView(TemplateView):
             'email': self.request.session.get('email_validation_address')
         })
         return context
+
+
+class RequireCoursesView(TemplateView):
+    template_name = 'home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(RequireCoursesView, self).get_context_data(**kwargs)
+        backend = self.request.session['partial_pipeline']['backend']
+        context.update({
+            'courses_required': True,
+            'backend': backend
+        })
+        return context

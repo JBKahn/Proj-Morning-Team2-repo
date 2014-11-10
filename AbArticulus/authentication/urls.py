@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
-from authentication.views import AuthComplete, LoggedInView, RequireEmailView, ValidationCodeSentView
+from authentication.views import AuthComplete, LoggedInView, RequireEmailView, ValidationCodeSentView, RequireCoursesView
 from home.views import HomeView
 
 urlpatterns = patterns(
@@ -9,5 +9,6 @@ urlpatterns = patterns(
     url(r'^login/$', HomeView.as_view()),
     url(r'^logout/$', 'authentication.views.logout'),
     url(r'^email/$', RequireEmailView.as_view(), name='require_email'),
+    url(r'^course/$', RequireCoursesView.as_view(), name='require_courses'),
     url(r'^email-sent/', ValidationCodeSentView.as_view()),
 )

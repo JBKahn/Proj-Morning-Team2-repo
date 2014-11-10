@@ -15,6 +15,17 @@ from api.interfaces.helpers import json_to_dict
 
 class ApiInterface(object):
     @classmethod
+    def add_calendar(cls, title):
+        calendar_user = get_user_model().objects.get(email=settings.EMAIL_OF_USER_WITH_CALENDARS)
+        data = {
+            'summary': title
+        }
+        response = GoogleApiInterface.add_calendar(calendar_user=calendar_user, data=data)
+        if response.status_code != status.HTTP_200_OK:
+            raise UnexpectedResponseError(response.status_code)
+        return response.json()
+
+    @classmethod
     def get_calendars_from_user(cls, user):
         response = GoogleApiInterface.get_calendars_from_user(user)
         if response.status_code != status.HTTP_200_OK:

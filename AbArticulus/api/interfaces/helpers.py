@@ -9,6 +9,8 @@ from social.apps.django_app.utils import load_strategy
 def get_google_api_endpoint_url(api_name, **kwargs):
     if api_name == 'calendarList':
         return 'https://www.googleapis.com/calendar/v3/users/me/calendarList'
+    if api_name == 'calendars':
+        return 'https://www.googleapis.com/calendar/v3/calendars'
     if api_name == 'events':
         if kwargs.get('calendar_id') is None:
             raise ValueError('Calendar id was not passed in.')

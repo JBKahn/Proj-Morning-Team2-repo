@@ -3,6 +3,11 @@ from api.interfaces.helpers import get_google_api_endpoint_url, make_request
 
 class GoogleApiInterface(object):
     @classmethod
+    def add_calendar(cls, calendar_user, data):
+        url = get_google_api_endpoint_url(api_name="calendars")
+        return make_request(user=calendar_user, url=url, data=data, method="POST")
+
+    @classmethod
     def get_calendars_from_user(cls, user):
         url = get_google_api_endpoint_url(api_name="calendarList")
         return make_request(user=user, url=url, params=None)
