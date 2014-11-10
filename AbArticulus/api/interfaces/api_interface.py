@@ -2,10 +2,12 @@ from datetime import datetime
 
 from rest_framework import status
 
+from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db.models import Sum
 
 from abcalendar.models import Tag, Calendar, Event, GoogleEvent, Vote
-from abcalendar.serializers import GoogleEventSerializer, EventSerializer, VoteSerializer
+from abcalendar.serializers import GoogleEventSerializer, EventSerializer, VoteSerializer, TagSerializer
 from api.interfaces.google_api_interface import GoogleApiInterface
 from api.interfaces.helpers import json_to_dict
 
@@ -63,6 +65,35 @@ class ApiInterface(object):
         return event
 
     @classmethod
+    def share_calendar_with_user(cls, user, calendar_id):
+        '''event is a JSON request body, can be populated via create_event_json()'''
+        data = {
+            'scope': {
+                'type': 'user',
+                'value': user.email,
+            },
+            'role': 'reader'
+        }
+
+        calendar_user = get_user_model().objects.get(email=settings.EMAIL_OF_USER_WITH_CALENDARS)
+        response = GoogleApiInterface.share_calendar(calendar_user, calendar_id, data)
+        if response.status_code != status.HTTP_200_OK:
+            raise UnexpectedResponseError(response.status_code)
+        return json_to_dict(response.json())
+
+    @classmethod
+    def user_update_event(cls, user, calendar_id, gevent_id, event_data, revision):
+        if Calendar.objects.filter(gid=calendar_id).exists():
+            raise ValueError("You cannot update an event which belongs to the app user")
+        return cls.put_event_to_calendar(
+            user=user,
+            calendar_id=calendar_id,
+            gevent_id=gevent_id,
+            event_data=event_data,
+            revision=revision
+        )
+
+    @classmethod
     def add_user_event(cls, user, calendar_id, event_data, tag_data):
         # If the calendar isn't one of ours, we don't care about this.
         if Calendar.objects.filter(gid=calendar_id).exists():
@@ -85,6 +116,7 @@ class ApiInterface(object):
                 description = GoogleEventSerializer(gevent).data
                 description['events'].append(EventSerializer(event_object).data)
                 description['events'][0]['votes'].append(VoteSerializer(vote_object).data)
+                description['events'][0]['tag'] = TagSerializer(tag_object).data
                 response = cls.post_event_to_calendar(user=user, calendar_id=calendar_id, event_data=event_data)
                 if response.status_code == status.HTTP_200_OK:
                     gid = response.json().get('id')

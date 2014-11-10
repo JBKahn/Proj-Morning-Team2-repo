@@ -18,9 +18,10 @@ angular.module("timeTable.service.eventService", [])
             return defer.promise;
         },
 
-        addEvent: function(title, startDate, endDate, allDay){
+        addEvent: function(calendar, title, startDate, endDate, allDay){
             var url = Constants.get('eventListUrl');
             var params = {
+                calendar: calendar,
                 title: title,
                 start: startDate,
                 end: endDate,
@@ -40,9 +41,10 @@ angular.module("timeTable.service.eventService", [])
             return defer.promise;
         },
 
-        updateEvent: function(id, sequence, title, startDate, endDate, allDay){
+        updateEvent: function(calendar, id, sequence, title, startDate, endDate, allDay){
             var url = Constants.get('eventUpdateUrl').replace(/\/0\//, "/" + id + "/");
             var params = {
+                calendar: calendar,
                 id: id,
                 sequence: sequence + 1,
                 title: title,

@@ -23,10 +23,30 @@ var CalendarController =  function($scope, $modal, EventService) {
       }
     };
 
+    this.sources = [];
     EventService.getEvents()
         .then(function (data) {
-            for (var i = 0; i < data.length; i++) {
-                self.eventData.events.push(data[i]);
+            var sourceNames = Object.keys(data);
+            //TODO: Add more before merging.
+            var eventColors = ['#E8860C', '#FF0000', '#7C0CE8', '#0D88FF', '#0DFFF9', '#92FF25', '#A8A8FF'];
+            for (var i = 0; i < sourceNames.length; i++) {
+                var source = sourceNames[i];
+                self.sources.push({
+                    id: data[source].id,
+                    name: source,
+                    index: i,
+                    editable: ['writer', 'owner'].indexOf(data[source].role) > -1
+                });
+                self.eventData.events[i] = {
+                    color: eventColors[i],
+                    events: [],
+                    editable: ['writer', 'owner'].indexOf(data[source].role) > -1
+                };
+                for (var j = 0; j < data[source].events.length; j++) {
+                    var calEvent = data[source].events[j];
+                    calEvent.calendar = self.sources[i];
+                    self.eventData.events[i].events.push(calEvent);
+                }
             }
         });
 
@@ -68,7 +88,7 @@ var CalendarController =  function($scope, $modal, EventService) {
 
     /* event sources array*/
     this.CalendarData = {
-        eventSources: [this.eventData.events]
+        eventSources: this.eventData.events
     };
 
     this.open = function (size, eventData) {
@@ -80,17 +100,26 @@ var CalendarController =  function($scope, $modal, EventService) {
             resolve: {
                 eventData: function () {
                     return eventData;
+                },
+                calendars: function() {
+                    return self.sources;
                 }
             }
         });
 
         modalInstance.result
             .then(function (newEvent) {
+                var i;
+                for (i = 0; i < self.sources.length; i++) {
+                    if (self.sources[i].id === newEvent.calendar_id) {
+                        break;
+                    }
+                }
                 if (!eventData.id) {
                     newEvent.start = new Date(newEvent.start);
                     newEvent.end = new Date(newEvent.end);
                     console.log(newEvent);
-                    self.eventData.events.push(newEvent);
+                    self.eventData.events[i].events.push(newEvent);
                 } else {
                     eventData.title = newEvent.title;
                     eventData.start = newEvent.start;

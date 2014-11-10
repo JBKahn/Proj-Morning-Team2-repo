@@ -17,6 +17,10 @@ def get_google_api_endpoint_url(api_name, **kwargs):
         else:
             event_info = ''
         return 'https://www.googleapis.com/calendar/v3/calendars/{}/events{}'.format(kwargs.get('calendar_id'), event_info)
+    if api_name == 'acl':
+        if kwargs.get('calendar_id') is None:
+            raise ValueError('Calendar id was not passed in.')
+        return 'https://www.googleapis.com/calendar/v3/calendars/{}/acl'.format(kwargs.get('calendar_id'))
     raise ValueError('request api endpoint not defined.')
 
 
@@ -27,7 +31,7 @@ def make_request(user, url, params=None, method="GET", data=None):
         if response is not None and response.status_code == status.HTTP_401_UNAUTHORIZED:
             # Our access token is likely the issue. We can use the refrest token to reauthorize ourselves.
             social = user.social_auth.get(provider='google-oauth2')
-            strategy = load_strategy('google-oauth2')
+            strategy = load_strategy(response)
             social.refresh_token(strategy=strategy)
         # Default params will pass other params if we need more.
         if params is None:
@@ -72,4 +76,5 @@ def json_to_dict(event):
         'title': event.get('summary'),
         'id': event.get('id'),
         'sequence': event.get('sequence'),
+        'description': event.get('description'),
     }

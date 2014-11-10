@@ -47772,15 +47772,19 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "</div>\n" +
     "<form role=\"form\">\n" +
     "    <div class=\"form-group\">\n" +
+    "        <label>Calendar</label>\n" +
+    "        <select ng-disabled=\"!modalData.editable\" ng-model=\"modalData.eventData.calendar\" class=\"form-control\" ng-options=\"calendar.name for calendar in modalData.calendars\"></select>\n" +
+    "    </div>\n" +
+    "    <div class=\"form-group\">\n" +
     "        <label>Event Title</label>\n" +
-    "        <input ng-model=\"modalData.eventData.title\" placeholder=\"Event Title\" class=\"form-control\" type=\"text\">\n" +
+    "        <input ng-disabled=\"!modalData.editable\" ng-model=\"modalData.eventData.title\" placeholder=\"Event Title\" class=\"form-control\" type=\"text\">\n" +
     "    </div>\n" +
     "    <div class=\"form-group\">\n" +
     "        <label>Start Date</label>\n" +
     "        <div class=\"dropdown\">\n" +
     "            <a class=\"dropdown-toggle\" id=\"startDateDropdown\" role=\"button\" data-toggle=\"dropdown\" data-target=\"#\" href=\"#\">\n" +
     "                <div class=\"input-group\">\n" +
-    "                    <input type=\"text\" class=\"form-control\" data-ng-model=\"modalData.eventData.startDate\">\n" +
+    "                    <input ng-disabled=\"!modalData.editable\" type=\"text\" class=\"form-control\" data-ng-model=\"modalData.eventData.startDate\">\n" +
     "                    <span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-calendar\"></i></span>\n" +
     "                </div>\n" +
     "            </a>\n" +
@@ -47795,21 +47799,21 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "        <div class=\"dropdown\">\n" +
     "            <a class=\"dropdown-toggle\" id=\"endDateDropdown\" role=\"button\" data-toggle=\"dropdown\" data-target=\"#\" href=\"#\">\n" +
     "                <div class=\"input-group\">\n" +
-    "                    <input type=\"text\" class=\"form-control\" data-ng-model=\"modalData.eventData.endDate\">\n" +
+    "                    <input ng-disabled=\"!modalData.editable\" type=\"text\" class=\"form-control\" data-ng-model=\"modalData.eventData.endDate\">\n" +
     "                    <span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-calendar\"></i></span>\n" +
     "                </div>\n" +
     "            </a>\n" +
     "            <ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"dLabel\">\n" +
-    "                <datetimepicker data-ng-model=\"modalData.eventData.endDate\" data-datetimepicker-config=\"{ dropdownSelector: '#endDateDropdown' }\"/>\n" +
+    "                <datetimepicker ng-disabled=\"!modalData.editable\" data-ng-model=\"modalData.eventData.endDate\" data-datetimepicker-config=\"{ dropdownSelector: '#endDateDropdown' }\"/>\n" +
     "            </ul>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "    <div class=\"checkbox\">\n" +
-    "        <input type=\"checkbox\" ng-model=\"modalData.eventData.allDay\">All-day event\n" +
+    "        <input type=\"checkbox\" ng-disabled=\"!modalData.editable\" ng-model=\"modalData.eventData.allDay\">All-day event\n" +
     "    </div>\n" +
     "</form>\n" +
     "<div class=\"modal-footer\">\n" +
-    "    <button class=\"btn btn-primary\" ng-click=\"save()\">Save</button>\n" +
+    "    <button class=\"btn btn-primary\" ng-disabled=\"!modalData.editable\" ng-click=\"save()\">Save</button>\n" +
     "    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Cancel</button>\n" +
     "</div>\n"
   );
@@ -47888,9 +47892,10 @@ angular.module("timeTable.service.eventService", [])
             return defer.promise;
         },
 
-        addEvent: function(title, startDate, endDate, allDay){
+        addEvent: function(calendar, title, startDate, endDate, allDay){
             var url = Constants.get('eventListUrl');
             var params = {
+                calendar: calendar,
                 title: title,
                 start: startDate,
                 end: endDate,
@@ -47910,9 +47915,10 @@ angular.module("timeTable.service.eventService", [])
             return defer.promise;
         },
 
-        updateEvent: function(id, sequence, title, startDate, endDate, allDay){
+        updateEvent: function(calendar, id, sequence, title, startDate, endDate, allDay){
             var url = Constants.get('eventUpdateUrl').replace(/\/0\//, "/" + id + "/");
             var params = {
+                calendar: calendar,
                 id: id,
                 sequence: sequence + 1,
                 title: title,
@@ -47936,7 +47942,18 @@ angular.module("timeTable.service.eventService", [])
     };
 }]);
 
-var eventModalController = function ($scope, $modalInstance, EventService, eventData) {
+var eventModalController = function ($scope, $modalInstance, EventService, eventData, calendars) {
+    // Required as the original calendar passed in references a different object than modalData.calendars
+    $scope.getCalendarOption = function(calendars, calendar_id) {
+        var i;
+        for (i = 0; i < calendars.length; i++) {
+            if (calendars[i].id === calendar_id) {
+                return calendars[i];
+            }
+        }
+        return '';
+    }
+
     $scope.modalData = {
         eventData: {
             'title': eventData.title || '',
@@ -47944,20 +47961,25 @@ var eventModalController = function ($scope, $modalInstance, EventService, event
             'endDate': eventData.end || '',
             'allDay': eventData.allDay || false,
             'id': eventData.id || '',
-            'sequence': eventData.sequence || 0
-        }
+            'sequence': eventData.sequence || 0,
+            'calendar': $scope.getCalendarOption(calendars, eventData.calendar.id),
+        },
+        'calendars': calendars,
+        'editable': eventData.calendar.editable
     };
 
     $scope.addEvent = function() {
         var eventData = $scope.modalData.eventData;
-        if (!eventData.title || !eventData.startDate || !eventData.endDate) {
+        if (!eventData.title || !eventData.startDate || !eventData.endDate || !eventData.calendar) {
             return;
         }
+        var promise;
         if (eventData.id === '') {
-            var promise = EventService.addEvent(eventData.title, eventData.startDate, eventData.endDate, eventData.allDay);
+            promise = EventService.addEvent(eventData.calendar.id, eventData.title, eventData.startDate, eventData.endDate, eventData.allDay);
         } else {
-            var promise = EventService.updateEvent(eventData.id, eventData.sequence, eventData.title, eventData.startDate, eventData.endDate, eventData.allDay)
+            promise = EventService.updateEvent(eventData.calendar.id, eventData.id, eventData.sequence, eventData.title, eventData.startDate, eventData.endDate, eventData.allDay);
         }
+
         promise.then(
             function (data) {
                 $modalInstance.close(data);
@@ -47978,7 +48000,7 @@ var eventModalController = function ($scope, $modalInstance, EventService, event
 };
 
 angular.module("timeTable.controllers.eventModal", [])
-.controller("EventModalController", ["$scope", "$modalInstance", "EventService", "eventData", eventModalController]);
+.controller("EventModalController", ["$scope", "$modalInstance", "EventService", "eventData", "calendars", eventModalController]);
 
 var CalendarController =  function($scope, $modal, EventService) {
     var self = this;
@@ -48005,10 +48027,30 @@ var CalendarController =  function($scope, $modal, EventService) {
       }
     };
 
+    this.sources = [];
     EventService.getEvents()
         .then(function (data) {
-            for (var i = 0; i < data.length; i++) {
-                self.eventData.events.push(data[i]);
+            var sourceNames = Object.keys(data);
+            //TODO: Add more before merging.
+            var eventColors = ['#E8860C', '#FF0000', '#7C0CE8', '#0D88FF', '#0DFFF9', '#92FF25', '#A8A8FF'];
+            for (var i = 0; i < sourceNames.length; i++) {
+                var source = sourceNames[i];
+                self.sources.push({
+                    id: data[source].id,
+                    name: source,
+                    index: i,
+                    editable: ['writer', 'owner'].indexOf(data[source].role) > -1
+                });
+                self.eventData.events[i] = {
+                    color: eventColors[i],
+                    events: [],
+                    editable: ['writer', 'owner'].indexOf(data[source].role) > -1
+                };
+                for (var j = 0; j < data[source].events.length; j++) {
+                    var calEvent = data[source].events[j];
+                    calEvent.calendar = self.sources[i];
+                    self.eventData.events[i].events.push(calEvent);
+                }
             }
         });
 
@@ -48017,7 +48059,8 @@ var CalendarController =  function($scope, $modal, EventService) {
             allDay: true,
             start: date,
             end: date
-        }
+        };
+
         self.open('lg', event);
     };
 
@@ -48049,7 +48092,7 @@ var CalendarController =  function($scope, $modal, EventService) {
 
     /* event sources array*/
     this.CalendarData = {
-        eventSources: [this.eventData.events]
+        eventSources: this.eventData.events
     };
 
     this.open = function (size, eventData) {
@@ -48061,17 +48104,26 @@ var CalendarController =  function($scope, $modal, EventService) {
             resolve: {
                 eventData: function () {
                     return eventData;
+                },
+                calendars: function() {
+                    return self.sources;
                 }
             }
         });
 
         modalInstance.result
             .then(function (newEvent) {
+                var i;
+                for (i = 0; i < self.sources.length; i++) {
+                    if (self.sources[i].id === newEvent.calendar_id) {
+                        break;
+                    }
+                }
                 if (!eventData.id) {
                     newEvent.start = new Date(newEvent.start);
                     newEvent.end = new Date(newEvent.end);
                     console.log(newEvent);
-                    self.eventData.events.push(newEvent);
+                    self.eventData.events[i].events.push(newEvent);
                 } else {
                     eventData.title = newEvent.title;
                     eventData.start = newEvent.start;

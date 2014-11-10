@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 from constants import TAG_CHOICES, VOTE_CHOICES
@@ -35,12 +36,12 @@ class Event(models.Model):
 
 class Comment(models.Model):
     gevent = models.ForeignKey(GoogleEvent, related_name='comments')
-    user = models.ForeignKey('authentication.CustomUser')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     comment = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
 
 
 class Vote(models.Model):
-    user = models.ForeignKey('authentication.CustomUser')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     event = models.ForeignKey(Event, related_name='votes')
     number = models.IntegerField(choices=VOTE_CHOICES)
