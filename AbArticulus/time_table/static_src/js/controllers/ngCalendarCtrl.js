@@ -45,7 +45,7 @@ angular.module("timeTable.controllers.calendar", [])
           right: 'today prev,next'
         },
         eventClick: $scope.editEvent,
-        dayClick: $scope.dayClick, // Commented out due to looking at the wrong scope. I'll look into this.
+        dayClick: $scope.dayClick,
         eventDrop: $scope.dropEvent,
         eventResize: $scope.resizeEvent
       }
