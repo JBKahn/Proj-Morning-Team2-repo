@@ -123,6 +123,9 @@ class ApiInterface(object):
             if Event.objects.filter(tag=tag_object, **event_data).exists():
                 event_object = Event.objects.get(tag=tag_object, **event_data)
                 gevent = event_object.gevent
+            elif Event.objects.filter(tag=tag_object).exists():
+                event_object = Event(tag=tag_object, **event_data)
+                gevent = Event.objects.filter(tag=tag_object)[0].gevent
             else:
                 event_object = Event(tag=tag_object, **event_data)
                 gevent = None
@@ -156,6 +159,7 @@ class ApiInterface(object):
                     vote_object.save()
                     return json_to_dict(response.json())
             else:
+                event_object.gevent = gevent
                 event_object.save()
                 # TODO: Bail if the user has  previosuly voted for this event.
                 # TODO: Remove conflicting vote otherwise
