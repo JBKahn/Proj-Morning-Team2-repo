@@ -157,7 +157,9 @@ class ApiInterface(object):
                     event_object.save()
                     vote_object.event_id = event_object.id
                     vote_object.save()
-                    return json_to_dict(response.json())
+                    newEventData = json_to_dict(response.json())
+                    newEventData['existing'] = False
+                    return newEventData
             else:
                 event_object.gevent = gevent
                 event_object.save()
@@ -185,7 +187,9 @@ class ApiInterface(object):
                     if response.status_code == status.HTTP_200_OK:
                         gevent.revision = gevent.revision + 1
                         gevent.save()
-                        return json_to_dict(response.json())
+                        newEventData = json_to_dict(response.json())
+                        newEventData['existing'] = True
+                        return newEventData
                 else:
                     return cls.delete_event_from_calendar(user=user, calendar_id=calendar_id, event_id=gevent.gid)
             raise UnexpectedResponseError('Could not add event')
