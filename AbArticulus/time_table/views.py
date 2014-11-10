@@ -45,7 +45,9 @@ class EventAccessView(APIView):
         serializer = SimpleEventUpdateSerializer(data=request.DATA)
         if serializer.is_valid():
             json_event = ApiInterface.create_event_from_dict(dict(serializer.data))
-            return Response(ApiInterface.user_update_event(user=request.user, calendar_id=request.DATA.get('calendar'), gevent_id=serializer.data.get('id'), event_data=json_event, revision=request.DATA.get('sequence')))
+            event_data = ApiInterface.user_update_event(user=request.user, calendar_id=request.DATA.get('calendar'), gevent_id=serializer.data.get('id'), event_data=json_event, revision=request.DATA.get('sequence'))
+            event_data['calendar_id'] = request.DATA.get('calendar')
+            return Response(event_data)
 
     def delete(self, request, event_id, format='JSON', *args, **kwargs):
         return Response(ApiInterface.get_event_from_calendar(user=request.user, calendar_id=self.calendar_id, event_id=event_id))
