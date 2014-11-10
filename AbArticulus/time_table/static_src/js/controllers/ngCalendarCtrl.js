@@ -1,15 +1,40 @@
 angular.module("timeTable.controllers.calendar", [])
 .controller("CalendarController", ["$scope", "$modal", "EventService", function($scope, $modal, EventService) {
     var self = this;
-    // TODO: fix this....I am not committing this attrocity.
-    self.scope = $scope;
 
     /* event source that contains custom events on the scope */
     this.eventData = {
         events: []
     };
 
-    /* config object */
+    $scope.$on('EventEdited', function (event, data) {
+        var a = 1;
+        for (var i = 0; i < $scope.CalendarData.eventSources.length; i++) {
+            if ($scope.CalendarData.eventSources[i].calendar_id !== data.calendar_id) {
+                continue;
+            }
+            for (var j = 0; j < $scope.CalendarData.eventSources[i].events.length; j++) {
+                if ($scope.CalendarData.eventSources[i].events[j].id === data.id) {
+                    $scope.CalendarData.eventSources[i].events[j].sequence = data.sequence;
+                    $scope.CalendarData.eventSources[i].events[j].title = data.title;
+                    $scope.CalendarData.eventSources[i].events[j].start = data.start;
+                    $scope.CalendarData.eventSources[i].events[j].end = data.end;
+                    $scope.CalendarData.eventSources[i].events[j].allDay = data.allDay;
+                    $scope.CalendarData.eventSources[i].events[j].description = data.description;
+                }
+            }
+        }
+    });
+
+    $scope.$on('EventAdded', function (event, data) {
+        for (var i = 0; i < $scope.CalendarData.eventSources.length; i++) {
+            if ($scope.CalendarData.eventSources[i].calendar_id === data.calendar_id) {
+                data.calendar =  self.sources[i];
+                self.eventData.events[i].events.push(data);
+            }
+        }
+    });
+
     this.eventData.uiConfig = {
       calendar:{
         height: 850,
@@ -20,7 +45,7 @@ angular.module("timeTable.controllers.calendar", [])
           right: 'today prev,next'
         },
         eventClick: $scope.editEvent,
-        //dayClick: $scope.dayClick, // Commented out due to looking at the wrong scope. I'll look into this.
+        dayClick: $scope.dayClick, // Commented out due to looking at the wrong scope. I'll look into this.
         eventDrop: $scope.dropEvent,
         eventResize: $scope.resizeEvent
       }
@@ -72,17 +97,7 @@ angular.module("timeTable.controllers.calendar", [])
         EventService.updateEvent(event.calendar.id, event.id, event.sequence, event.title, event.start, event.end, event.allDay)
             .then(
                 function (data) {
-                    // TODO: fix this....I am not committing this attrocity.
-                    for (var i = 0; i < self.scope.$$childHead.CalendarData.eventSources.length; i++) {
-                        if (self.scope.$$childHead.CalendarData.eventSources[i].calendar_id !== data.calendar_id) {
-                            continue;
-                        }
-                        for (var j = 0; j < self.scope.$$childHead.CalendarData.eventSources[i].events.length; j++) {
-                            if (self.scope.$$childHead.CalendarData.eventSources[i].events[j].id === data.id) {
-                                self.scope.$$childHead.CalendarData.eventSources[i].events[j].sequence = data.sequence;
-                            }
-                        }
-                    }
+                    $scope.$broadcast("EventEdited", data);
                 }, function (reason) {
                     revertFunc();
                 }
@@ -93,17 +108,7 @@ angular.module("timeTable.controllers.calendar", [])
         EventService.updateEvent(event.calendar.id, event.id, event.sequence, event.title, event.start, event.end, event.allDay)
             .then(
                 function (data) {
-                    // TODO: fix this....I am not committing this attrocity.
-                    for (var i = 0; i < self.scope.$$childHead.CalendarData.eventSources.length; i++) {
-                        if (self.scope.$$childHead.CalendarData.eventSources[i].calendar_id !== data.calendar_id) {
-                            continue;
-                        }
-                        for (var j = 0; j < self.scope.$$childHead.CalendarData.eventSources[i].events.length; j++) {
-                            if (self.scope.$$childHead.CalendarData.eventSources[i].events[j].id === data.id) {
-                                self.scope.$$childHead.CalendarData.eventSources[i].events[j].sequence = data.sequence;
-                            }
-                        }
-                    }
+                    $scope.$broadcast("EventEdited", data);
                 }, function (reason) {
                     revertFunc();
                 }
@@ -134,36 +139,14 @@ angular.module("timeTable.controllers.calendar", [])
 
         modalInstance.result
             .then(function (newEvent) {
-                var i;
-                for (i = 0; i < self.sources.length; i++) {
-                    if (self.sources[i].id === newEvent.calendar_id) {
-                        break;
-                    }
-                }
-                if (newEvent.existing === true) {
-                    for (var j = 0; j < self.eventData.events[i].events.length; j++) {
-                        if (self.eventData.events[i].events[j].id == newEvent.id) {
-                            self.eventData.events[i].events[j].title = newEvent.title;
-                            self.eventData.events[i].events[j].start = newEvent.start;
-                            self.eventData.events[i].events[j].end = newEvent.end;
-                            self.eventData.events[i].events[j].sequence = newEvent.sequence;
-                            self.eventData.events[i].events[j].allDay = newEvent.allDay;
-                            self.eventData.events[i].events[j].description = newEvent.description;
-                            return;
-                        }
-                    }
-                }
-                if (!eventData.id) {
+                if (newEvent.existing === true || eventData.id !== undefined) {
+                    $scope.$broadcast("EventEdited", newEvent);
+                } else {
                     newEvent.start = new Date(newEvent.start);
                     newEvent.end = new Date(newEvent.end);
-                    console.log(newEvent);
-                    self.eventData.events[i].events.push(newEvent);
-                } else {
-                    eventData.title = newEvent.title;
-                    eventData.start = newEvent.start;
-                    eventData.end = newEvent.end;
-                    eventData.sequence = newEvent.sequence;
-                    eventData.allDay = newEvent.allDay;
+                    // Have to do both since it depends where you clicked from.
+                    $scope.$broadcast("EventAdded", newEvent);
+                    $scope.$emit("EventAdded", newEvent);
                 }
             }, function () {
                 // Clicked Cancel on Modal; Do Nothing
