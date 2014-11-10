@@ -26,18 +26,18 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class EventSerializer(serializers.ModelSerializer):
-    tag = TagSerializer()
     votes = VoteSerializer(many=True)
 
     class Meta:
         model = Event
-        fields = ('start', 'end', 'reccur_until', 'all_day', 'tag', 'votes')
+        fields = ('start', 'end', 'reccur_until', 'all_day', 'votes')
 
 
 class GoogleEventSerializer(serializers.ModelSerializer):
     events = EventSerializer(many=True)
     comments = CommentSerializer(many=True)
+    tag = TagSerializer()
 
     class Meta:
         model = GoogleEvent
-        fields = ('events', 'comments', 'revision')
+        fields = ('events', 'comments', 'revision', 'tag')

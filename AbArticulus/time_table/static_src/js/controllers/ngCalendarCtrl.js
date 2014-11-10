@@ -9,6 +9,10 @@ angular.module("timeTable.controllers.calendar", [])
 
     $scope.$on('EventEdited', function (event, data) {
         var a = 1;
+        // UI-calendar can't properly handle this case so I incriment minutes by 1.
+        if (data.start === data.end) {
+            data.end = data.start.substr(0,15) + (parseInt(data.start.substr(15,1)) + 1) + data.start.substr(16);
+        }
         for (var i = 0; i < $scope.CalendarData.eventSources.length; i++) {
             if ($scope.CalendarData.eventSources[i].calendar_id !== data.calendar_id) {
                 continue;
@@ -29,6 +33,10 @@ angular.module("timeTable.controllers.calendar", [])
     $scope.$on('EventAdded', function (event, data) {
         for (var i = 0; i < $scope.CalendarData.eventSources.length; i++) {
             if ($scope.CalendarData.eventSources[i].calendar_id === data.calendar_id) {
+                // UI-calendar can't properly handle this case so I incriment minutes by 1.
+                if (data.start === data.end) {
+                    data.end = data.start.substr(0,15) + (parseInt(data.start.substr(15,1)) + 1) + data.start.substr(16);
+                }
                 data.calendar =  self.sources[i];
                 self.eventData.events[i].events.push(data);
             }
@@ -74,6 +82,9 @@ angular.module("timeTable.controllers.calendar", [])
                 for (var j = 0; j < data[source].events.length; j++) {
                     var calEvent = data[source].events[j];
                     calEvent.calendar = self.sources[i];
+                    if (calEvent.start === calEvent.end) {
+                        calEvent.end = calEvent.start.substr(0,15) + (parseInt(calEvent.start.substr(15,1)) + 1) + calEvent.start.substr(16);
+                    }
                     self.eventData.events[i].events.push(calEvent);
                 }
             }
@@ -86,7 +97,7 @@ angular.module("timeTable.controllers.calendar", [])
             end: date
         };
 
-        self.open('lg', event);
+        self.open('lg', event, true);
     };
 
     $scope.editEvent = function (event, allDay, jsEvent, view) {
@@ -121,7 +132,7 @@ angular.module("timeTable.controllers.calendar", [])
     };
     $scope.CalendarData = this.CalendarData;
 
-    this.open = function (size, eventData) {
+    this.open = function (size, eventData, isCalendarScope) {
         eventData = eventData || {};
         var modalInstance = $modal.open({
             templateUrl: 'templates/eventModal.html',
@@ -142,11 +153,11 @@ angular.module("timeTable.controllers.calendar", [])
                 if (newEvent.existing === true || eventData.id !== undefined) {
                     $scope.$broadcast("EventEdited", newEvent);
                 } else {
-                    newEvent.start = new Date(newEvent.start);
-                    newEvent.end = new Date(newEvent.end);
-                    // Have to do both since it depends where you clicked from.
-                    $scope.$broadcast("EventAdded", newEvent);
-                    $scope.$emit("EventAdded", newEvent);
+                    if (isCalendarScope) {
+                        $scope.$broadcast("EventAdded", newEvent);
+                    } else {
+                        $scope.$emit("EventAdded", newEvent);
+                    }
                 }
             }, function () {
                 // Clicked Cancel on Modal; Do Nothing

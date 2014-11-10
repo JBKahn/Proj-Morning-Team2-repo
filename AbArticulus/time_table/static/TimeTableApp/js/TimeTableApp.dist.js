@@ -47773,43 +47773,62 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "<form role=\"form\">\n" +
     "    <div class=\"form-group\">\n" +
     "        <label>Calendar</label>\n" +
-    "        <select ng-disabled=\"!modalData.editable\" ng-model=\"modalData.eventData.calendar\" class=\"form-control\" ng-options=\"calendar.name for calendar in modalData.calendars\"></select>\n" +
+    "        <select ng-required=\"true\" ng-disabled=\"!modalData.editable\" ng-model=\"modalData.eventData.calendar\" class=\"form-control\" ng-options=\"calendar.name for calendar in modalData.calendars\"></select>\n" +
+    "    </div>\n" +
+    "    <div class=\"form-group\">\n" +
+    "        <label>Type</label>\n" +
+    "        <div class=\"row\">\n" +
+    "            <div class=\"col-md-6\">\n" +
+    "                <select ng-required=\"true\" ng-disabled=\"!modalData.editable\" ng-model=\"modalData.eventData.tagType\" class=\"form-control\" ng-options=\"tag for tag in modalData.tagTypes\"></select>\n" +
+    "            </div>\n" +
+    "            <div class=\"col-md-6\">\n" +
+    "                <input ng-required=\"true\" ng-disabled=\"!modalData.editable\" ng-model=\"modalData.eventData.tagNumber\" placeholder=\"Number e.g. 1\" class=\"form-control\" type=\"text\">\n" +
+    "            </div>\n" +
+    "          </div>\n" +
     "    </div>\n" +
     "    <div class=\"form-group\">\n" +
     "        <label>Event Title</label>\n" +
-    "        <input ng-disabled=\"!modalData.editable\" ng-model=\"modalData.eventData.title\" placeholder=\"Event Title\" class=\"form-control\" type=\"text\">\n" +
+    "        <input ng-required=\"true\" ng-disabled=\"!modalData.editable\" ng-model=\"modalData.eventData.title\" placeholder=\"Event Title\" class=\"form-control\" type=\"text\">\n" +
     "    </div>\n" +
     "    <div class=\"form-group\">\n" +
     "        <label>Start Date</label>\n" +
-    "        <div class=\"dropdown\">\n" +
-    "            <a class=\"dropdown-toggle\" id=\"startDateDropdown\" role=\"button\" data-toggle=\"dropdown\" data-target=\"#\" href=\"#\">\n" +
-    "                <div class=\"input-group\">\n" +
-    "                    <input ng-disabled=\"!modalData.editable\" type=\"text\" class=\"form-control\" data-ng-model=\"modalData.eventData.startDate\">\n" +
-    "                    <span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-calendar\"></i></span>\n" +
-    "                </div>\n" +
-    "            </a>\n" +
-    "            <ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"dLabel\">\n" +
-    "                <datetimepicker data-ng-model=\"modalData.eventData.startDate\" data-datetimepicker-config=\"{ dropdownSelector: '#startDateDropdown' }\"/>\n" +
-    "            </ul>\n" +
+    "        <div class=\"row\">\n" +
+    "            <div class=\"col-md-6\">\n" +
+    "                <p class=\"input-group\">\n" +
+    "                    <input type=\"text\" class=\"form-control\" datepicker-popup=\"yyyy/MM/dd\" ng-model=\"modalData.eventData.startDay\"\n" +
+    "                        is-open=\"stOpened\" min-date=\"'2013-01-01'\" datepicker-options=\"dateOptions\"\n" +
+    "                        ng-required=\"true\" close-text=\"Close\" ng-disabled=\"!modalData.editable\" />\n" +
+    "                    <span class=\"input-group-btn\">\n" +
+    "                        <button type=\"button\" class=\"btn btn-default\" ng-click=\"open($event, 'stOpened')\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
+    "                    </span>\n" +
+    "                </p>\n" +
+    "            </div>\n" +
+    "            <div class=\"col-md-6\">\n" +
+    "                <timepicker ng-hide=\"modalData.eventData.allDay\" ng-disabled=\"!modalData.editable\" ng-model=\"modalData.eventData.startTime\" hour-step=\"1\" minute-step=\"1\" show-meridian=\"true\"></timepicker>\n" +
+    "            </div>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
     "    <div class=\"form-group\">\n" +
-    "        <label>Start Date</label>\n" +
-    "        <div class=\"dropdown\">\n" +
-    "            <a class=\"dropdown-toggle\" id=\"endDateDropdown\" role=\"button\" data-toggle=\"dropdown\" data-target=\"#\" href=\"#\">\n" +
-    "                <div class=\"input-group\">\n" +
-    "                    <input ng-disabled=\"!modalData.editable\" type=\"text\" class=\"form-control\" data-ng-model=\"modalData.eventData.endDate\">\n" +
-    "                    <span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-calendar\"></i></span>\n" +
-    "                </div>\n" +
-    "            </a>\n" +
-    "            <ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"dLabel\">\n" +
-    "                <datetimepicker ng-disabled=\"!modalData.editable\" data-ng-model=\"modalData.eventData.endDate\" data-datetimepicker-config=\"{ dropdownSelector: '#endDateDropdown' }\"/>\n" +
-    "            </ul>\n" +
+    "        <label>End Date</label>\n" +
+    "        <div class=\"row\">\n" +
+    "            <div class=\"col-md-6\">\n" +
+    "                <p class=\"input-group\">\n" +
+    "                    <input type=\"text\" class=\"form-control\" datepicker-popup=\"yyyy/MM/dd\" ng-model=\"modalData.eventData.endDay\"\n" +
+    "                        is-open=\"etOpened\" min-date=\"'2013-01-01'\" datepicker-options=\"dateOptions\"\n" +
+    "                        ng-required=\"true\" close-text=\"Close\" ng-disabled=\"!modalData.editable\" />\n" +
+    "                    <span class=\"input-group-btn\">\n" +
+    "                        <button type=\"button\" class=\"btn btn-default\" ng-click=\"open($event, 'etOpened')\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
+    "                    </span>\n" +
+    "                </p>\n" +
+    "            </div>\n" +
+    "            <div class=\"col-md-6\">\n" +
+    "                <timepicker ng-hide=\"modalData.eventData.allDay\" ng-disabled=\"!modalData.editable\" ng-model=\"modalData.eventData.endTime\" hour-step=\"1\" minute-step=\"1\" show-meridian=\"true\"></timepicker>\n" +
+    "            </div>\n" +
     "        </div>\n" +
     "    </div>\n" +
     "    <div class=\"checkbox\">\n" +
-    "        <input type=\"checkbox\" ng-disabled=\"!modalData.editable\" ng-model=\"modalData.eventData.allDay\">All-day event\n" +
+    "        <input type=\"checkbox\" ng-required=\"true\" ng-disabled=\"!modalData.editable\" ng-model=\"modalData.eventData.allDay\">All-day event\n" +
     "    </div>\n" +
     "    <p>{{ modalData.eventData.description }}</p>\n" +
     "</form>\n" +
@@ -47863,6 +47882,7 @@ angular.module("timeTable.constants", [])
     var constants = {
         eventListUrl: jsBootstrap.eventListUrl || "",
         eventUpdateUrl: jsBootstrap.eventUpdateUrl || "",
+        tagTypes: jsBootstrap.tagTypes || "",
         staticUrl: jsBootstrap.staticUrl || ""
     };
 
@@ -47943,7 +47963,19 @@ angular.module("timeTable.service.eventService", [])
     };
 }]);
 
-var eventModalController = function ($scope, $modalInstance, EventService, eventData, calendars) {
+var eventModalController = function ($scope, $modalInstance, Constants, EventService, eventData, calendars) {
+    $scope.open = function($event, opened) {
+        $event.preventDefault();
+        $event.stopPropagation();
+
+        $scope[opened] = true;
+    };
+
+    $scope.dateOptions = {
+        formatYear: 'yy',
+        startingDay: 1
+    };
+
     // Required as the original calendar passed in references a different object than modalData.calendars
     $scope.getCalendarOption = function(calendars, calendar_id) {
         var i;
@@ -47958,28 +47990,41 @@ var eventModalController = function ($scope, $modalInstance, EventService, event
     $scope.modalData = {
         eventData: {
             'title': eventData.title || '',
-            'startDate': eventData.start || '',
-            'endDate': eventData.end || '',
+            'startDay': eventData.start || new Date(),
+            'endDay': eventData.end || new Date(),
+            'startTime': eventData.start || new Date(),
+            'endTime': eventData.end || new Date(),
             'allDay': eventData.allDay || false,
             'id': eventData.id || '',
             'sequence': eventData.sequence || 0,
             'description': eventData.description || '',
             'calendar': eventData.calendar && $scope.getCalendarOption(calendars, eventData.calendar.id) || '',
+            'tagType': eventData.tag_type || Constants.get('tagTypes')[0],
+            'tagNumber': eventData.tag_number || 0
         },
         'calendars': calendars,
-        'editable': !eventData.calendar || eventData.calendar.editable
+        'tagTypes': Constants.get('tagTypes'),
+        'editable': !eventData.calendar || eventData.calendar.editable,
+        'initialData': eventData
     };
 
     $scope.addEvent = function() {
         var eventData = $scope.modalData.eventData;
-        if (!eventData.title || !eventData.startDate || !eventData.endDate || !eventData.calendar) {
+        if (!eventData.title || !eventData.startTime || !eventData.startDay || !eventData.endTime || !eventData.endDay || !eventData.calendar) {
             return;
         }
+        var startDate = eventData.startDay;
+        startDate.setHours(eventData.startTime.getHours());
+        startDate.setMinutes(eventData.startTime.getMinutes());
+        var endDate = eventData.endDay;
+        endDate.setHours(eventData.endTime.getHours());
+        endDate.setMinutes(eventData.endTime.getMinutes());
+
         var promise;
         if (eventData.id === '') {
-            promise = EventService.addEvent(eventData.calendar.id, eventData.title, eventData.startDate, eventData.endDate, eventData.allDay);
+            promise = EventService.addEvent(eventData.calendar.id, eventData.title, startDate, endDate, eventData.allDay);
         } else {
-            promise = EventService.updateEvent(eventData.calendar.id, eventData.id, eventData.sequence, eventData.title, eventData.startDate, eventData.endDate, eventData.allDay);
+            promise = EventService.updateEvent(eventData.calendar.id, eventData.id, eventData.sequence, eventData.title, startDate, endDate, eventData.allDay);
         }
 
         promise.then(
@@ -48002,7 +48047,7 @@ var eventModalController = function ($scope, $modalInstance, EventService, event
 };
 
 angular.module("timeTable.controllers.eventModal", [])
-.controller("EventModalController", ["$scope", "$modalInstance", "EventService", "eventData", "calendars", eventModalController]);
+.controller("EventModalController", ["$scope", "$modalInstance", "Constants", "EventService", "eventData", "calendars", eventModalController]);
 
 angular.module("timeTable.controllers.calendar", [])
 .controller("CalendarController", ["$scope", "$modal", "EventService", function($scope, $modal, EventService) {
@@ -48015,6 +48060,10 @@ angular.module("timeTable.controllers.calendar", [])
 
     $scope.$on('EventEdited', function (event, data) {
         var a = 1;
+        // UI-calendar can't properly handle this case so I incriment minutes by 1.
+        if (data.start === data.end) {
+            data.end = data.start.substr(0,15) + (parseInt(data.start.substr(15,1)) + 1) + data.start.substr(16);
+        }
         for (var i = 0; i < $scope.CalendarData.eventSources.length; i++) {
             if ($scope.CalendarData.eventSources[i].calendar_id !== data.calendar_id) {
                 continue;
@@ -48035,6 +48084,10 @@ angular.module("timeTable.controllers.calendar", [])
     $scope.$on('EventAdded', function (event, data) {
         for (var i = 0; i < $scope.CalendarData.eventSources.length; i++) {
             if ($scope.CalendarData.eventSources[i].calendar_id === data.calendar_id) {
+                // UI-calendar can't properly handle this case so I incriment minutes by 1.
+                if (data.start === data.end) {
+                    data.end = data.start.substr(0,15) + (parseInt(data.start.substr(15,1)) + 1) + data.start.substr(16);
+                }
                 data.calendar =  self.sources[i];
                 self.eventData.events[i].events.push(data);
             }
@@ -48051,7 +48104,7 @@ angular.module("timeTable.controllers.calendar", [])
           right: 'today prev,next'
         },
         eventClick: $scope.editEvent,
-        dayClick: $scope.dayClick, // Commented out due to looking at the wrong scope. I'll look into this.
+        dayClick: $scope.dayClick,
         eventDrop: $scope.dropEvent,
         eventResize: $scope.resizeEvent
       }
@@ -48080,6 +48133,9 @@ angular.module("timeTable.controllers.calendar", [])
                 for (var j = 0; j < data[source].events.length; j++) {
                     var calEvent = data[source].events[j];
                     calEvent.calendar = self.sources[i];
+                    if (calEvent.start === calEvent.end) {
+                        calEvent.end = calEvent.start.substr(0,15) + (parseInt(calEvent.start.substr(15,1)) + 1) + calEvent.start.substr(16);
+                    }
                     self.eventData.events[i].events.push(calEvent);
                 }
             }
@@ -48092,7 +48148,7 @@ angular.module("timeTable.controllers.calendar", [])
             end: date
         };
 
-        self.open('lg', event);
+        self.open('lg', event, true);
     };
 
     $scope.editEvent = function (event, allDay, jsEvent, view) {
@@ -48127,7 +48183,7 @@ angular.module("timeTable.controllers.calendar", [])
     };
     $scope.CalendarData = this.CalendarData;
 
-    this.open = function (size, eventData) {
+    this.open = function (size, eventData, isCalendarScope) {
         eventData = eventData || {};
         var modalInstance = $modal.open({
             templateUrl: 'templates/eventModal.html',
@@ -48148,11 +48204,11 @@ angular.module("timeTable.controllers.calendar", [])
                 if (newEvent.existing === true || eventData.id !== undefined) {
                     $scope.$broadcast("EventEdited", newEvent);
                 } else {
-                    newEvent.start = new Date(newEvent.start);
-                    newEvent.end = new Date(newEvent.end);
-                    // Have to do both since it depends where you clicked from.
-                    $scope.$broadcast("EventAdded", newEvent);
-                    $scope.$emit("EventAdded", newEvent);
+                    if (isCalendarScope) {
+                        $scope.$broadcast("EventAdded", newEvent);
+                    } else {
+                        $scope.$emit("EventAdded", newEvent);
+                    }
                 }
             }, function () {
                 // Clicked Cancel on Modal; Do Nothing

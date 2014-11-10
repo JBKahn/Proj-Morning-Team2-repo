@@ -33,6 +33,7 @@ angular.module("timeTable.constants", [])
     var constants = {
         eventListUrl: jsBootstrap.eventListUrl || "",
         eventUpdateUrl: jsBootstrap.eventUpdateUrl || "",
+        tagTypes: jsBootstrap.tagTypes || "",
         staticUrl: jsBootstrap.staticUrl || ""
     };
 

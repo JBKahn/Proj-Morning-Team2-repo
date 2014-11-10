@@ -1,4 +1,16 @@
-var eventModalController = function ($scope, $modalInstance, EventService, eventData, calendars) {
+var eventModalController = function ($scope, $modalInstance, Constants, EventService, eventData, calendars) {
+    $scope.open = function($event, opened) {
+        $event.preventDefault();
+        $event.stopPropagation();
+
+        $scope[opened] = true;
+    };
+
+    $scope.dateOptions = {
+        formatYear: 'yy',
+        startingDay: 1
+    };
+
     // Required as the original calendar passed in references a different object than modalData.calendars
     $scope.getCalendarOption = function(calendars, calendar_id) {
         var i;
@@ -13,28 +25,41 @@ var eventModalController = function ($scope, $modalInstance, EventService, event
     $scope.modalData = {
         eventData: {
             'title': eventData.title || '',
-            'startDate': eventData.start || '',
-            'endDate': eventData.end || '',
+            'startDay': eventData.start || new Date(),
+            'endDay': eventData.end || new Date(),
+            'startTime': eventData.start || new Date(),
+            'endTime': eventData.end || new Date(),
             'allDay': eventData.allDay || false,
             'id': eventData.id || '',
             'sequence': eventData.sequence || 0,
             'description': eventData.description || '',
             'calendar': eventData.calendar && $scope.getCalendarOption(calendars, eventData.calendar.id) || '',
+            'tagType': eventData.tag_type || Constants.get('tagTypes')[0],
+            'tagNumber': eventData.tag_number || 0
         },
         'calendars': calendars,
-        'editable': !eventData.calendar || eventData.calendar.editable
+        'tagTypes': Constants.get('tagTypes'),
+        'editable': !eventData.calendar || eventData.calendar.editable,
+        'initialData': eventData
     };
 
     $scope.addEvent = function() {
         var eventData = $scope.modalData.eventData;
-        if (!eventData.title || !eventData.startDate || !eventData.endDate || !eventData.calendar) {
+        if (!eventData.title || !eventData.startTime || !eventData.startDay || !eventData.endTime || !eventData.endDay || !eventData.calendar) {
             return;
         }
+        var startDate = eventData.startDay;
+        startDate.setHours(eventData.startTime.getHours());
+        startDate.setMinutes(eventData.startTime.getMinutes());
+        var endDate = eventData.endDay;
+        endDate.setHours(eventData.endTime.getHours());
+        endDate.setMinutes(eventData.endTime.getMinutes());
+
         var promise;
         if (eventData.id === '') {
-            promise = EventService.addEvent(eventData.calendar.id, eventData.title, eventData.startDate, eventData.endDate, eventData.allDay);
+            promise = EventService.addEvent(eventData.calendar.id, eventData.title, startDate, endDate, eventData.allDay);
         } else {
-            promise = EventService.updateEvent(eventData.calendar.id, eventData.id, eventData.sequence, eventData.title, eventData.startDate, eventData.endDate, eventData.allDay);
+            promise = EventService.updateEvent(eventData.calendar.id, eventData.id, eventData.sequence, eventData.title, startDate, endDate, eventData.allDay);
         }
 
         promise.then(
@@ -57,4 +82,4 @@ var eventModalController = function ($scope, $modalInstance, EventService, event
 };
 
 angular.module("timeTable.controllers.eventModal", [])
-.controller("EventModalController", ["$scope", "$modalInstance", "EventService", "eventData", "calendars", eventModalController]);
+.controller("EventModalController", ["$scope", "$modalInstance", "Constants", "EventService", "eventData", "calendars", eventModalController]);

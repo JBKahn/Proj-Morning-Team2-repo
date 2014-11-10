@@ -10,7 +10,6 @@ class Calendar(models.Model):
 
 
 class Tag(models.Model):
-    calendar = models.ForeignKey(Calendar)
     tag_type = models.CharField(max_length=25, choices=TAG_CHOICES)
     number = models.IntegerField(default=1, blank=True, null=True)
 
@@ -21,12 +20,13 @@ class Tag(models.Model):
 
 
 class GoogleEvent(models.Model):
+    tag = models.ForeignKey(Tag)
+    calendar = models.ForeignKey(Calendar)
     gid = models.CharField(max_length=255, unique=True)
     revision = models.IntegerField()
 
 
 class Event(models.Model):
-    tag = models.ForeignKey(Tag)
     gevent = models.ForeignKey(GoogleEvent, related_name='events')
     start = models.DateTimeField()
     end = models.DateTimeField()

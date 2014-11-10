@@ -39,7 +39,8 @@ class ApiInterface(object):
             raise UnexpectedResponseError(response.status_code)
         formated_events = []
         for item in response.json().get('items'):
-            formated_events.append(json_to_dict(item))
+            if item.get('status') != u'cancelled':
+                formated_events.append(json_to_dict(item))
         return formated_events
 
     @classmethod
@@ -115,20 +116,20 @@ class ApiInterface(object):
                 'tag_type': "ASSIGNMENT",
                 'number': 1
             }
-            tag_object, _ = Tag.objects.get_or_create(calendar=calendar_object, **tag_data)
+            tag_object, _ = Tag.objects.get_or_create(**tag_data)
 
             # TODO: Should the title be combination of the tag info?
             title = event_data['title']
             del event_data['title']
-            if Event.objects.filter(tag=tag_object, **event_data).exists():
-                event_object = Event.objects.get(tag=tag_object, **event_data)
-                gevent = event_object.gevent
-            elif Event.objects.filter(tag=tag_object).exists():
-                event_object = Event(tag=tag_object, **event_data)
-                gevent = Event.objects.filter(tag=tag_object)[0].gevent
+            if GoogleEvent.objects.filter(tag=tag_object, calendar=calendar_object).exists():
+                gevent = GoogleEvent.objects.get(tag=tag_object, calendar=calendar_object)
+                if gevent.events.filter(**event_data).exists():
+                    event_object = gevent.events.get(**event_data)
+                else:
+                    event_object = Event(**event_data)
             else:
-                event_object = Event(tag=tag_object, **event_data)
                 gevent = None
+                event_object = Event(**event_data)
             event_data['title'] = title
 
             vote_object = None
@@ -138,11 +139,11 @@ class ApiInterface(object):
                 vote_object = Vote.objects.get(user=user, event=event_object)
 
             if gevent is None:
-                gevent = GoogleEvent(revision=0)
+                gevent = GoogleEvent(revision=0, tag=tag_object, calendar=calendar_object)
                 description = GoogleEventSerializer(gevent).data
                 description['events'].append(EventSerializer(event_object).data)
                 description['events'][0]['votes'].append(VoteSerializer(vote_object).data)
-                description['events'][0]['tag'] = TagSerializer(tag_object).data
+                description['tag'] = TagSerializer(tag_object).data
                 event_data = cls.create_event_from_dict(event_data)
                 event_data['description'] = JSONRenderer().render(description)
                 calendar_user = get_user_model().objects.get(email=settings.EMAIL_OF_USER_WITH_CALENDARS)
