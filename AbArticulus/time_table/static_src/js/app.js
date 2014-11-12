@@ -6,7 +6,7 @@ var myApp = angular.module("TimeTableApp", [
     "AppTemplates",
     "ui.calendar",
     "ui.bootstrap",
-    "ui.bootstrap.datetimepicker",
+    "ngMaterial",
     "timeTable.constants",
     "timeTable.controllers.calendar",
     "timeTable.controllers.eventModal",

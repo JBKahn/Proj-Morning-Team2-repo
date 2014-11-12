@@ -215,11 +215,11 @@ class ApiInterface(object):
             'summary': title,
             'start': {
                 time_key: start.strftime(time_format),
-                'timeZone': str(start.tzinfo)
+                #  'timeZone': str(start.tzinfo)
             },
             'end': {
                 time_key: end.strftime(time_format),
-                'timeZone': str(start.tzinfo)
+                #  'timeZone': str(start.tzinfo)
             },
         }
 

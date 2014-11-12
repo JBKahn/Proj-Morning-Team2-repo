@@ -2,9 +2,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from abcalendar.constants import TAG_CHOICES
+from abcalendar.models import Calendar
 from api.interfaces.api_interface import ApiInterface
 from time_table.serializers import SimpleEventSerializer, SimpleEventUpdateSerializer, SimpleTagSerializer
 
+from django.conf import settings
 from django.views.generic import TemplateView
 
 
@@ -29,14 +31,15 @@ class EventCreateView(APIView):
                 event_sources[item.get('summary')] = {
                     'events': ApiInterface.get_events_from_calendar(user=request.user, calendar_id=item.get('id')),
                     'id': item.get('id'),
-                    'role': item.get('accessRole')
+                    'canCreateEvents': item.get('accessRole') in [u'writer', u'owner'],
+                    'isAppCalendar': Calendar.objects.filter(gid=item.get('id')).exists() or item.get('id') == settings.EMAIL_OF_USER_WITH_CALENDARS
                 }
         return Response(event_sources)
 
     def post(self, request, format='JSON', *args, **kwargs):
         event_serializer = SimpleEventSerializer(data=request.DATA)
         tag_serializer = SimpleTagSerializer(data=request.DATA)
-        if event_serializer.is_valid() and tag_serializer.is_valid():
+        if event_serializer.is_valid() and (not Calendar.objects.filter(gid=request.DATA.get('calendar')).exists() or tag_serializer.is_valid()):
             new_event_data = ApiInterface.add_user_event(user=request.user, calendar_id=request.DATA.get('calendar'), event_data=event_serializer.data, tag_data=tag_serializer.data)
             new_event_data['calendar_id'] = request.DATA.get('calendar')
             return Response(new_event_data)

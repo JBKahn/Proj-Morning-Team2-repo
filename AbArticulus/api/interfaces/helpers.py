@@ -5,6 +5,8 @@ import requests
 from rest_framework import status
 from social.apps.django_app.utils import load_strategy
 
+from django.conf import settings
+
 
 def get_google_api_endpoint_url(api_name, **kwargs):
     if api_name == 'calendarList':
@@ -79,4 +81,5 @@ def json_to_dict(event):
         'id': event.get('id'),
         'sequence': event.get('sequence'),
         'description': event.get('description'),
+        'isAppEvent': event.get('creator', {}).get('email') == settings.EMAIL_OF_USER_WITH_CALENDARS
     }

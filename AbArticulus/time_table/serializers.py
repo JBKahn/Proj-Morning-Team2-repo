@@ -4,7 +4,7 @@ from abcalendar.constants import TAG_CHOICES
 
 
 class SimpleEventSerializer(serializers.Serializer):
-    title = serializers.CharField(max_length=100)
+    title = serializers.CharField(max_length=100, required=False)
     start = serializers.DateTimeField()
     end = serializers.DateTimeField()
     all_day = serializers.BooleanField()

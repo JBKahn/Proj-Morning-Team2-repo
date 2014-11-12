@@ -1,8 +1,10 @@
 <div role="main">
     <div class="container">
         <section id="directives-calendar" ng-controller="CalendarController as calCtrl">
-            <button class="btn btn-default" ng-click="calCtrl.open('lg')">Create Event</button>
-            <div class="calendar" ng-model="calCtrl.CalendarData.eventSources" calendar="myCalendar1" config="calCtrl.eventData.uiConfig.calendar" ui-calendar="calCtrl.eventData.uiConfig.calendar"></div>
+            <md-button class="md-raised md-primary md-create" ng-click="calCtrl.open('lg')">Create EVent</md-button>
+            <md-whiteframe class="md-whiteframe-z1" layout layout-align="center center">
+                <div class="calendar" ng-model="calCtrl.CalendarData.eventSources" ui-calendar="calCtrl.eventData.uiConfig.calendar" calendar="myCalendar1" config="calCtrl.eventData.uiConfig.calendar"></div>
+            </md-whiteframe>
         </section>
     </div>
 </div>
