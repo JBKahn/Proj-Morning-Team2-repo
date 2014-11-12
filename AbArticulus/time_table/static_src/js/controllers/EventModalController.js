@@ -47,9 +47,10 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         var userEventFields;
         if (eventData.id) {
             // editing
-            appEventFields = ['calendar', 'id', 'tagType', 'tagNumber', 'sequence', 'startDate', 'endDate', 'startTime', 'endTime', 'alternateTimes', 'comments'];
-            userEventFields = ['calendar', 'id', 'title', 'sequence', 'startDate', 'endDate', 'startTime', 'endTime'];
-            var calendar = $scope.getCalendarOption(calendars, eventData.calendar.id);
+            appEventFields = ['calendar', 'id', 'tagType', 'tagNumber', 'sequence', 'startDate', 'endDate', 'startTime', 'endTime', 'alternateTimes', 'comments', 'allDay'];
+            userEventFields = ['calendar', 'id', 'title', 'sequence', 'startDate', 'endDate', 'startTime', 'endTime', 'allDay'];
+            var calendar = $scope.getCalendarOption(calendars, eventData.calendar.id),
+                hasJsonDescription = (Object(eventData.description) === eventData.description);
             if (calendar.isAppCalendar) {
                 $scope.modalData = {
                     'modalTitle': "Edit Event",
@@ -57,10 +58,10 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                     'userEventFields': userEventFields,
                     'disabledEventFields': ['calendar', 'id', 'tagType', 'tagNumber'],
                     'isUserEvent': false,
-                    'alternateTimes': eventData.description && JSON.parse(eventData.description).events,
-                    'comments': eventData.description && JSON.parse(eventData.description).comments,
+                    'alternateTimes': (hasJsonDescription && eventData.description.events) || '',
+                    'comments': (hasJsonDescription && eventData.description.comments) || '',
                     'calendars': [calendar],
-                    'tagTypes': [JSON.parse(eventData.description).tag.tag_type.charAt(0).toUpperCase() + JSON.parse(eventData.description).tag.tag_type.slice(1).toLowerCase()],
+                    'tagTypes': (hasJsonDescription && eventData.description.tag && [(eventData.description.tag.tag_type.charAt(0).toUpperCase() + eventData.description.tag.tag_type.slice(1).toLowerCase())]) || [],
                     eventData: {
                         'calendar': calendar,
                         'id': eventData.id,
@@ -70,8 +71,8 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                         'startTime': moment(eventData.start).format("h:mma"),
                         'endTime': moment(eventData.end).add('hours', 1).format("h:mma"),
                         'allDay': eventData.allDay,
-                        'tagType': eventData.description && JSON.parse(eventData.description).tag.tag_type.charAt(0).toUpperCase() + JSON.parse(eventData.description).tag.tag_type.slice(1).toLowerCase(),
-                        'tagNumber': eventData.description && JSON.parse(eventData.description).tag.number || 0
+                        'tagType':(hasJsonDescription && eventData.description.tag  && (eventData.description.tag.tag_type.charAt(0).toUpperCase() + eventData.description.tag.tag_type.slice(1).toLowerCase())) || '',
+                        'tagNumber':hasJsonDescription && eventData.description.tag && eventData.description.tag.number || 0
                     }
                 };
             } else {
@@ -125,8 +126,8 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                     eligableCreationCalendars.push(calendars[i]);
                 }
             }
-            appEventFields = ['calendar', 'tagType', 'tagNumber', 'startDate', 'endDate', 'startTime', 'endTime'];
-            userEventFields = ['calendar', 'title', 'startDate', 'endDate', 'startTime', 'endTime'];
+            appEventFields = ['calendar', 'tagType', 'tagNumber', 'startDate', 'endDate', 'startTime', 'endTime', 'allDay'];
+            userEventFields = ['calendar', 'title', 'startDate', 'endDate', 'startTime', 'endTime', 'allDay'];
             $scope.modalData = {
                 'modalTitle': "Create Event",
                 'calendars': eligableCreationCalendars,
@@ -165,7 +166,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                 if ((fields[i] === 'startDate' && (!eventData.startDay || !eventData.startTime)) || (fields[i] === 'endDate' && (!eventData.endDay || !eventData.endTime))) {
                     errors.push('missing ' + fields[i]);
                 } else {
-                    if (['startDate', 'endDate', 'comments', 'alternateTimes'].indexOf(fields[i]) === -1) {
+                    if (['startDate', 'endDate', 'comments', 'alternateTimes', 'allDay'].indexOf(fields[i]) === -1) {
                         errors.push('missing ' + fields[i]);
                     }
                 }
@@ -189,14 +190,14 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
             errors.push('endDate is before start date');
         }
         var startTime = eventData.startTime.match("^([0-9]{1,2}):([0-9]{2})(am|pm)$");
-        if (eventData.allDay || !startTime || parseInt(startTime[1]) > 12 || parseInt(startTime[2]) > 60) {
+        if (!eventData.allDay && !startTime || parseInt(startTime[1]) > 12 || parseInt(startTime[2]) > 60) {
             errors.push('start time format wrong');
         }
         var endTime = eventData.endTime.match("^([0-9]{1,2}):([0-9]{2})(am|pm)$");
-        if (eventData.allDay ||!endTime || parseInt(endTime[1]) > 12 || parseInt(endTime[2]) > 60) {
+        if (!eventData.allDay && !endTime || parseInt(endTime[1]) > 12 || parseInt(endTime[2]) > 60) {
             errors.push('end time format wrong');
         }
-        if (startTime && endTIme) {
+        if (startTime && endTime) {
             var startHour = parseInt(startTime[1]),
                 startMinutes = parseInt(startTime[2]),
                 endHour = parseInt(endTime[1]),

@@ -72,7 +72,8 @@ angular.module("timeTable.controllers.calendar", [])
                     color: eventColors[i],
                     events: [],
                     calendar_id: data[source].id,
-                    canEditEvents: data[source].canCreateEvents
+                    canEditEvents: data[source].canCreateEvents,
+                    editable: data[source].canCreateEvents
                 };
                 for (var j = 0; j < data[source].events.length; j++) {
                     var calEvent = data[source].events[j];

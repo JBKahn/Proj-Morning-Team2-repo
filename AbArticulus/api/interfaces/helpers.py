@@ -73,6 +73,10 @@ def make_request(user, url, params=None, method="GET", data=None):
 
 
 def json_to_dict(event):
+    try:
+        description = json.loads(event.get('description'))
+    except Exception:
+        description = event.get('description')
     return {
         'end': event.get('end') and (event.get('end').get('dateTime') or (datetime.strptime(event.get('end').get('date'), "%Y-%m-%d").isoformat())),
         'start': event.get('start') and (event.get('start').get('dateTime') or (datetime.strptime(event.get('start').get('date'), "%Y-%m-%d").isoformat())),
@@ -80,6 +84,6 @@ def json_to_dict(event):
         'title': event.get('summary'),
         'id': event.get('id'),
         'sequence': event.get('sequence'),
-        'description': event.get('description'),
+        'description': description,
         'isAppEvent': event.get('creator', {}).get('email') == settings.EMAIL_OF_USER_WITH_CALENDARS
     }
