@@ -1,10 +1,11 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
 
 from abcalendar.constants import TAG_CHOICES
 from abcalendar.models import Calendar
 from api.interfaces.api_interface import ApiInterface
-from time_table.serializers import SimpleEventSerializer, SimpleEventUpdateSerializer, SimpleTagSerializer
+from time_table.serializers import SimpleEventSerializer, SimpleEventUpdateSerializer, SimpleTagSerializer, SimpleCalendarSerializer, SimpleDatabaseCalendarSerializer
 
 from django.conf import settings
 from django.views.generic import TemplateView
@@ -20,8 +21,6 @@ class TimeTableHomeView(TemplateView):
 
 
 class EventCreateView(APIView):
-    calendar_id = "primary"
-
     def get(self, request, format='JSON', *args, **kwargs):
         calendars = ApiInterface.get_calendars_from_user(user=request.user)
         event_sources = {}
@@ -43,6 +42,10 @@ class EventCreateView(APIView):
             new_event_data = ApiInterface.add_user_event(user=request.user, calendar_id=request.DATA.get('calendar'), event_data=event_serializer.data, tag_data=tag_serializer.data)
             new_event_data['calendar_id'] = request.DATA.get('calendar')
             return Response(new_event_data)
+        errors = {}
+        errors.update(event_serializer.errors)
+        errors.update(tag_serializer.errors)
+        return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class EventAccessView(APIView):
@@ -58,6 +61,20 @@ class EventAccessView(APIView):
             event_data = ApiInterface.user_update_event(user=request.user, calendar_id=request.DATA.get('calendar'), gevent_id=event_serializer.data.get('id'), event_data=json_event, revision=request.DATA.get('sequence'))
             event_data['calendar_id'] = request.DATA.get('calendar')
             return Response(event_data)
+        return Response(event_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, event_id, format='JSON', *args, **kwargs):
         return Response(ApiInterface.get_event_from_calendar(user=request.user, calendar_id=self.calendar_id, event_id=event_id))
+
+
+class CalendarListCreateView(APIView):
+    def get(self, request, format='JSON', *args, **kwargs):
+        calendars = SimpleDatabaseCalendarSerializer(Calendar.objects.exclude(name=settings.EMAIL_OF_USER_WITH_CALENDARS), many=True)
+        return Response(calendars.data)
+
+    def post(self, request, format='JSON', *args, **kwargs):
+        calendar_serializer = SimpleCalendarSerializer(data=request.DATA)
+        if calendar_serializer.is_valid():
+            new_calendar_data = ApiInterface.user_add_calendar(user=request.user, title=calendar_serializer.data.get('title'))
+            return Response(new_calendar_data)
+        return Response(calendar_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

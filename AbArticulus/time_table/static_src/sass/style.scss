@@ -95,3 +95,21 @@
 .calendar {
   width: 828px;
 }
+
+#CreateCalendarModal {
+  overflow: inherit;
+  input {
+    width: 193px;
+  }
+}
+
+md-toolbar#toolbar {
+  background-color: rgb(209, 72, 54);
+  .username {
+    float: right;
+  }
+}
+
+md-sidenav md-button {
+  height: 35px;
+}

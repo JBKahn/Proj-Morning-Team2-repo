@@ -21,6 +21,7 @@ class Command(BaseCommand):
                 calendar_object = Calendar.objects.get_or_create(name=calendar.get('summary'), gid=calendar.get('id'))
 
                 events = ApiInterface.get_events_from_calendar(user=calendar_user, calendar_id=calendar.get('id'))
+                break
                 for event in events:
                     description = event.get('description')
                     tag_object, _ = Tag.objects.get_or_create(**description.get('tag'))

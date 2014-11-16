@@ -1,10 +1,59 @@
-<div role="main">
-    <div class="container">
-        <section id="directives-calendar" ng-controller="CalendarController as calCtrl">
-            <md-button class="md-raised md-primary md-create" ng-click="calCtrl.open('lg')">Create EVent</md-button>
-            <md-whiteframe class="md-whiteframe-z1" layout layout-align="center center">
-                <div class="calendar" ng-model="calCtrl.CalendarData.eventSources" ui-calendar="calCtrl.eventData.uiConfig.calendar" calendar="myCalendar1" config="calCtrl.eventData.uiConfig.calendar"></div>
-            </md-whiteframe>
+<div role="main">    
+    <section id="directives-calendar" ng-controller="CalendarController as calCtrl">
+
+        <md-toolbar scroll-shrink id="toolbar">
+            <div class="md-toolbar-tools">
+                <h3>
+                    <span>AbArticulus</span>
+                </h3>
+            </div>
+        </md-toolbar>
+
+        <section layout="horizontal" flex>
+
+            <md-sidenav class="md-sidenav-left md-whiteframe-z2" component-id="left" is-locked-open="true">
+
+                <md-toolbar class="md-theme-indigo">
+                    <h1 class="md-toolbar-tools">Actions</h1>
+                </md-toolbar>
+
+                <md-content class="md-padding">
+                    <md-button ng-click="calCtrl.openCalendarModal('lg')" class="md-primary" show-md>
+                        Add Calendar
+                    </md-button>
+                    <md-button ng-click="calCtrl.openEventModal('lg')" class="md-primary" show-md>
+                        Create Event
+                    </md-button>
+                </md-content>
+
+
+                <md-toolbar class="md-theme-indigo">
+                    <h1 class="md-toolbar-tools">Calendars</h1>
+                </md-toolbar>
+
+                <md-content class="md-padding">
+                    <md-list>
+
+                        <md-item ng-repeat="calendar in calCtrl.sources">
+                            <md-item-content>
+                                <div class="md-tile-left">
+                                    <md-progress-circular mode="determinate" value="100" diameter="24"></md-progress-circular>
+                                </div>
+                                <div class="md-tile-content">
+                                    <h3>{{calendar.name}}</h3>
+                                </div>
+                            </md-item-content>
+                        </md-item>
+
+                    </md-list>
+                </md-content>
+
+            </md-sidenav>
+            <div class="container">
+                <md-whiteframe class="md-whiteframe-z2" layout layout-align="center center">
+                    <div class="calendar" ng-model="calCtrl.CalendarData.eventSources" ui-calendar="calCtrl.eventData.uiConfig.calendar" calendar="myCalendar1" config="calCtrl.eventData.uiConfig.calendar"></div>
+                </md-whiteframe>
+            </div>
         </section>
-    </div>
+    </section>
 </div>

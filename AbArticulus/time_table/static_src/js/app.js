@@ -10,7 +10,9 @@ var myApp = angular.module("TimeTableApp", [
     "timeTable.constants",
     "timeTable.controllers.calendar",
     "timeTable.controllers.eventModal",
-    "timeTable.service.eventService"
+    "timeTable.controllers.calendarModal",
+    "timeTable.service.eventService",
+    "timeTable.service.calendarService"
 ])
 .config(["$httpProvider", "$routeProvider", function($httpProvider, $routeProvider) {
     $httpProvider.defaults.xsrfCookieName = "csrftoken";
@@ -31,6 +33,7 @@ angular.module("timeTable.constants", [])
 .factory("Constants", ["$window", function($window) {
     var jsBootstrap = $window.jsBootstrap || {};
     var constants = {
+        calendarListUrl: jsBootstrap.calendarListUrl || "",
         eventListUrl: jsBootstrap.eventListUrl || "",
         eventUpdateUrl: jsBootstrap.eventUpdateUrl || "",
         tagTypes: jsBootstrap.tagTypes || "",

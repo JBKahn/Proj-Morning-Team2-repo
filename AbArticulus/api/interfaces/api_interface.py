@@ -34,6 +34,20 @@ class ApiInterface(object):
         return response.json()
 
     @classmethod
+    def user_add_calendar(cls, user, title):
+        calendar_user = get_user_model().objects.get(email=settings.EMAIL_OF_USER_WITH_CALENDARS)
+        calendars = cls.get_calendars_from_user(calendar_user)
+        calendar = None
+        for item in calendars.get('items'):
+            if item.get('summary') == title:
+                calendar = item
+        if not calendar:
+            calendar = cls.add_calendar(title)
+        Calendar.objects.get_or_create(gid=calendar.get('id'), name=title)
+        cls.share_calendar_with_user(user, calendar.get('id'))
+        return calendar
+
+    @classmethod
     def get_events_from_calendar(cls, user, calendar_id):
         response = GoogleApiInterface.get_events_from_calendar(user, calendar_id)
         if response.status_code != status.HTTP_200_OK:
@@ -144,6 +158,7 @@ class ApiInterface(object):
                 description['events'].append(EventSerializer(event_object).data)
                 description['events'][0]['votes'].append(VoteSerializer(vote_object).data)
                 description['tag'] = TagSerializer(tag_object).data
+                event_data['title'] = '{}: {} {}'.format(calendar_object.name, tag_object.tag_type.capitalize(), tag_object.number)
                 event_data = cls.create_event_from_dict(event_data)
                 event_data['description'] = JSONRenderer().render(description)
                 calendar_user = get_user_model().objects.get(email=settings.EMAIL_OF_USER_WITH_CALENDARS)

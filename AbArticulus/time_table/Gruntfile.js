@@ -35,7 +35,7 @@ module.exports = function(grunt) {
                     appConfig.path.bowerPath + "angular-animate/angular-animate.min.js",
                     appConfig.path.bowerPath + "angular-aria/angular-aria.min.js",
                     appConfig.path.bowerPath + "hammerjs/hammer.js",
-                    appConfig.path.bowerPath + "angular-material/angular-material.min.js"
+                    appConfig.path.appPath + "js/angular-material.js"
                 ],
                 dest: appConfig.path.buildPath + "js/requirements.dist.js"
             },

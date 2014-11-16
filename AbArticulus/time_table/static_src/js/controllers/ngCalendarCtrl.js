@@ -49,42 +49,46 @@ angular.module("timeTable.controllers.calendar", [])
         eventClick: $scope.editEvent,
         dayClick: $scope.dayClick,
         eventDrop: $scope.dropEvent,
-        eventResize: $scope.resizeEvent
+        eventResize: $scope.resizeEvent,
+        ignoreTimezone: false,
       }
     };
 
     this.sources = [];
-    EventService.getEvents()
-        .then(function (data) {
-            var sourceNames = Object.keys(data);
-            //TODO: Add more before merging.
-            var eventColors = ['#E8860C', '#FF0000', '#7C0CE8', '#0D88FF', '#0DFFF9', '#92FF25', '#A8A8FF'];
-            for (var i = 0; i < sourceNames.length; i++) {
-                var source = sourceNames[i];
-                self.sources.push({
-                    id: data[source].id,
-                    name: source,
-                    index: i,
-                    canCreateEvents: data[source].canCreateEvents,
-                    isAppCalendar: data[source].isAppCalendar
-                });
-                self.eventData.events[i] = {
-                    color: eventColors[i],
-                    events: [],
-                    calendar_id: data[source].id,
-                    canEditEvents: data[source].canCreateEvents,
-                    editable: data[source].canCreateEvents
-                };
-                for (var j = 0; j < data[source].events.length; j++) {
-                    var calEvent = data[source].events[j];
-                    calEvent.calendar = self.sources[i];
-                    if (calEvent.start === calEvent.end) {
-                        calEvent.end = calEvent.start.substr(0,15) + (parseInt(calEvent.start.substr(15,1)) + 1) + calEvent.start.substr(16);
+    $scope.init = function() {
+        self.sources.splice(0);
+        EventService.getEvents()
+            .then(function (data) {
+                var sourceNames = Object.keys(data);
+                //TODO: Add more before merging.
+                var eventColors = ['#E8860C', '#FF0000', '#7C0CE8', '#0D88FF', '#0DFFF9', '#92FF25', '#A8A8FF'];
+                for (var i = 0; i < sourceNames.length; i++) {
+                    var source = sourceNames[i];
+                    self.sources.push({
+                        id: data[source].id,
+                        name: source,
+                        index: i,
+                        canCreateEvents: data[source].canCreateEvents,
+                        isAppCalendar: data[source].isAppCalendar
+                    });
+                    self.eventData.events[i] = {
+                        color: eventColors[i],
+                        events: [],
+                        calendar_id: data[source].id,
+                        canEditEvents: data[source].canCreateEvents,
+                        editable: data[source].canCreateEvents
+                    };
+                    for (var j = 0; j < data[source].events.length; j++) {
+                        var calEvent = data[source].events[j];
+                        calEvent.calendar = self.sources[i];
+                        if (calEvent.start === calEvent.end) {
+                            calEvent.end = calEvent.start.substr(0,15) + (parseInt(calEvent.start.substr(15,1)) + 1) + calEvent.start.substr(16);
+                        }
+                        self.eventData.events[i].events.push(calEvent);
                     }
-                    self.eventData.events[i].events.push(calEvent);
                 }
-            }
-        });
+            });
+    };
 
     $scope.dayClick = function(date, allDay, jsEvent, view) {
         var event = {
@@ -93,11 +97,11 @@ angular.module("timeTable.controllers.calendar", [])
             end: date
         };
 
-        self.open('lg', event, true);
+        self.openEventModal('lg', event, true);
     };
 
     $scope.editEvent = function (event, allDay, jsEvent, view) {
-        self.open('lg', event);
+        self.openEventModal('lg', event);
     };
 
     $scope.dropEvent = function (event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) {
@@ -128,7 +132,24 @@ angular.module("timeTable.controllers.calendar", [])
     };
     $scope.CalendarData = this.CalendarData;
 
-    this.open = function (size, eventData, isCalendarScope) {
+    this.openCalendarModal = function (size) {
+        var modalInstance = $mdDialog.show({
+            templateUrl: 'templates/calendarModal.html',
+            controller: 'CalendarModalController',
+            size: size,
+            resolve: {
+                calendars: function() {
+                    return self.sources;
+                }
+            }
+        }).then(function (newCalendar) {
+            $scope.init();
+        }, function () {
+            // Clicked Cancel on Modal; Do Nothing
+        });
+    };
+
+    this.openEventModal = function (size, eventData, isCalendarScope) {
         eventData = eventData || {};
 
         var modalInstance = $mdDialog.show({
@@ -150,4 +171,5 @@ angular.module("timeTable.controllers.calendar", [])
             // Clicked Cancel on Modal; Do Nothing
         });
     };
+    $scope.init();
 }]);
