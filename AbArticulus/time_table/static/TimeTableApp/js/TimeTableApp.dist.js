@@ -61637,7 +61637,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         }
 
         var promise;
-        if (eventData.id === undefined) {
+        if (eventData.id === undefined || calendar.isAppCalendar) {
             promise = EventService.addEvent(eventData.calendar.id, eventData.title, validate.startDate, validate.endDate, eventData.allDay, eventData.tagType || '', eventData.tagNumber);
         } else {
             promise = EventService.updateEvent(eventData.calendar.id, eventData.id, eventData.sequence, eventData.title, validate.startDate, validate.endDate, eventData.allDay);
