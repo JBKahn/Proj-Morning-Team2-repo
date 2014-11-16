@@ -6,6 +6,7 @@ from rest_framework.renderers import JSONRenderer
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
+from django.utils import timezone
 
 from abcalendar.models import Tag, Calendar, Event, GoogleEvent, Vote
 from abcalendar.serializers import GoogleEventSerializer, EventSerializer, VoteSerializer, TagSerializer
@@ -114,18 +115,22 @@ class ApiInterface(object):
             tag_object, _ = Tag.objects.get_or_create(**tag_data)
 
             # TODO: Should the title be combination of the tag info?
-            title = event_data['title']
-            del event_data['title']
+            event_object_data = {
+                'start': event_data.get('start'),
+                'end': event_data.get('end'),
+                'all_day': event_data.get('all_day'),
+                'reccur_until': event_data.get('reccur_until'),
+            }
+
             if GoogleEvent.objects.filter(tag=tag_object, calendar=calendar_object).exists():
                 gevent = GoogleEvent.objects.get(tag=tag_object, calendar=calendar_object)
-                if gevent.events.filter(**event_data).exists():
-                    event_object = gevent.events.get(**event_data)
+                if gevent.events.filter(**event_object_data).exists():
+                    event_object = gevent.events.get(**event_object_data)
                 else:
-                    event_object = Event(**event_data)
+                    event_object = Event(**event_object_data)
             else:
                 gevent = None
-                event_object = Event(**event_data)
-            event_data['title'] = title
+                event_object = Event(**event_object_data)
 
             vote_object = None
             if not Vote.objects.filter(user=user, event=event_object).exists():
@@ -169,20 +174,21 @@ class ApiInterface(object):
                 most_upvoted_event = max(events, key=lambda e: e.num_votes)
                 vote_count = most_upvoted_event.num_votes
                 if vote_count >= -1:
+                    gevent.revision = gevent.revision + 1
+                    gevent.save()
+
                     event_data = {
-                        'start': most_upvoted_event.start,
-                        'end': most_upvoted_event.end,
-                        'recur_until': most_upvoted_event.reccur_until,
+                        'start': timezone.localtime(most_upvoted_event.start),
+                        'end': timezone.localtime(most_upvoted_event.end),
+                        'recur_until': (most_upvoted_event.reccur_until and timezone.localtime(most_upvoted_event.reccur_until)) or most_upvoted_event.reccur_until,
                         'description': JSONRenderer().render(GoogleEventSerializer(gevent).data)
                     }
                     event_data = cls.create_event_from_dict(event_data)
+                    event_data['sequence'] = gevent.revision
                     calendar_user = get_user_model().objects.get(email=settings.EMAIL_OF_USER_WITH_CALENDARS)
                     # TODO: remove. for testing only as we won't share the primary calendar
                     if calendar_id == settings.EMAIL_OF_USER_WITH_CALENDARS:
                         calendar_id = 'primary'
-                    event_data['sequence'] = gevent.revision + 1
-                    gevent.revision = gevent.revision + 1
-                    gevent.save()
                     response = GoogleApiInterface.put_event_to_calendar(user=calendar_user, calendar_id=calendar_id, event_id=gevent.gid, event=event_data)
                     if response.status_code == status.HTTP_200_OK:
                         newEventData = json_to_dict(response.json())
@@ -215,11 +221,9 @@ class ApiInterface(object):
             'summary': title,
             'start': {
                 time_key: start.strftime(time_format),
-                #  'timeZone': str(start.tzinfo)
             },
             'end': {
                 time_key: end.strftime(time_format),
-                #  'timeZone': str(start.tzinfo)
             },
         }
 

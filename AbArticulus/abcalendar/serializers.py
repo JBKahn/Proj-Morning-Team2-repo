@@ -1,6 +1,16 @@
 from rest_framework import serializers
 
+from django.utils import timezone
+
 from abcalendar.models import Vote, Comment, Tag, Event, GoogleEvent
+
+
+class DateTimeTzAwareField(serializers.DateTimeField):
+
+    def to_native(self, value):
+        if value:
+            value = timezone.localtime(value)
+        return super(DateTimeTzAwareField, self).to_native(value)
 
 
 class VoteSerializer(serializers.ModelSerializer):
@@ -12,7 +22,7 @@ class VoteSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    user = serializers.RelatedField(read_only=True)
 
     class Meta:
         model = Comment
@@ -27,6 +37,9 @@ class TagSerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
     votes = VoteSerializer(many=True)
+    start = DateTimeTzAwareField()
+    end = DateTimeTzAwareField()
+    reccur_until = DateTimeTzAwareField()
 
     class Meta:
         model = Event
