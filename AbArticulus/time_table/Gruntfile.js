@@ -25,7 +25,6 @@ module.exports = function(grunt) {
                     appConfig.path.bowerPath + "jquery/dist/jquery.min.js",
                     appConfig.path.bowerPath + "jquery-ui/jquery-ui.js",
                     appConfig.path.appPath + "js/fullcalendar.old.js",
-                    // appConfig.path.bowerPath + "fullcalendar/fullcalendar.js",
                     appConfig.path.bowerPath + 'angular/angular.js',
                     appConfig.path.bowerPath + 'angular-route/angular-route.js',
                     appConfig.path.bowerPath + "bootstrap/dist/js/bootstrap.min.js",
