@@ -198,6 +198,7 @@ class ApiInterface(object):
                         'recur_until': (most_upvoted_event.reccur_until and timezone.localtime(most_upvoted_event.reccur_until)) or most_upvoted_event.reccur_until,
                         'description': JSONRenderer().render(GoogleEventSerializer(gevent).data)
                     }
+                    event_data['title'] = '{}: {} {}'.format(calendar_object.name, tag_object.tag_type.capitalize(), tag_object.number)
                     event_data = cls.create_event_from_dict(event_data)
                     event_data['sequence'] = gevent.revision
                     calendar_user = get_user_model().objects.get(email=settings.EMAIL_OF_USER_WITH_CALENDARS)

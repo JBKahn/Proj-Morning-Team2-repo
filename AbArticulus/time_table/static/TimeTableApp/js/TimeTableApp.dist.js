@@ -68000,7 +68000,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                         'startDay': moment(eventData.start).format("YYYY/MM/DD"),
                         'endDay': moment(eventData.end).format("YYYY/MM/DD"),
                         'startTime': moment(eventData.start).format("h:mma"),
-                        'endTime': moment(eventData.end).add('hours', 1).format("h:mma"),
+                        'endTime': moment(eventData.end).format("h:mma"),
                         'allDay': eventData.allDay,
                         'tagType':(hasJsonDescription && eventData.description.tag  && (eventData.description.tag.tag_type.charAt(0).toUpperCase() + eventData.description.tag.tag_type.slice(1).toLowerCase())) || '',
                         'tagNumber':hasJsonDescription && eventData.description.tag && eventData.description.tag.number || 0
@@ -68097,7 +68097,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         }
         // Check if missing data
         for (var i = 0; i < fields.length; i++) {
-            if (!eventData[fields[i]]) {
+            if (eventData[fields[i]] === '') {
                 if ((fields[i] === 'startDate' && (!eventData.startDay || !eventData.startTime)) || (fields[i] === 'endDate' && (!eventData.endDay || !eventData.endTime))) {
                     if (!eventData.startDay) {
                         $scope.modalData.eventData.errors.startDay = 'Start Date is required';
@@ -68178,7 +68178,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         }
 
         var promise;
-        if (eventData.id === undefined || calendar.isAppCalendar) {
+        if (eventData.id === undefined || eventData.calendar.isAppCalendar) {
             promise = EventService.addEvent(eventData.calendar.id, eventData.title, validate.startDate, validate.endDate, eventData.allDay, eventData.tagType || '', eventData.tagNumber);
         } else {
             promise = EventService.updateEvent(eventData.calendar.id, eventData.id, eventData.sequence, eventData.title, validate.startDate, validate.endDate, eventData.allDay);
