@@ -67867,7 +67867,7 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
     };
 
     $scope.$watch('modalData.calendarData', function(newValue, oldValue) {
-        $scope.validateForm()
+        $scope.validateForm();
     }, true);
 
     $scope.validateForm = function() {
@@ -67949,7 +67949,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
 
 
     $scope.$watch('modalData.eventData', function(newValue, oldValue) {
-        $scope.validateForm()
+        $scope.validateForm();
     }, true);
 
     $scope.shouldShowField = function(field) {
@@ -68114,14 +68114,14 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                     errors.push('missing ' + fields[i]);
                 } else {
                     if (['startDate', 'endDate', 'comments', 'alternateTimes', 'allDay'].indexOf(fields[i]) === -1) {
-                        $scope.modalData.eventData.errors[fields[i]] = fields[i] + ' is required'
+                        $scope.modalData.eventData.errors[fields[i]] = fields[i] + ' is required';
                         errors.push('missing ' + fields[i]);
                     }
                 }
             }
         }
 
-        if ((fields.indexOf('tagNumber') > -1 ) && isNaN(parseInt(eventData.tagNumber))) {
+        if ((fields.indexOf('tagNumber') > -1 ) && eventData.tagNumber !== '' && isNaN(parseInt(eventData.tagNumber))) {
             $scope.modalData.eventData.errors.tagNumber = 'Tag Number must be a number';
             errors.push('tagNumber is not an number');
         }

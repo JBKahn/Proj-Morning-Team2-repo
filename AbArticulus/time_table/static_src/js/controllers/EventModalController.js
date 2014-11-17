@@ -196,7 +196,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
             }
         }
 
-        if ((fields.indexOf('tagNumber') > -1 ) && isNaN(parseInt(eventData.tagNumber))) {
+        if ((fields.indexOf('tagNumber') > -1 ) && eventData.tagNumber !== '' && isNaN(parseInt(eventData.tagNumber))) {
             $scope.modalData.eventData.errors.tagNumber = 'Tag Number must be a number';
             errors.push('tagNumber is not an number');
         }
