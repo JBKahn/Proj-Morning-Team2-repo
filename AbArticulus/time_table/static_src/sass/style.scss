@@ -121,3 +121,16 @@ md-sidenav {
 .calendar-container {
   width: 100%;
 }
+
+md-content.md-default-theme md-input-group.md-default-theme label.error {
+  color:red;
+  transform: translate3d(0,4px,0) scale(0.75);
+}
+
+label.error {
+  color:red;
+}
+
+md-content.md-default-theme md-input-group input[haserrors="true"] {
+  border-color: red;
+}

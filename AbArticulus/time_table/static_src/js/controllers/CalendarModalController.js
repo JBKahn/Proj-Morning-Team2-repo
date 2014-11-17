@@ -11,7 +11,8 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
             'calendars': [],
             'usersCalendars': usersAppCalendars,
             calendarData: {
-                'title': '',
+                'title': '',    
+                'errors': {}
             }
         };
         CalendarService.getCalendars().then(function (data) {
@@ -28,21 +29,28 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
         });
     };
 
+    $scope.$watch('modalData.calendarData', function(newValue, oldValue) {
+        $scope.validateForm();
+    }, true);
+
     $scope.validateForm = function() {
         var calendarData = $scope.modalData.calendarData;
         var errors = [];
+        $scope.modalData.calendarData.errors = {};
         if (!calendarData.title) {
-            errors.push('title is required');
+            $scope.modalData.calendarData.errors.title = 'title is required';
         } else {
             var validCourse = calendarData.title.match("^([A-Z]{3})[0-9]{3}(H|Y)1 (F|S|Y) (LEC|TUT)-[0-9]{4}$");
             if (!validCourse) {
-                errors.push('invalid course format');
+                $scope.modalData.calendarData.errors.title = 'invalid course format';
             }
         }
         return {
             'errors': errors
         };
     };
+
+
 
     $scope.addCalendar = function() {
         var calendarData = $scope.modalData.calendarData;

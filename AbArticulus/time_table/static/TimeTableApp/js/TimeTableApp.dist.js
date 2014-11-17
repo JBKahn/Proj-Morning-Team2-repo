@@ -65103,7 +65103,7 @@ angular.module('material.components.tabs', [
 angular.module('material.components.textField', ['material.core', 'material.services.theming'])
        .directive('mdInputGroup', [ mdInputGroupDirective ])
        .directive('mdInput', ['$mdUtil', mdInputDirective ])
-       .directive('mdTextFloat', [ '$mdTheming', '$mdUtil', mdTextFloatDirective ]);
+       .directive('mdTextFloat', [ '$mdTheming', '$mdUtil', '$parse', mdTextFloatDirective ]);
 
 
 
@@ -65133,7 +65133,7 @@ angular.module('material.components.textField', ['material.core', 'material.serv
  * <md-text-float label="eMail"    ng-model="user.email" type="email" ></md-text-float>
  * </hljs>
  */
-function mdTextFloatDirective($mdTheming, $mdUtil) {
+function mdTextFloatDirective($mdTheming, $mdUtil, $parse) {
   return {
     restrict: 'E',
     replace: true,
@@ -65151,9 +65151,25 @@ function mdTextFloatDirective($mdTheming, $mdUtil) {
       return {
         pre : function(scope, element, attrs) {
           // transpose `disabled` flag
-          if ( angular.isDefined(attrs.disabled) ) {
-            element.attr('disabled', true);
-            scope.isDisabled = true;
+          // if ( angular.isDefined(attrs.disabled) ) {
+          //   element.attr('disabled', true);
+          //   scope.isDisabled = true;
+          // }
+          var disabledParsed = $parse(
+            angular.isDefined(attrs.disabled) ?  'true' : attrs.ngDisabled
+          );
+          scope.isDisabled = function() {
+            return disabledParsed(scope.$parent);
+          }
+
+
+          scope.hasErrors = function() {
+            if ((angular.isDefined(attrs.haserrors) && attrs.haserrors) || false) {
+              scope.errors = attrs.haserrors;
+              return true;
+            }
+            scope.errors = false;
+            return false;
           }
 
           scope.inputType = attrs.type || "text";
@@ -65167,9 +65183,10 @@ function mdTextFloatDirective($mdTheming, $mdUtil) {
       };
     },
     template:
-    '<md-input-group ng-disabled="isDisabled" tabindex="-1">' +
+    '<md-input-group errors="{{hasErrors()}}" tabindex="-1">' +
     ' <label for="{{fid}}" >{{label}}</label>' +
-    ' <md-input id="{{fid}}" ng-model="value" type="{{inputType}}"></md-input>' +
+    ' <md-input id="{{fid}}" ng-disabled="isDisabled()" ng-model="value" type="{{inputType}}"></md-input>' +
+    ' <label ng-if="hasErrors()" class="error" for="{{fid}}" >{{errors}}</label>' +
     '</md-input-group>'
   };
 }
@@ -65244,11 +65261,21 @@ function mdInputDirective($mdUtil) {
       }
 
       // scan for disabled and transpose the `type` value to the <input> element
-      var isDisabled = $mdUtil.isParentDisabled(element);
+      // var isDisabled = $mdUtil.isParentDisabled(element);
 
-      element.attr('tabindex', isDisabled ? -1 : 0 );
-      element.attr('aria-disabled', isDisabled ? 'true' : 'false');
-      element.attr('type', attr.type || element.parent().attr('type') || "text" );
+      // element.attr('tabindex', isDisabled ? -1 : 0 );
+      // element.attr('aria-disabled', isDisabled ? 'true' : 'false');
+      // element.attr('type', attr.type || element.parent().attr('type') || "text" );
+
+      scope.$watch(scope.isDisabled, function(isDisabled) {
+        element.attr('aria-disabled', !!isDisabled);
+        element.attr('tabindex', !!isDisabled);
+      });
+      element.attr('type', attr.type || element.parent().attr('type') || "text");
+
+      scope.$watch(scope.hasErrors, function(hasErrors) {
+        element.attr('hasErrors', !!hasErrors);
+      });
 
       // When the input value changes, check if it "has" a value, and
       // set the appropriate class on the input group
@@ -67569,7 +67596,7 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "\n" +
     "        <h3>Add a Calendar</h3>\n" +
     "        <form>\n" +
-    "            <md-text-float label=\"Course\" ng-model=\"modalData.calendarData.title\" templateUrl=\"templates/typeaheadMdInput.html\" ng-attr-courses=\"{{modalData.calendars}}\"> </md-text-float>\n" +
+    "            <md-text-float label=\"Course e.g. CSC301H1 S LEC-0101\" hasErrors=\"{{modalData.calendarData.errors.title}}\" ng-model=\"modalData.calendarData.title\" templateUrl=\"templates/typeaheadMdInput.html\" ng-attr-courses=\"{{modalData.calendars}}\"> </md-text-float>\n" +
     "        </form>\n" +
     "    </md-content>\n" +
     "    <div class=\"md-actions modal-buttons\">\n" +
@@ -67586,8 +67613,8 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "        <h2>{{ modalData.modalTitle }}</h2>\n" +
     "        <form>\n" +
     "            <div class=\"row radio-label\" ng-show=\"shouldShowField('calendar') || shouldShowField('tagType')\">\n" +
-    "                <label ng-show=\"shouldShowField('calendar')\">Calendar</label>\n" +
-    "                <label ng-show=\"shouldShowField('tagType')\">Event Type</label>\n" +
+    "                <label ng-show=\"shouldShowField('calendar')\" ng-class=\"{error: modalData.eventData.errors.calendar}\">Calendar</label>\n" +
+    "                <label ng-show=\"shouldShowField('tagType')\" ng-class=\"{error: modalData.eventData.errors.tagType}\">Event Type</label>\n" +
     "            </div>\n" +
     "            <div class=\"row\">\n" +
     "                <md-radio-group ng-model=\"modalData.eventData.calendar\" ng-show=\"shouldShowField('calendar')\" ng-change=\"selectCalendar()\">\n" +
@@ -67601,15 +67628,15 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "                    </md-radio-button>\n" +
     "                </md-radio-group>\n" +
     "            </div>\n" +
-    "            <md-text-float label=\"Type Number\" ng-show=\"shouldShowField('tagNumber')\" ng-model=\"modalData.eventData.tagNumber\"> </md-text-float>\n" +
-    "            <md-text-float label=\"Event Title\" ng-show=\"shouldShowField('title')\" ng-model=\"modalData.eventData.title\"> </md-text-float>\n" +
+    "            <md-text-float label=\"Type Number\" hasErrors=\"{{modalData.eventData.errors.tagNumber}}\" ng-show=\"shouldShowField('tagNumber')\" ng-model=\"modalData.eventData.tagNumber\"> </md-text-float>\n" +
+    "            <md-text-float label=\"Event Title\" hasErrors=\"{{modalData.eventData.errors.title}}\" ng-show=\"shouldShowField('title')\" ng-model=\"modalData.eventData.title\"> </md-text-float>\n" +
     "            <div class=\"row\">\n" +
-    "                <md-text-float label=\"Start Date\" ng-show=\"shouldShowField('startDate')\" ng-model=\"modalData.eventData.startDay\"> </md-text-float>\n" +
-    "                <md-text-float label=\"Start Time\" ng-show=\"shouldShowField('startTime')\" ng-model=\"modalData.eventData.startTime\"> </md-text-float>\n" +
+    "                <md-text-float label=\"Start Date\" hasErrors=\"{{modalData.eventData.errors.startDay}}\" ng-show=\"shouldShowField('startDate')\" ng-model=\"modalData.eventData.startDay\"> </md-text-float>\n" +
+    "                <md-text-float label=\"Start Time\" hasErrors=\"{{modalData.eventData.errors.startTime}}\" ng-show=\"shouldShowField('startTime')\" ng-model=\"modalData.eventData.startTime\"> </md-text-float>\n" +
     "            </div>\n" +
     "            <div class=\"row\">\n" +
-    "                <md-text-float label=\"End Date\" ng-show=\"shouldShowField('endDate')\" ng-model=\"modalData.eventData.endDay\"> </md-text-float>\n" +
-    "                <md-text-float label=\"End Time\" ng-show=\"shouldShowField('endTime')\" ng-model=\"modalData.eventData.endTime\"> </md-text-float>\n" +
+    "                <md-text-float label=\"End Date\" hasErrors=\"{{modalData.eventData.errors.endDay}}\" ng-show=\"shouldShowField('endDate')\" ng-model=\"modalData.eventData.endDay\"> </md-text-float>\n" +
+    "                <md-text-float label=\"End Time\" hasErrors=\"{{modalData.eventData.errors.endTime}}\" ng-show=\"shouldShowField('endTime')\" ng-model=\"modalData.eventData.endTime\"> </md-text-float>\n" +
     "            </div>\n" +
     "            <md-switch aria-label=\"allDay\" ng-show=\"shouldShowField('allDay')\" ng-model=\"modalData.eventData.allDay\">\n" +
     "                All day event\n" +
@@ -67821,7 +67848,8 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
             'calendars': [],
             'usersCalendars': usersAppCalendars,
             calendarData: {
-                'title': '',
+                'title': '',    
+                'errors': {}
             }
         };
         CalendarService.getCalendars().then(function (data) {
@@ -67838,21 +67866,28 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
         });
     };
 
+    $scope.$watch('modalData.calendarData', function(newValue, oldValue) {
+        $scope.validateForm()
+    }, true);
+
     $scope.validateForm = function() {
         var calendarData = $scope.modalData.calendarData;
         var errors = [];
+        $scope.modalData.calendarData.errors = {};
         if (!calendarData.title) {
-            errors.push('title is required');
+            $scope.modalData.calendarData.errors.title = 'title is required';
         } else {
             var validCourse = calendarData.title.match("^([A-Z]{3})[0-9]{3}(H|Y)1 (F|S|Y) (LEC|TUT)-[0-9]{4}$");
             if (!validCourse) {
-                errors.push('invalid course format');
+                $scope.modalData.calendarData.errors.title = 'invalid course format';
             }
         }
         return {
             'errors': errors
         };
     };
+
+
 
     $scope.addCalendar = function() {
         var calendarData = $scope.modalData.calendarData;
@@ -67912,6 +67947,11 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         return '';
     };
 
+
+    $scope.$watch('modalData.eventData', function(newValue, oldValue) {
+        $scope.validateForm()
+    }, true);
+
     $scope.shouldShowField = function(field) {
         if ($scope.modalData.isUserEvent) {
             return $scope.modalData.userEventFields.indexOf(field) > -1;
@@ -67953,6 +67993,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                     'calendars': [calendar],
                     'tagTypes': (hasJsonDescription && eventData.description.tag && [(eventData.description.tag.tag_type.charAt(0).toUpperCase() + eventData.description.tag.tag_type.slice(1).toLowerCase())]) || [],
                     eventData: {
+                        'errors': {},
                         'calendar': calendar,
                         'id': eventData.id,
                         'sequence': eventData.sequence,
@@ -67975,12 +68016,13 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                         'isUserEvent': true,
                         'calendars': [calendar],
                         eventData: {
+                            'errors': {},
                             'calendar': calendar,
                             'id': eventData.id,
                             'sequence': eventData.sequence,
                             'title': eventData.title,
                             'startDay': moment(eventData.start).format("YYYY/MM/DD"),
-                            'endDay': moment(eventData.end).format("YYYY/MM/DD"),
+                            'endDay': moment(eventData.end).add('hours', 1).format("YYYY/MM/DD"),
                             'startTime': moment(eventData.start).format("h:mma"),
                             'endTime': moment(eventData.end).add('hours', 1).format("h:mma"),
                             'allDay': eventData.allDay,
@@ -67995,6 +68037,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                         'isUserEvent': true,
                         'calendars': [calendar],
                         eventData: {
+                            'errors': {},
                             'calendar': calendar,
                             'id': eventData.id,
                             'sequence': eventData.sequence,
@@ -68027,9 +68070,10 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                 'disabledEventFields': [],
                 'isUserEvent': false,
                 eventData: {
+                    'errors': {},
                     'title': '',
                     'startDay': moment(eventData.start).format("YYYY/MM/DD"),
-                    'endDay': moment(eventData.end).format("YYYY/MM/DD"),
+                    'endDay': moment(eventData.end).add('hours', 1).format("YYYY/MM/DD"),
                     'startTime': moment().format("h:mma"),
                     'endTime': moment().add('hours', 1).format("h:mma"),
                     'allDay': false,
@@ -68045,6 +68089,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         var eventData = $scope.modalData.eventData;
         var fields;
         var errors = [];
+        $scope.modalData.eventData.errors = {};
         if ($scope.modalData.isUserEvent) {
             fields = $scope.modalData.userEventFields;
         } else {
@@ -68054,38 +68099,53 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         for (var i = 0; i < fields.length; i++) {
             if (!eventData[fields[i]]) {
                 if ((fields[i] === 'startDate' && (!eventData.startDay || !eventData.startTime)) || (fields[i] === 'endDate' && (!eventData.endDay || !eventData.endTime))) {
+                    if (!eventData.startDay) {
+                        $scope.modalData.eventData.errors.startDay = 'Start Date is required';
+                    }
+                    if (!eventData.startTime) {
+                        $scope.modalData.eventData.errors.startTime = 'Start Time is required';
+                    }
+                    if (!eventData.endDay) {
+                        $scope.modalData.eventData.errors.endDay = 'End Date is required';
+                    }
+                    if (!eventData.endTime) {
+                        $scope.modalData.eventData.errors.endTime = 'End Time is required';
+                    }
                     errors.push('missing ' + fields[i]);
                 } else {
                     if (['startDate', 'endDate', 'comments', 'alternateTimes', 'allDay'].indexOf(fields[i]) === -1) {
+                        $scope.modalData.eventData.errors[fields[i]] = fields[i] + ' is required'
                         errors.push('missing ' + fields[i]);
                     }
                 }
             }
         }
-        if (errors.length > 0) {
-            return {
-                'errors': errors,
-            };
-        }
+
         if ((fields.indexOf('tagNumber') > -1 ) && isNaN(parseInt(eventData.tagNumber))) {
+            $scope.modalData.eventData.errors.tagNumber = 'Tag Number must be a number';
             errors.push('tagNumber is not an number');
         }
-        if (!moment(eventData.startDay, 'YYYY/MM/DD').isValid()) {
+        if (eventData.startDay && !moment(eventData.startDay, 'YYYY/MM/DD').isValid() || !eventData.startDay.match("^[0-9]{4}\/[0-9]{2}\/[0-9]{2}$")) {
+            $scope.modalData.eventData.errors.startDay = 'Start Date must be proper date';
             errors.push('startDate is not correctly formated');
         }
-        if (!moment(eventData.endDay, 'YYYY/MM/DD').isValid()) {
+        if (eventData.endDay && !moment(eventData.endDay, 'YYYY/MM/DD').isValid() || !eventData.endDay.match("^[0-9]{4}\/[0-9]{2}\/[0-9]{2}$")) {
+            $scope.modalData.eventData.errors.endDay = 'End Date must be proper date';
             errors.push('endDate is not correctly formated');
         }
-        if (moment(eventData.endDay, 'YYYY/MM/DD') < moment(eventData.startDay, 'YYYY/MM/DD')) {
+        if (eventData.startDay && eventData.endDay && moment(eventData.endDay, 'YYYY/MM/DD') < moment(eventData.startDay, 'YYYY/MM/DD')) {
             errors.push('endDate is before start date');
+            $scope.modalData.eventData.errors.endDay = 'End Date must be after start date';
         }
         var startTime = eventData.startTime.match("^([0-9]{1,2}):([0-9]{2})(am|pm)$");
         if (!eventData.allDay && !startTime || parseInt(startTime[1]) > 12 || parseInt(startTime[2]) > 60) {
             errors.push('start time format wrong');
+            $scope.modalData.eventData.errors.startTime = 'Start Time must be a valid time';
         }
         var endTime = eventData.endTime.match("^([0-9]{1,2}):([0-9]{2})(am|pm)$");
         if (!eventData.allDay && !endTime || parseInt(endTime[1]) > 12 || parseInt(endTime[2]) > 60) {
             errors.push('end time format wrong');
+            $scope.modalData.eventData.errors.endTime = 'End Time must be a valid time';
         }
         if (startTime && endTime) {
             var startHour = parseInt(startTime[1]),
@@ -68094,11 +68154,12 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                 endMinutes = parseInt(endTime[2]);
             if (
                 !eventData.allDay && endTime && startTime &&
-                (moment(eventData.endDay).format('YYYY/MM/DD') !==  moment(eventData.startDay).format('YYYY/MM/DD')) &&
-                (((endTime[3] === startTime[3]) && ((endHour < startHour) || ((endHour === startHour) && (endMinutes < startMinutes)))) ||
+                (moment(eventData.endDay).format('YYYY/MM/DD') ===  moment(eventData.startDay).format('YYYY/MM/DD')) &&
+                (((endTime[3] === startTime[3]) && ((endHour < startHour) || ((endHour === startHour) && (endMinutes <= startMinutes)))) ||
                 (endTime[3] === 'am') && (startTime[3] === 'pm'))) {
 
                 errors.push('start time is before end time on the same date');
+                $scope.modalData.eventData.errors.endDay = 'End Time must be after start time';
             }
         }
         return {

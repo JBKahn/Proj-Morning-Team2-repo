@@ -3,8 +3,8 @@
         <h2>{{ modalData.modalTitle }}</h2>
         <form>
             <div class="row radio-label" ng-show="shouldShowField('calendar') || shouldShowField('tagType')">
-                <label ng-show="shouldShowField('calendar')">Calendar</label>
-                <label ng-show="shouldShowField('tagType')">Event Type</label>
+                <label ng-show="shouldShowField('calendar')" ng-class="{error: modalData.eventData.errors.calendar}">Calendar</label>
+                <label ng-show="shouldShowField('tagType')" ng-class="{error: modalData.eventData.errors.tagType}">Event Type</label>
             </div>
             <div class="row">
                 <md-radio-group ng-model="modalData.eventData.calendar" ng-show="shouldShowField('calendar')" ng-change="selectCalendar()">
@@ -18,15 +18,15 @@
                     </md-radio-button>
                 </md-radio-group>
             </div>
-            <md-text-float label="Type Number" ng-show="shouldShowField('tagNumber')" ng-model="modalData.eventData.tagNumber"> </md-text-float>
-            <md-text-float label="Event Title" ng-show="shouldShowField('title')" ng-model="modalData.eventData.title"> </md-text-float>
+            <md-text-float label="Type Number" hasErrors="{{modalData.eventData.errors.tagNumber}}" ng-show="shouldShowField('tagNumber')" ng-model="modalData.eventData.tagNumber"> </md-text-float>
+            <md-text-float label="Event Title" hasErrors="{{modalData.eventData.errors.title}}" ng-show="shouldShowField('title')" ng-model="modalData.eventData.title"> </md-text-float>
             <div class="row">
-                <md-text-float label="Start Date" ng-show="shouldShowField('startDate')" ng-model="modalData.eventData.startDay"> </md-text-float>
-                <md-text-float label="Start Time" ng-show="shouldShowField('startTime')" ng-model="modalData.eventData.startTime"> </md-text-float>
+                <md-text-float label="Start Date" hasErrors="{{modalData.eventData.errors.startDay}}" ng-show="shouldShowField('startDate')" ng-model="modalData.eventData.startDay"> </md-text-float>
+                <md-text-float label="Start Time" hasErrors="{{modalData.eventData.errors.startTime}}" ng-show="shouldShowField('startTime')" ng-model="modalData.eventData.startTime"> </md-text-float>
             </div>
             <div class="row">
-                <md-text-float label="End Date" ng-show="shouldShowField('endDate')" ng-model="modalData.eventData.endDay"> </md-text-float>
-                <md-text-float label="End Time" ng-show="shouldShowField('endTime')" ng-model="modalData.eventData.endTime"> </md-text-float>
+                <md-text-float label="End Date" hasErrors="{{modalData.eventData.errors.endDay}}" ng-show="shouldShowField('endDate')" ng-model="modalData.eventData.endDay"> </md-text-float>
+                <md-text-float label="End Time" hasErrors="{{modalData.eventData.errors.endTime}}" ng-show="shouldShowField('endTime')" ng-model="modalData.eventData.endTime"> </md-text-float>
             </div>
             <md-switch aria-label="allDay" ng-show="shouldShowField('allDay')" ng-model="modalData.eventData.allDay">
                 All day event

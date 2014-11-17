@@ -22,6 +22,11 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         return '';
     };
 
+
+    $scope.$watch('modalData.eventData', function(newValue, oldValue) {
+        $scope.validateForm();
+    }, true);
+
     $scope.shouldShowField = function(field) {
         if ($scope.modalData.isUserEvent) {
             return $scope.modalData.userEventFields.indexOf(field) > -1;
@@ -63,6 +68,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                     'calendars': [calendar],
                     'tagTypes': (hasJsonDescription && eventData.description.tag && [(eventData.description.tag.tag_type.charAt(0).toUpperCase() + eventData.description.tag.tag_type.slice(1).toLowerCase())]) || [],
                     eventData: {
+                        'errors': {},
                         'calendar': calendar,
                         'id': eventData.id,
                         'sequence': eventData.sequence,
@@ -85,12 +91,13 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                         'isUserEvent': true,
                         'calendars': [calendar],
                         eventData: {
+                            'errors': {},
                             'calendar': calendar,
                             'id': eventData.id,
                             'sequence': eventData.sequence,
                             'title': eventData.title,
                             'startDay': moment(eventData.start).format("YYYY/MM/DD"),
-                            'endDay': moment(eventData.end).format("YYYY/MM/DD"),
+                            'endDay': moment(eventData.end).add('hours', 1).format("YYYY/MM/DD"),
                             'startTime': moment(eventData.start).format("h:mma"),
                             'endTime': moment(eventData.end).add('hours', 1).format("h:mma"),
                             'allDay': eventData.allDay,
@@ -105,6 +112,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                         'isUserEvent': true,
                         'calendars': [calendar],
                         eventData: {
+                            'errors': {},
                             'calendar': calendar,
                             'id': eventData.id,
                             'sequence': eventData.sequence,
@@ -137,9 +145,10 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                 'disabledEventFields': [],
                 'isUserEvent': false,
                 eventData: {
+                    'errors': {},
                     'title': '',
                     'startDay': moment(eventData.start).format("YYYY/MM/DD"),
-                    'endDay': moment(eventData.end).format("YYYY/MM/DD"),
+                    'endDay': moment(eventData.end).add('hours', 1).format("YYYY/MM/DD"),
                     'startTime': moment().format("h:mma"),
                     'endTime': moment().add('hours', 1).format("h:mma"),
                     'allDay': false,
@@ -155,6 +164,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         var eventData = $scope.modalData.eventData;
         var fields;
         var errors = [];
+        $scope.modalData.eventData.errors = {};
         if ($scope.modalData.isUserEvent) {
             fields = $scope.modalData.userEventFields;
         } else {
@@ -164,38 +174,53 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         for (var i = 0; i < fields.length; i++) {
             if (!eventData[fields[i]]) {
                 if ((fields[i] === 'startDate' && (!eventData.startDay || !eventData.startTime)) || (fields[i] === 'endDate' && (!eventData.endDay || !eventData.endTime))) {
+                    if (!eventData.startDay) {
+                        $scope.modalData.eventData.errors.startDay = 'Start Date is required';
+                    }
+                    if (!eventData.startTime) {
+                        $scope.modalData.eventData.errors.startTime = 'Start Time is required';
+                    }
+                    if (!eventData.endDay) {
+                        $scope.modalData.eventData.errors.endDay = 'End Date is required';
+                    }
+                    if (!eventData.endTime) {
+                        $scope.modalData.eventData.errors.endTime = 'End Time is required';
+                    }
                     errors.push('missing ' + fields[i]);
                 } else {
                     if (['startDate', 'endDate', 'comments', 'alternateTimes', 'allDay'].indexOf(fields[i]) === -1) {
+                        $scope.modalData.eventData.errors[fields[i]] = fields[i] + ' is required';
                         errors.push('missing ' + fields[i]);
                     }
                 }
             }
         }
-        if (errors.length > 0) {
-            return {
-                'errors': errors,
-            };
-        }
+
         if ((fields.indexOf('tagNumber') > -1 ) && isNaN(parseInt(eventData.tagNumber))) {
+            $scope.modalData.eventData.errors.tagNumber = 'Tag Number must be a number';
             errors.push('tagNumber is not an number');
         }
-        if (!moment(eventData.startDay, 'YYYY/MM/DD').isValid()) {
+        if (eventData.startDay && !moment(eventData.startDay, 'YYYY/MM/DD').isValid() || !eventData.startDay.match("^[0-9]{4}\/[0-9]{2}\/[0-9]{2}$")) {
+            $scope.modalData.eventData.errors.startDay = 'Start Date must be proper date';
             errors.push('startDate is not correctly formated');
         }
-        if (!moment(eventData.endDay, 'YYYY/MM/DD').isValid()) {
+        if (eventData.endDay && !moment(eventData.endDay, 'YYYY/MM/DD').isValid() || !eventData.endDay.match("^[0-9]{4}\/[0-9]{2}\/[0-9]{2}$")) {
+            $scope.modalData.eventData.errors.endDay = 'End Date must be proper date';
             errors.push('endDate is not correctly formated');
         }
-        if (moment(eventData.endDay, 'YYYY/MM/DD') < moment(eventData.startDay, 'YYYY/MM/DD')) {
+        if (eventData.startDay && eventData.endDay && moment(eventData.endDay, 'YYYY/MM/DD') < moment(eventData.startDay, 'YYYY/MM/DD')) {
             errors.push('endDate is before start date');
+            $scope.modalData.eventData.errors.endDay = 'End Date must be after start date';
         }
         var startTime = eventData.startTime.match("^([0-9]{1,2}):([0-9]{2})(am|pm)$");
         if (!eventData.allDay && !startTime || parseInt(startTime[1]) > 12 || parseInt(startTime[2]) > 60) {
             errors.push('start time format wrong');
+            $scope.modalData.eventData.errors.startTime = 'Start Time must be a valid time';
         }
         var endTime = eventData.endTime.match("^([0-9]{1,2}):([0-9]{2})(am|pm)$");
         if (!eventData.allDay && !endTime || parseInt(endTime[1]) > 12 || parseInt(endTime[2]) > 60) {
             errors.push('end time format wrong');
+            $scope.modalData.eventData.errors.endTime = 'End Time must be a valid time';
         }
         if (startTime && endTime) {
             var startHour = parseInt(startTime[1]),
@@ -204,11 +229,12 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                 endMinutes = parseInt(endTime[2]);
             if (
                 !eventData.allDay && endTime && startTime &&
-                (moment(eventData.endDay).format('YYYY/MM/DD') !==  moment(eventData.startDay).format('YYYY/MM/DD')) &&
-                (((endTime[3] === startTime[3]) && ((endHour < startHour) || ((endHour === startHour) && (endMinutes < startMinutes)))) ||
+                (moment(eventData.endDay).format('YYYY/MM/DD') ===  moment(eventData.startDay).format('YYYY/MM/DD')) &&
+                (((endTime[3] === startTime[3]) && ((endHour < startHour) || ((endHour === startHour) && (endMinutes <= startMinutes)))) ||
                 (endTime[3] === 'am') && (startTime[3] === 'pm'))) {
 
                 errors.push('start time is before end time on the same date');
+                $scope.modalData.eventData.errors.endDay = 'End Time must be after start time';
             }
         }
         return {
