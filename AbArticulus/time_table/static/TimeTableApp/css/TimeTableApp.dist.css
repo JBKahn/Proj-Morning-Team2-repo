@@ -696,7 +696,13 @@ md-toolbar#toolbar {
   md-toolbar#toolbar .username {
     float: right; }
 
-md-sidenav md-button {
-  height: 35px; }
+md-sidenav {
+  min-width: 20%;
+  max-width: 310px; }
+  md-sidenav md-button {
+    height: 35px; }
+
+.calendar-container {
+  width: 100%; }
 
 /*# sourceMappingURL=app.css.map */

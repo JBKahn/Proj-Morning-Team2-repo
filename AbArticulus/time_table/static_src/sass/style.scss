@@ -110,6 +110,14 @@ md-toolbar#toolbar {
   }
 }
 
-md-sidenav md-button {
-  height: 35px;
+md-sidenav {
+  min-width: 20%;
+  max-width: 310px;
+  md-button {
+    height: 35px;
+  }
+}
+
+.calendar-container {
+  width: 100%;
 }

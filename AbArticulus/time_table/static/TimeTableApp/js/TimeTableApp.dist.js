@@ -67539,7 +67539,8 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "                </md-content>\n" +
     "\n" +
     "            </md-sidenav>\n" +
-    "            <div class=\"container\">\n" +
+    "\n" +
+    "            <div class=\"calendar-container\">\n" +
     "                <md-whiteframe class=\"md-whiteframe-z2\" layout layout-align=\"center center\">\n" +
     "                    <div class=\"calendar\" ng-model=\"calCtrl.CalendarData.eventSources\" ui-calendar=\"calCtrl.eventData.uiConfig.calendar\" calendar=\"myCalendar1\" config=\"calCtrl.eventData.uiConfig.calendar\"></div>\n" +
     "                </md-whiteframe>\n" +
@@ -67566,7 +67567,7 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "            </md-item>\n" +
     "        </md-list>\n" +
     "\n" +
-    "        <h3>Add a Calendars</h3>\n" +
+    "        <h3>Add a Calendar</h3>\n" +
     "        <form>\n" +
     "            <md-text-float label=\"Course\" ng-model=\"modalData.calendarData.title\" templateUrl=\"templates/typeaheadMdInput.html\" ng-attr-courses=\"{{modalData.calendars}}\"> </md-text-float>\n" +
     "        </form>\n" +
@@ -67843,7 +67844,7 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
         if (!calendarData.title) {
             errors.push('title is required');
         } else {
-            var validCourse = calendarData.title.match("^([A-Z]{3})[0-9]{3}(H|Y)1 (F|S|Y) (LEC|TUT)-[0-9]{4}$")
+            var validCourse = calendarData.title.match("^([A-Z]{3})[0-9]{3}(H|Y)1 (F|S|Y) (LEC|TUT)-[0-9]{4}$");
             if (!validCourse) {
                 errors.push('invalid course format');
             }
@@ -68235,7 +68236,7 @@ angular.module("timeTable.controllers.calendar", [])
                     }
                 }
             });
-    }
+    };
 
     $scope.dayClick = function(date, allDay, jsEvent, view) {
         var event = {
@@ -68318,5 +68319,5 @@ angular.module("timeTable.controllers.calendar", [])
             // Clicked Cancel on Modal; Do Nothing
         });
     };
-    $scope.init()
+    $scope.init();
 }]);
