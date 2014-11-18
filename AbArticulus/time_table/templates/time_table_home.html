@@ -18,8 +18,10 @@
 <script>
     // Bootstrap Django data for angular
     window.jsBootstrap = {};
+    window.jsBootstrap.calendarListUrl = "{% url "time_table:calendar_list_create" %}";
     window.jsBootstrap.eventListUrl = "{% url "time_table:event_create" %}";
     window.jsBootstrap.eventUpdateUrl = "{% url "time_table:event_access" event_id=0 %}";
+    window.jsBootstrap.tagTypes = [{% for type in tag_types %}"{{type}}",{% endfor %}];
     window.jsBootstrap.staticUrl = "{% static "" %}";
 </script>
 {% endblock %}

@@ -18,20 +18,23 @@ angular.module("timeTable.service.eventService", [])
             return defer.promise;
         },
 
-        addEvent: function(title, startDate, endDate, allDay){
+        addEvent: function(calendar, title, startDate, endDate, allDay, tagType, tagNumber){
             var url = Constants.get('eventListUrl');
             var params = {
+                calendar: calendar,
                 title: title,
                 start: startDate,
                 end: endDate,
-                all_day: allDay
+                all_day: allDay,
+                tag_type: tagType.toUpperCase(),
+                number: tagNumber
             };
 
             var defer = $q.defer();
 
             $http({method: "POST", url: url, data: params})
             .success(function(result){
-                defer.resolve(result);
+                defer.resolve(result, 1);
             })
             .error(function(error){
                 defer.reject(error);
@@ -40,9 +43,10 @@ angular.module("timeTable.service.eventService", [])
             return defer.promise;
         },
 
-        updateEvent: function(id, sequence, title, startDate, endDate, allDay){
+        updateEvent: function(calendar, id, sequence, title, startDate, endDate, allDay){
             var url = Constants.get('eventUpdateUrl').replace(/\/0\//, "/" + id + "/");
             var params = {
+                calendar: calendar,
                 id: id,
                 sequence: sequence + 1,
                 title: title,
@@ -55,7 +59,7 @@ angular.module("timeTable.service.eventService", [])
 
             $http({method: "PUT", url: url, data: params})
             .success(function(result){
-                defer.resolve(result);
+                defer.resolve(result, 1);
             })
             .error(function(error){
                 defer.reject(error);

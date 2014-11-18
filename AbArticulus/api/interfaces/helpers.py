@@ -1,13 +1,18 @@
 import json
-import requests
 from datetime import datetime
 
-from abcalendar.models import Event, Tag, Organization
+import requests
+from rest_framework import status
+from social.apps.django_app.utils import load_strategy
+
+from django.conf import settings
 
 
 def get_google_api_endpoint_url(api_name, **kwargs):
     if api_name == 'calendarList':
         return 'https://www.googleapis.com/calendar/v3/users/me/calendarList'
+    if api_name == 'calendars':
+        return 'https://www.googleapis.com/calendar/v3/calendars'
     if api_name == 'events':
         if kwargs.get('calendar_id') is None:
             raise ValueError('Calendar id was not passed in.')
@@ -16,44 +21,62 @@ def get_google_api_endpoint_url(api_name, **kwargs):
         else:
             event_info = ''
         return 'https://www.googleapis.com/calendar/v3/calendars/{}/events{}'.format(kwargs.get('calendar_id'), event_info)
+    if api_name == 'acl':
+        if kwargs.get('calendar_id') is None:
+            raise ValueError('Calendar id was not passed in.')
+        return 'https://www.googleapis.com/calendar/v3/calendars/{}/acl'.format(kwargs.get('calendar_id'))
     raise ValueError('request api endpoint not defined.')
 
 
 def make_request(user, url, params=None, method="GET", data=None):
-    # Default params will pass other params if we need more.
-    if params is None:
-        social = user.social_auth.get(provider='google-oauth2')
-        params = {'access_token': social.extra_data['access_token']}
-    if method == "GET":
-        response = requests.get(
-            url=url,
-            params=params
-        )
-    elif method == "DELETE":
-        response = requests.delete(
-            url=url,
-            params=params
-        )
-    elif method == "POST":
-        response = requests.post(
-            url=url,
-            data=json.dumps(data),
-            params=params,
-            headers={"Content-Type": "application/json"}
-        )
-    elif method == "PUT":
-        response = requests.put(
-            url=url,
-            data=json.dumps(data),
-            params=params,
-            headers={"Content-Type": "application/json"}
-        )
-    else:
-        raise ValueError("Only GET, DELETE, POST, and PUT are supported.")
+    retries = 2
+    response = None
+    while retries > 0 and (response is None or response.status_code != 200):
+        if response is not None and response.status_code == status.HTTP_401_UNAUTHORIZED:
+            # Our access token is likely the issue. We can use the refrest token to reauthorize ourselves.
+            social = user.social_auth.get(provider='google-oauth2')
+            strategy = load_strategy(response)
+            social.refresh_token(strategy=strategy)
+        # Default params will pass other params if we need more.
+        if params is None:
+            social = user.social_auth.get(provider='google-oauth2')
+            params = {'access_token': social.extra_data['access_token']}
+        if method == "GET":
+            response = requests.get(
+                url=url,
+                params=params
+            )
+        elif method == "DELETE":
+            response = requests.delete(
+                url=url,
+                params=params
+            )
+        elif method == "POST":
+            response = requests.post(
+                url=url,
+                data=json.dumps(data),
+                params=params,
+                headers={"Content-Type": "application/json"}
+            )
+        elif method == "PUT":
+            response = requests.put(
+                url=url,
+                data=json.dumps(data),
+                params=params,
+                headers={"Content-Type": "application/json"}
+            )
+        else:
+            raise ValueError("Only GET, DELETE, POST, and PUT are supported.")
+        retries = retries - 1
+
     return response
 
 
 def json_to_dict(event):
+    try:
+        description = json.loads(event.get('description'))
+    except Exception:
+        description = event.get('description')
     return {
         'end': event.get('end') and (event.get('end').get('dateTime') or (datetime.strptime(event.get('end').get('date'), "%Y-%m-%d").isoformat())),
         'start': event.get('start') and (event.get('start').get('dateTime') or (datetime.strptime(event.get('start').get('date'), "%Y-%m-%d").isoformat())),
@@ -61,17 +84,6 @@ def json_to_dict(event):
         'title': event.get('summary'),
         'id': event.get('id'),
         'sequence': event.get('sequence'),
+        'description': description,
+        'isAppEvent': event.get('creator', {}).get('email') == settings.EMAIL_OF_USER_WITH_CALENDARS
     }
-
-
-def handle_models_for_event_creation(organization_name, tag_type, gevent_id, user):
-    if not Organization.objects.filter(name=organization_name).exists():
-        organization = Organization.objects.create(name=organization_name, user=user)
-    else:
-        organization = Organization.objects.get(name=organization_name)
-    tag, _ = Tag.objects.get_or_create(tag_type=tag_type, organization=organization)
-    Event.objects.create(gevent_id=gevent_id, tag=tag, user=user)
-
-
-def handle_models_for_event_delete(gevent_id):
-    Event.objects.get(gevent_id=gevent_id).delete()

@@ -1,0 +1,25 @@
+<md-dialog aria-label="Event Modal">
+    <md-content id="CreateCalendarModal">
+        <h2>{{ modalData.modalTitle }}</h2>
+
+        <h3>Existing Calendars</h3>
+        <md-list>
+            <md-item ng-repeat="calendar in modalData.usersCalendars">
+                <md-item-content>
+                    <div class="md-tile-content">
+                        <h3>{{calendar}}</h3>
+                    </div>
+                </md-item-content>
+            </md-item>
+        </md-list>
+
+        <h3>Add a Calendar</h3>
+        <form>
+            <md-text-float label="Course e.g. CSC301H1 S LEC-0101" hasErrors="{{modalData.calendarData.errors.title}}" ng-model="modalData.calendarData.title" templateUrl="templates/typeaheadMdInput.html" ng-attr-courses="{{modalData.calendars}}"> </md-text-float>
+        </form>
+    </md-content>
+    <div class="md-actions modal-buttons">
+        <md-button ng-disabled="isSaveDisabled()" ng-click="save()">Save</md-button>
+        <md-button ng-click="cancel()">Cancel</md-button>
+    </div>
+</md-dialog>

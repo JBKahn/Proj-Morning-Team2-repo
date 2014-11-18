@@ -3,7 +3,9 @@ from social.exceptions import InvalidEmail
 
 from django.shortcuts import redirect
 
-from authentication.forms import UoftEmailForm
+from abcalendar.models import Calendar
+from api.interfaces.api_interface import ApiInterface
+from authentication.forms import UoftEmailForm, UoftCourseForm
 
 
 @partial
@@ -34,3 +36,21 @@ def uoft_email_validation(backend, details, is_new=False, *args, **kwargs):
             return backend.strategy.redirect(
                 backend.strategy.setting('EMAIL_VALIDATION_URL')
             )
+
+
+@partial
+def require_courses(strategy, details, user=None, is_new=False, *args, **kwargs):
+    if kwargs.get('ajax') or user and user.calendars.count() > 0:
+        return
+    elif is_new and user.calendars.count() == 0:
+        courses = strategy.request_data().get('courses')
+        form = UoftCourseForm({'courses': courses})
+
+        if courses and form.is_valid():
+            for course in courses.split(','):
+                calendar = Calendar(name=course)
+                calendar_data = ApiInterface.add_calendar(title=course)
+                Calendar.id = calendar_data.get('id')
+                calendar.save()
+        else:
+            return redirect('authentication:require_courses')
