@@ -35,6 +35,7 @@ INSTALLED_APPS = (
     'time_table',
     'api',
     'abcalendar',
+    'rosi_parse',
 )
 
 MIDDLEWARE_CLASSES = (
