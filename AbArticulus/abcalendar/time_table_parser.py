@@ -84,6 +84,8 @@ def parse_course_offerings(course_link):
     while row < total_rows:
 
         course_code_out, course_info_out, is_cancelled = get_course_information(table_rows[row])
+    
+        #print course_code_out, course_info_out, is_cancelled
 
         if not is_cancelled:
             course_offering_and_info[course_code_out].append(course_info_out)
@@ -151,7 +153,7 @@ def get_course_information(tr):
         else:
             course_info_report.append('')
 
-    cancelled_schedules = len(course_info) >= 5 and (course_info[4] == 'Cancel')
+    cancelled_schedules = len(course_info) >= 5 and ('CANCEL' in course_info[4].upper())
 
     return course_code, course_info_report, cancelled_schedules
 
@@ -167,7 +169,8 @@ def get_seminar_information(tr, course_semester):
         else:
             course_info_report.append('')
 
-    cancelled = len(course_info) >= 4 and (course_info[3] == 'Cancel')
+    cancelled = len(course_info) >= 4 and ('CANCEL' in course_info[3].upper())
+
 
     return course_info_report, cancelled
 
