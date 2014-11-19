@@ -51,7 +51,7 @@ class ApiInterface(object):
     def get_events_from_calendar(cls, user, calendar_id):
         response = GoogleApiInterface.get_events_from_calendar(user, calendar_id)
         if response.status_code != status.HTTP_200_OK:
-            raise UnexpectedResponseError(response.status_code)
+            raise UnexpectedResponseError(response.json())
         formated_events = []
         for item in response.json().get('items'):
             if item.get('status') != u'cancelled':

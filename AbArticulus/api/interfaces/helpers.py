@@ -38,7 +38,7 @@ def make_request(user, url, params=None, method="GET", data=None):
             social = user.social_auth.get(provider='google-oauth2')
             strategy = load_strategy(response)
             social.refresh_token(strategy=strategy)
-            sleep(2)
+            sleep(0.5)
         # Default params will pass other params if we need more.
         if params is None:
             social = user.social_auth.get(provider='google-oauth2')
