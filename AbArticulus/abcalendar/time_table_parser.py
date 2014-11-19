@@ -84,8 +84,6 @@ def parse_course_offerings(course_link):
     while row < total_rows:
 
         course_code_out, course_info_out, is_cancelled = get_course_information(table_rows[row])
-    
-        #print course_code_out, course_info_out, is_cancelled
 
         if not is_cancelled:
             course_offering_and_info[course_code_out].append(course_info_out)
