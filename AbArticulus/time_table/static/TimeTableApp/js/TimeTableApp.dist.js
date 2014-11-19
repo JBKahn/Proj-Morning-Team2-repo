@@ -62502,6 +62502,9 @@ function MdButtonDirective(ngHrefDirectives, $mdInkRipple, $mdAria, $mdUtil, $md
         $mdTheming(element);
         $mdAria.expect(element, 'aria-label', element.text());
         $mdInkRipple.attachButtonBehavior(element);
+        scope.$watch(attr.ngDisabled, function(isDisabled) {
+          element.attr('tabindex', isDisabled ? -1 : 0);
+        });
       };
     }
   };
@@ -62657,6 +62660,12 @@ function MdCheckboxDirective(inputDirectives, $mdInkRipple, $mdAria, $mdConstant
 
       $mdAria.expect(tElement, 'aria-label', true);
 
+      scope.$watch(attr.ngDisabled, function(isDisabled) {
+        debugger;
+        element.attr('aria-disabled', !!isDisabled);
+        element.attr('tabindex', isDisabled ? -1 : 0);
+      })
+
       // Reuse the original input[type=checkbox] directive from Angular core.
       // This is a bit hacky as we need our own event listener and own render
       // function.
@@ -62676,7 +62685,7 @@ function MdCheckboxDirective(inputDirectives, $mdInkRipple, $mdAria, $mdConstant
         }
       }
       function listener(ev) {
-        if (element[0].hasAttribute('disabled')) return;
+        if (element[0].hasAttribute('disabled') || element[0].getAttribute('aria-disabled') === 'true') return;
 
         scope.$apply(function() {
           checked = !checked;
@@ -67618,27 +67627,27 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "            </div>\n" +
     "            <div class=\"row\">\n" +
     "                <md-radio-group ng-model=\"modalData.eventData.calendar\" ng-show=\"shouldShowField('calendar')\" ng-change=\"selectCalendar()\">\n" +
-    "                    <md-radio-button ng-repeat=\"calendar in modalData.calendars\" ng-value=\"calendar\" aria-label=\"{{ calendar.name }}\">\n" +
+    "                    <md-radio-button ng-disabled=\"shouldDisabledField('calendar')\" ng-repeat=\"calendar in modalData.calendars\" ng-value=\"calendar\" aria-label=\"{{ calendar.name }}\">\n" +
     "                        {{ calendar.name }}\n" +
     "                    </md-radio-button>\n" +
     "                </md-radio-group>\n" +
     "                <md-radio-group ng-model=\"modalData.eventData.tagType\" ng-show=\"shouldShowField('tagType')\">\n" +
-    "                    <md-radio-button ng-repeat=\"tag in modalData.tagTypes\" ng-value=\"tag\" aria-label=\"{{ tag }}\">\n" +
+    "                    <md-radio-button ng-disabled=\"shouldDisabledField('tagType')\" ng-repeat=\"tag in modalData.tagTypes\" ng-value=\"tag\" aria-label=\"{{ tag }}\">\n" +
     "                        {{ tag }}\n" +
     "                    </md-radio-button>\n" +
     "                </md-radio-group>\n" +
     "            </div>\n" +
-    "            <md-text-float label=\"Type Number\" hasErrors=\"{{modalData.eventData.errors.tagNumber}}\" ng-show=\"shouldShowField('tagNumber')\" ng-model=\"modalData.eventData.tagNumber\"> </md-text-float>\n" +
-    "            <md-text-float label=\"Event Title\" hasErrors=\"{{modalData.eventData.errors.title}}\" ng-show=\"shouldShowField('title')\" ng-model=\"modalData.eventData.title\"> </md-text-float>\n" +
+    "            <md-text-float label=\"Type Number\" ng-disabled=\"shouldDisabledField('tagNumber')\" hasErrors=\"{{modalData.eventData.errors.tagNumber}}\" ng-show=\"shouldShowField('tagNumber')\" ng-model=\"modalData.eventData.tagNumber\"> </md-text-float>\n" +
+    "            <md-text-float label=\"Event Title\" ng-disabled=\"shouldDisabledField('title')\" hasErrors=\"{{modalData.eventData.errors.title}}\" ng-show=\"shouldShowField('title')\" ng-model=\"modalData.eventData.title\"> </md-text-float>\n" +
     "            <div class=\"row\">\n" +
-    "                <md-text-float label=\"Start Date\" hasErrors=\"{{modalData.eventData.errors.startDay}}\" ng-show=\"shouldShowField('startDate')\" ng-model=\"modalData.eventData.startDay\"> </md-text-float>\n" +
-    "                <md-text-float label=\"Start Time\" hasErrors=\"{{modalData.eventData.errors.startTime}}\" ng-show=\"shouldShowField('startTime')\" ng-model=\"modalData.eventData.startTime\"> </md-text-float>\n" +
+    "                <md-text-float label=\"Start Date\" ng-disabled=\"shouldDisabledField('startDay')\" hasErrors=\"{{modalData.eventData.errors.startDay}}\" ng-show=\"shouldShowField('startDate')\" ng-model=\"modalData.eventData.startDay\"> </md-text-float>\n" +
+    "                <md-text-float label=\"Start Time\" ng-disabled=\"shouldDisabledField('startTime')\" hasErrors=\"{{modalData.eventData.errors.startTime}}\" ng-show=\"shouldShowField('startTime')\" ng-model=\"modalData.eventData.startTime\"> </md-text-float>\n" +
     "            </div>\n" +
     "            <div class=\"row\">\n" +
-    "                <md-text-float label=\"End Date\" hasErrors=\"{{modalData.eventData.errors.endDay}}\" ng-show=\"shouldShowField('endDate')\" ng-model=\"modalData.eventData.endDay\"> </md-text-float>\n" +
-    "                <md-text-float label=\"End Time\" hasErrors=\"{{modalData.eventData.errors.endTime}}\" ng-show=\"shouldShowField('endTime')\" ng-model=\"modalData.eventData.endTime\"> </md-text-float>\n" +
+    "                <md-text-float label=\"End Date\" ng-disabled=\"shouldDisabledField('endDay')\" hasErrors=\"{{modalData.eventData.errors.endDay}}\" ng-show=\"shouldShowField('endDate')\" ng-model=\"modalData.eventData.endDay\"> </md-text-float>\n" +
+    "                <md-text-float label=\"End Time\" ng-disabled=\"shouldDisabledField('endTime')\" hasErrors=\"{{modalData.eventData.errors.endTime}}\" ng-show=\"shouldShowField('endTime')\" ng-model=\"modalData.eventData.endTime\"> </md-text-float>\n" +
     "            </div>\n" +
-    "            <md-switch aria-label=\"allDay\" ng-show=\"shouldShowField('allDay')\" ng-model=\"modalData.eventData.allDay\">\n" +
+    "            <md-switch aria-label=\"allDay\" ng-disabled=\"shouldDisabledField('allDay')\" ng-show=\"shouldShowField('allDay')\" ng-model=\"modalData.eventData.allDay\">\n" +
     "                All day event\n" +
     "            </md-switch>\n" +
     "        </form>\n" +
@@ -67648,10 +67657,10 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "        <p ng-show=\"shouldShowField('comments')\">{{ modalData.comments }}</p>\n" +
     "    </md-content>\n" +
     "    <div class=\"md-actions modal-buttons\">\n" +
-    "        <md-button ng-disabled=\"isSaveDisabled()\" ng-click=\"save()\">Save</md-button>\n" +
+    "        <md-button ng-disabled=\"isSaveDisabled()\" ng-click=\"save()\" ng-if=\"!(modalData.eventData.calendar.isAppCalendar && !modalData.eventChanged)\">{{ modalData.saveButtonText }}</md-button>\n" +
     "        <md-button ng-click=\"cancel()\">Cancel</md-button>\n" +
     "    </div>\n" +
-    "</md-dialog>"
+    "</md-dialog>\n"
   );
 
 
@@ -67950,6 +67959,9 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
 
     $scope.$watch('modalData.eventData', function(newValue, oldValue) {
         $scope.validateForm();
+        if (newValue != oldValue) {
+            $scope.modalData.eventChanged = true;
+        };
     }, true);
 
     $scope.shouldShowField = function(field) {
@@ -67969,7 +67981,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
     };
 
     $scope.isSaveDisabled = function() {
-        return !($scope.modalData.eventData.calendar && (!$scope.modalData.eventData.calendar.isAppCalendar || !$scope.modalData.eventData.calendar.canEditEvents));
+        return !($scope.modalData.eventData.calendar && (!$scope.modalData.eventData.calendar.isAppCalendar || !$scope.modalData.eventData.calendar.canEditEvents)) && $scope.validateForm().errors.length > 0;
     };
 
     $scope.init = function() {
@@ -67981,9 +67993,10 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
             userEventFields = ['calendar', 'id', 'title', 'sequence', 'startDate', 'endDate', 'startTime', 'endTime', 'allDay'];
             var calendar = $scope.getCalendarOption(calendars, eventData.calendar.id),
                 hasJsonDescription = (Object(eventData.description) === eventData.description);
-            if (calendar.isAppCalendar) {
+            if (calendar.isAppCalendar && !eventData.isreccuring) {
                 $scope.modalData = {
-                    'modalTitle': "Edit Event",
+                    'modalTitle': "Vote or Suggest a New Date and Time",
+                    'saveButtonText': 'Suggest New Date',
                     'appEventFields': appEventFields,
                     'userEventFields': userEventFields,
                     'disabledEventFields': ['calendar', 'id', 'tagType', 'tagNumber'],
@@ -67992,6 +68005,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                     'comments': (hasJsonDescription && eventData.description.comments) || '',
                     'calendars': [calendar],
                     'tagTypes': (hasJsonDescription && eventData.description.tag && [(eventData.description.tag.tag_type.charAt(0).toUpperCase() + eventData.description.tag.tag_type.slice(1).toLowerCase())]) || [],
+                    'eventChanged': false,
                     eventData: {
                         'errors': {},
                         'calendar': calendar,
@@ -68007,8 +68021,9 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                     }
                 };
             } else {
-                if (eventData.canEditEvents) {
+                if (eventData.canEditEvents && !eventData.isReccuring) {
                     $scope.modalData = {
+                        'saveButtonText': 'Save Changes',
                         'modalTitle': "Edit Event",
                         'appEventFields': appEventFields,
                         'userEventFields': userEventFields,
@@ -68030,7 +68045,8 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                     };
                 } else {
                     $scope.modalData = {
-                        'modalTitle': "Edit Event",
+                        'saveButtonText': '',
+                        'modalTitle': "View Event",
                         'appEventFields': appEventFields,
                         'userEventFields': userEventFields,
                         'disabledEventFields': ['title', 'startDay', 'endDay', 'startTime', 'endTime', 'allDay', 'calendar'],
@@ -68062,6 +68078,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
             appEventFields = ['calendar', 'tagType', 'tagNumber', 'startDate', 'endDate', 'startTime', 'endTime', 'allDay'];
             userEventFields = ['calendar', 'title', 'startDate', 'endDate', 'startTime', 'endTime', 'allDay'];
             $scope.modalData = {
+                'saveButtonText': 'Add Event',
                 'modalTitle': "Create Event",
                 'calendars': eligableCreationCalendars,
                 'tagTypes': Constants.get('tagTypes'),
@@ -68086,6 +68103,11 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
     };
 
     $scope.validateForm = function() {
+        if (!$scope.modalData) {
+            return {
+                'errors': ['modal data is not defined']
+            }
+        }
         var eventData = $scope.modalData.eventData;
         var fields;
         var errors = [];

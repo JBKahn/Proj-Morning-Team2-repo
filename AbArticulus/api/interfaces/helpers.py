@@ -85,5 +85,6 @@ def json_to_dict(event):
         'id': event.get('id'),
         'sequence': event.get('sequence'),
         'description': description,
-        'isAppEvent': event.get('creator', {}).get('email') == settings.EMAIL_OF_USER_WITH_CALENDARS
+        'isAppEvent': event.get('creator', {}).get('email') == settings.EMAIL_OF_USER_WITH_CALENDARS,
+        'isReccuring': event.get('recurringEventId') is not None
     }
