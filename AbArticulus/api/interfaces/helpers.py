@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from time import sleep
 
 import requests
 from rest_framework import status
@@ -29,7 +30,7 @@ def get_google_api_endpoint_url(api_name, **kwargs):
 
 
 def make_request(user, url, params=None, method="GET", data=None):
-    retries = 2
+    retries = 3
     response = None
     while retries > 0 and (response is None or response.status_code != 200):
         if response is not None and response.status_code == status.HTTP_401_UNAUTHORIZED:
@@ -37,6 +38,7 @@ def make_request(user, url, params=None, method="GET", data=None):
             social = user.social_auth.get(provider='google-oauth2')
             strategy = load_strategy(response)
             social.refresh_token(strategy=strategy)
+            sleep(2)
         # Default params will pass other params if we need more.
         if params is None:
             social = user.social_auth.get(provider='google-oauth2')

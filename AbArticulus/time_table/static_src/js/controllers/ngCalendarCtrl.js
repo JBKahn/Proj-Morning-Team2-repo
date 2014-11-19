@@ -61,7 +61,7 @@ angular.module("timeTable.controllers.calendar", [])
             .then(function (data) {
                 var sourceNames = Object.keys(data);
                 //TODO: Add more before merging.
-                var eventColors = ['#E8860C', '#FF0000', '#7C0CE8', '#0D88FF', '#0DFFF9', '#92FF25', '#A8A8FF'];
+                var eventColors = ['#BA68C8', '#F06292', '#4DB6AC', '#DCE775', '#FFD54F', '#81C784', '#4FC3F7', '#FF8A65', '#A1887F', '#4DD0E1', '#AED581', '#7986CB', '#E57373', '#64B5F6', '#9575CD'];
                 for (var i = 0; i < sourceNames.length; i++) {
                     var source = sourceNames[i];
                     self.sources.push({
