@@ -1452,7 +1452,6 @@ function MdCheckboxDirective(inputDirectives, $mdInkRipple, $mdAria, $mdConstant
       $mdAria.expect(tElement, 'aria-label', true);
 
       scope.$watch(attr.ngDisabled, function(isDisabled) {
-        debugger;
         element.attr('aria-disabled', !!isDisabled);
         element.attr('tabindex', isDisabled ? -1 : 0);
       })
