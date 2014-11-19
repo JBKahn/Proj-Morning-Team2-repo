@@ -62661,7 +62661,6 @@ function MdCheckboxDirective(inputDirectives, $mdInkRipple, $mdAria, $mdConstant
       $mdAria.expect(tElement, 'aria-label', true);
 
       scope.$watch(attr.ngDisabled, function(isDisabled) {
-        debugger;
         element.attr('aria-disabled', !!isDisabled);
         element.attr('tabindex', isDisabled ? -1 : 0);
       })
@@ -67961,7 +67960,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         $scope.validateForm();
         if (newValue != oldValue) {
             $scope.modalData.eventChanged = true;
-        };
+        }
     }, true);
 
     $scope.shouldShowField = function(field) {
@@ -68106,7 +68105,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         if (!$scope.modalData) {
             return {
                 'errors': ['modal data is not defined']
-            }
+            };
         }
         var eventData = $scope.modalData.eventData;
         var fields;
