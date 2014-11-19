@@ -171,14 +171,3 @@ def get_seminar_information(tr, course_semester):
 
 
     return course_info_report, cancelled
-
-
-def get_lecture_info(course_list):
-    ''' Returns a tuple containing information about a course (course_title, time, location, instructor). '''
-    course_desc = course_list[1]
-    course_section = course_list[2]
-    course_time = course_list[3]
-    course_loc = course_list[4]
-    course_instructor = course_list[5]
-
-    return course_desc, course_section, course_time, course_loc, course_instructor

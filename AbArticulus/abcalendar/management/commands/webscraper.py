@@ -5,7 +5,7 @@ from string import ascii_letters
 
 from django.core.management.base import BaseCommand
 
-from abcalendar.time_table_parser import University_of_Toronto_Timetable, get_lecture_info
+from abcalendar.time_table_parser import University_of_Toronto_Timetable
 from api.interfaces.api_interface import ApiInterface
 from authentication.models import CustomUser
 
@@ -25,9 +25,9 @@ class Command(BaseCommand):
             # for each course, create a tag object
             for lecture in course_info:
 
-                # returns course_desc, course_section, course_time, course_loc, course_instructor
+                # returns sec_code, course_desc, meeting_sec, course_time, course_loc, instructor
                 # Michelle: this doesn't always work.
-                course_desc, course_sec, course_time, course_loc, instructor = get_lecture_info(lecture)
+                sec_code, course_desc, meeting_sec, course_time, course_loc, instructor = lecture
                 course_title = course + " : " + course_desc
                 lecture_times = self.convert_lecture_time_codes(course_time)
 
