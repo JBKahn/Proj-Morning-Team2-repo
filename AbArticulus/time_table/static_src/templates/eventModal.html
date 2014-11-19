@@ -8,27 +8,27 @@
             </div>
             <div class="row">
                 <md-radio-group ng-model="modalData.eventData.calendar" ng-show="shouldShowField('calendar')" ng-change="selectCalendar()">
-                    <md-radio-button ng-repeat="calendar in modalData.calendars" ng-value="calendar" aria-label="{{ calendar.name }}">
+                    <md-radio-button ng-disabled="shouldDisabledField('calendar')" ng-repeat="calendar in modalData.calendars" ng-value="calendar" aria-label="{{ calendar.name }}">
                         {{ calendar.name }}
                     </md-radio-button>
                 </md-radio-group>
                 <md-radio-group ng-model="modalData.eventData.tagType" ng-show="shouldShowField('tagType')">
-                    <md-radio-button ng-repeat="tag in modalData.tagTypes" ng-value="tag" aria-label="{{ tag }}">
+                    <md-radio-button ng-disabled="shouldDisabledField('tagType')" ng-repeat="tag in modalData.tagTypes" ng-value="tag" aria-label="{{ tag }}">
                         {{ tag }}
                     </md-radio-button>
                 </md-radio-group>
             </div>
-            <md-text-float label="Type Number" hasErrors="{{modalData.eventData.errors.tagNumber}}" ng-show="shouldShowField('tagNumber')" ng-model="modalData.eventData.tagNumber"> </md-text-float>
-            <md-text-float label="Event Title" hasErrors="{{modalData.eventData.errors.title}}" ng-show="shouldShowField('title')" ng-model="modalData.eventData.title"> </md-text-float>
+            <md-text-float label="Type Number" ng-disabled="shouldDisabledField('tagNumber')" hasErrors="{{modalData.eventData.errors.tagNumber}}" ng-show="shouldShowField('tagNumber')" ng-model="modalData.eventData.tagNumber"> </md-text-float>
+            <md-text-float label="Event Title" ng-disabled="shouldDisabledField('title')" hasErrors="{{modalData.eventData.errors.title}}" ng-show="shouldShowField('title')" ng-model="modalData.eventData.title"> </md-text-float>
             <div class="row">
-                <md-text-float label="Start Date" hasErrors="{{modalData.eventData.errors.startDay}}" ng-show="shouldShowField('startDate')" ng-model="modalData.eventData.startDay"> </md-text-float>
-                <md-text-float label="Start Time" hasErrors="{{modalData.eventData.errors.startTime}}" ng-show="shouldShowField('startTime')" ng-model="modalData.eventData.startTime"> </md-text-float>
+                <md-text-float label="Start Date" ng-disabled="shouldDisabledField('startDay')" hasErrors="{{modalData.eventData.errors.startDay}}" ng-show="shouldShowField('startDate')" ng-model="modalData.eventData.startDay"> </md-text-float>
+                <md-text-float label="Start Time" ng-disabled="shouldDisabledField('startTime')" hasErrors="{{modalData.eventData.errors.startTime}}" ng-show="shouldShowField('startTime')" ng-model="modalData.eventData.startTime"> </md-text-float>
             </div>
             <div class="row">
-                <md-text-float label="End Date" hasErrors="{{modalData.eventData.errors.endDay}}" ng-show="shouldShowField('endDate')" ng-model="modalData.eventData.endDay"> </md-text-float>
-                <md-text-float label="End Time" hasErrors="{{modalData.eventData.errors.endTime}}" ng-show="shouldShowField('endTime')" ng-model="modalData.eventData.endTime"> </md-text-float>
+                <md-text-float label="End Date" ng-disabled="shouldDisabledField('endDay')" hasErrors="{{modalData.eventData.errors.endDay}}" ng-show="shouldShowField('endDate')" ng-model="modalData.eventData.endDay"> </md-text-float>
+                <md-text-float label="End Time" ng-disabled="shouldDisabledField('endTime')" hasErrors="{{modalData.eventData.errors.endTime}}" ng-show="shouldShowField('endTime')" ng-model="modalData.eventData.endTime"> </md-text-float>
             </div>
-            <md-switch aria-label="allDay" ng-show="shouldShowField('allDay')" ng-model="modalData.eventData.allDay">
+            <md-switch aria-label="allDay" ng-disabled="shouldDisabledField('allDay')" ng-show="shouldShowField('allDay')" ng-model="modalData.eventData.allDay">
                 All day event
             </md-switch>
         </form>
@@ -38,7 +38,7 @@
         <p ng-show="shouldShowField('comments')">{{ modalData.comments }}</p>
     </md-content>
     <div class="md-actions modal-buttons">
-        <md-button ng-disabled="isSaveDisabled()" ng-click="save()">Save</md-button>
+        <md-button ng-disabled="isSaveDisabled()" ng-click="save()" ng-if="!(modalData.eventData.calendar.isAppCalendar && !modalData.eventChanged)">{{ modalData.saveButtonText }}</md-button>
         <md-button ng-click="cancel()">Cancel</md-button>
     </div>
 </md-dialog>

@@ -1293,6 +1293,9 @@ function MdButtonDirective(ngHrefDirectives, $mdInkRipple, $mdAria, $mdUtil, $md
         $mdTheming(element);
         $mdAria.expect(element, 'aria-label', element.text());
         $mdInkRipple.attachButtonBehavior(element);
+        scope.$watch(attr.ngDisabled, function(isDisabled) {
+          element.attr('tabindex', isDisabled ? -1 : 0);
+        });
       };
     }
   };
@@ -1448,6 +1451,12 @@ function MdCheckboxDirective(inputDirectives, $mdInkRipple, $mdAria, $mdConstant
 
       $mdAria.expect(tElement, 'aria-label', true);
 
+      scope.$watch(attr.ngDisabled, function(isDisabled) {
+        debugger;
+        element.attr('aria-disabled', !!isDisabled);
+        element.attr('tabindex', isDisabled ? -1 : 0);
+      })
+
       // Reuse the original input[type=checkbox] directive from Angular core.
       // This is a bit hacky as we need our own event listener and own render
       // function.
@@ -1467,7 +1476,7 @@ function MdCheckboxDirective(inputDirectives, $mdInkRipple, $mdAria, $mdConstant
         }
       }
       function listener(ev) {
-        if (element[0].hasAttribute('disabled')) return;
+        if (element[0].hasAttribute('disabled') || element[0].getAttribute('aria-disabled') === 'true') return;
 
         scope.$apply(function() {
           checked = !checked;
