@@ -32,10 +32,37 @@
                 All day event
             </md-switch>
         </form>
-        <p ng-show="shouldShowField('alternateTimes')">events</p>
-        <p ng-show="shouldShowField('alternateTimes')">{{ modalData.alternateTimes }}</p>
-        <p ng-show="shouldShowField('comments')">comments</p>
-        <p ng-show="shouldShowField('comments')">{{ modalData.comments }}</p>
+
+        <md-list ng-show="shouldShowField('alternateTimes')">
+            <h4>Other Suggested Times</h4>
+            <md-item ng-repeat="item in modalData.alternateTimes">
+                <md-item-content>
+                    <div class="md-tile-left">
+                        <section layout="row" layout-phone="column" layout-align="center center">
+                            <md-button ng-click="voteOnAlternative(item, 1)" ng-disabled="item.userVote === 1" class="md-raised md-primary">+</md-button>
+                            <md-button ng-click="voteOnAlternative(item, -1)" ng-disabled="item.userVote === -1" class="md-raised md-warn">-</md-button>
+                        </section>
+                    </div>
+                    <div class="md-tile-content">
+                        <h3>Start: {{item.startFormatted}}</h3>
+                        <h3>End: {{item.endFormatted}}</h3>
+                        <h3>Votes: {{item.voteTotal}}</h3>
+                    </div>
+                </md-item-content>
+          </md-item>
+        </md-list>
+
+        <md-list ng-show="shouldShowField('comments')">
+            <h4>Comments</h4>
+            <md-item ng-repeat="item in modalData.comments">
+                <md-item-content>
+                    <div class="md-tile-content">
+                        <h3>"{{item.comment}}"</h3>
+                        <h4>-{{item.user}}</h4>
+                    </div>
+                </md-item-content>
+          </md-item>
+        </md-list>
     </md-content>
     <div class="md-actions modal-buttons">
         <md-button ng-disabled="isSaveDisabled()" ng-click="save()" ng-if="!(modalData.eventData.calendar.isAppCalendar && !modalData.eventChanged)">{{ modalData.saveButtonText }}</md-button>

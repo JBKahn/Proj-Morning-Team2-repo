@@ -39,6 +39,13 @@
 
 #createEventModal {
     max-width: 500px;
+    .md-tile-left {
+        height: 30px;
+        md-button {
+            margin: 0 5px;
+            width: 25px;
+        }
+    }
 }
 
 #createEventModal form {
