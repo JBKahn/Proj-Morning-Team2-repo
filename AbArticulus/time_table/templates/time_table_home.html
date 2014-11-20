@@ -14,7 +14,6 @@
 {% endblock main_content %}
 
 {% block extra_javascript %}
-
 <script>
     // Bootstrap Django data for angular
     window.jsBootstrap = {};
@@ -23,5 +22,6 @@
     window.jsBootstrap.eventUpdateUrl = "{% url "time_table:event_access" event_id=0 %}";
     window.jsBootstrap.tagTypes = [{% for type in tag_types %}"{{type}}",{% endfor %}];
     window.jsBootstrap.staticUrl = "{% static "" %}";
+    window.jsBootstrap.userId = "{{ user.id }}";
 </script>
 {% endblock %}

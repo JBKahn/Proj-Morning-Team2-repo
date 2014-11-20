@@ -67650,10 +67650,37 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "                All day event\n" +
     "            </md-switch>\n" +
     "        </form>\n" +
-    "        <p ng-show=\"shouldShowField('alternateTimes')\">events</p>\n" +
-    "        <p ng-show=\"shouldShowField('alternateTimes')\">{{ modalData.alternateTimes }}</p>\n" +
-    "        <p ng-show=\"shouldShowField('comments')\">comments</p>\n" +
-    "        <p ng-show=\"shouldShowField('comments')\">{{ modalData.comments }}</p>\n" +
+    "\n" +
+    "        <md-list ng-show=\"shouldShowField('alternateTimes')\">\n" +
+    "            <h4>Other Suggested Times</h4>\n" +
+    "            <md-item ng-repeat=\"item in modalData.alternateTimes\">\n" +
+    "                <md-item-content>\n" +
+    "                    <div class=\"md-tile-left\">\n" +
+    "                        <section layout=\"row\" layout-phone=\"column\" layout-align=\"center center\">\n" +
+    "                            <md-button ng-click=\"voteOnAlternative(item, 1)\" ng-disabled=\"item.userVote === 1\" class=\"md-raised md-primary\">+</md-button>\n" +
+    "                            <md-button ng-click=\"voteOnAlternative(item, -1)\" ng-disabled=\"item.userVote === -1\" class=\"md-raised md-warn\">-</md-button>\n" +
+    "                        </section>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"md-tile-content\">\n" +
+    "                        <h3>Start: {{item.startFormatted}}</h3>\n" +
+    "                        <h3>End: {{item.endFormatted}}</h3>\n" +
+    "                        <h3>Votes: {{item.voteTotal}}</h3>\n" +
+    "                    </div>\n" +
+    "                </md-item-content>\n" +
+    "          </md-item>\n" +
+    "        </md-list>\n" +
+    "\n" +
+    "        <md-list ng-show=\"shouldShowField('comments')\">\n" +
+    "            <h4>Comments</h4>\n" +
+    "            <md-item ng-repeat=\"item in modalData.comments\">\n" +
+    "                <md-item-content>\n" +
+    "                    <div class=\"md-tile-content\">\n" +
+    "                        <h3>\"{{item.comment}}\"</h3>\n" +
+    "                        <h4>-{{item.user}}</h4>\n" +
+    "                    </div>\n" +
+    "                </md-item-content>\n" +
+    "          </md-item>\n" +
+    "        </md-list>\n" +
     "    </md-content>\n" +
     "    <div class=\"md-actions modal-buttons\">\n" +
     "        <md-button ng-disabled=\"isSaveDisabled()\" ng-click=\"save()\" ng-if=\"!(modalData.eventData.calendar.isAppCalendar && !modalData.eventChanged)\">{{ modalData.saveButtonText }}</md-button>\n" +
@@ -67720,7 +67747,8 @@ angular.module("timeTable.constants", [])
         eventListUrl: jsBootstrap.eventListUrl || "",
         eventUpdateUrl: jsBootstrap.eventUpdateUrl || "",
         tagTypes: jsBootstrap.tagTypes || "",
-        staticUrl: jsBootstrap.staticUrl || ""
+        staticUrl: jsBootstrap.staticUrl || "",
+        userId: jsBootstrap.userId || ""
     };
 
     return {
@@ -67983,6 +68011,46 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         return !($scope.modalData.eventData.calendar && (!$scope.modalData.eventData.calendar.isAppCalendar || !$scope.modalData.eventData.calendar.canEditEvents)) && $scope.validateForm().errors.length > 0;
     };
 
+    $scope.getUserVote = function(votes) {
+        for (var i = 0; i < votes.length; i++) {
+            if (votes[i].user === parseInt(Constants.get('userId'))) {
+                return votes[i].number;
+            }
+        }
+        return 0;
+    };
+
+    $scope.setUserVoteOnAlternative = function(alternative, vote) {
+        for (var i = 0; i < alternative.votes.length; i++) {
+            if (alternative.votes[i].user === parseInt(Constants.get('userId'))) {
+                alternative.votes[i].number = vote;
+                return;
+            }
+        }
+        alternative.votes.push({number: vote, user: parseInt(Constants.get('userId'))});
+    };
+
+    $scope.getVoteTotalForEvent = function(votes) {
+        var total = 0;
+        for (var i = 0; i < votes.length; i++) {
+            total = total + votes[i].number;
+        }
+        return total;
+    };
+
+    $scope.voteOnAlternative = function(alternative, vote) {
+        for (var i = 0; i < $scope.modalData.alternateTimes.length; i++) {
+            if (vote === 1) {
+                $scope.setUserVoteOnAlternative($scope.modalData.alternateTimes[i], 0);
+                $scope.modalData.alternateTimes[i].userVote = 0;
+                $scope.modalData.alternateTimes[i].voteTotal = $scope.getVoteTotalForEvent($scope.modalData.alternateTimes[i]);
+            }
+        }
+        $scope.setUserVoteOnAlternative(alternative, vote);
+        alternative.userVote = vote;
+        alternative.voteTotal = $scope.getVoteTotalForEvent(alternative.votes);
+    };
+
     $scope.init = function() {
         var appEventFields;
         var userEventFields;
@@ -67992,6 +68060,20 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
             userEventFields = ['calendar', 'id', 'title', 'sequence', 'startDate', 'endDate', 'startTime', 'endTime', 'allDay'];
             var calendar = $scope.getCalendarOption(calendars, eventData.calendar.id),
                 hasJsonDescription = (Object(eventData.description) === eventData.description);
+            if (hasJsonDescription) {
+                for (var i = 0; i < eventData.description.events.length; i++) {
+                    var formatStr;
+                    if (eventData.description.events[i].allDay) {
+                        formatStr = 'ddd, MMM Do';
+                    } else {
+                        formatStr = "ddd, MMM Do YYYY, h:mma";
+                    }
+                    eventData.description.events[i].startFormatted = moment(eventData.description.events[i].start).format(formatStr);
+                    eventData.description.events[i].endFormatted = moment(eventData.description.events[i].end).format(formatStr);
+                    eventData.description.events[i].userVote = $scope.getUserVote(eventData.description.events[i].votes);
+                    eventData.description.events[i].voteTotal = $scope.getVoteTotalForEvent(eventData.description.events[i].votes);
+                }
+            }
             if (calendar.isAppCalendar && !eventData.isreccuring) {
                 $scope.modalData = {
                     'modalTitle': "Vote or Suggest a New Date and Time",
@@ -68069,7 +68151,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         } else {
             // new
             var eligableCreationCalendars = [];
-            for (i =0; i < calendars.length; i++) {
+            for (var i = 0; i < calendars.length; i++) {
                 if (calendars[i].isAppCalendar || calendars[i].canCreateEvents) {
                     eligableCreationCalendars.push(calendars[i]);
                 }

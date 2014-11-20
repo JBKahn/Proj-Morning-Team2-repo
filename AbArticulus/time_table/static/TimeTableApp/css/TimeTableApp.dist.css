@@ -637,6 +637,11 @@ table.fc-border-separate {
 
 #createEventModal {
   max-width: 500px; }
+  #createEventModal .md-tile-left {
+    height: 30px; }
+    #createEventModal .md-tile-left md-button {
+      margin: 0 5px;
+      width: 25px; }
 
 #createEventModal form {
   padding: 20px; }
