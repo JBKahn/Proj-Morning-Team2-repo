@@ -86,6 +86,7 @@ def parse_course_offerings(course_link):
         course_code_out, course_info_out, is_cancelled = get_course_information(table_rows[row])
 
         if not is_cancelled:
+            
             course_offering_and_info[course_code_out].append(course_info_out)
         row += 1
 
@@ -138,21 +139,37 @@ def soupified(uoft_timetable_website, some_string):
 
     return table
 
+def format_meeting_section(course_info_report, index):
+    ''' Formats meeting section code '''
+    m_section_code = course_info_report[index]
+    
+    if (len(m_section_code) <= 5):
+        if 'T' in m_section_code:
+            course_info_report = [re.sub("[T]", "TUT-",c_info) if i==index else c_info for i,c_info in enumerate(course_info_report)] 
+        if 'L' in m_section_code:
+            course_info_report = [re.sub("[L]", "LEC-",c_info) if i==index else c_info for i,c_info in enumerate(course_info_report)] 
+        if 'P' in m_section_code:
+            course_info_report = [re.sub("[P]", "PRA-",c_info) if i==index else c_info for i,c_info in enumerate(course_info_report)] 
+    return course_info_report
+        
+    
 
 def get_course_information(tr):
     ''' Returns course code, courses schedule offerings, and status of sched.'''
     course_info = [", ".join(cell.findAll(text=True)) for cell in tr.findAll('td')]
     course_code = clean_text(course_info[0].encode('utf-8'))
     course_info_report = []
+    
 
     for content in [1, 2, 3, 5, 6, 7]:
         if content < len(course_info):
+            
             course_info_report.append(clean_text(course_info[content].encode('utf-8')))
         else:
             course_info_report.append('')
 
     cancelled_schedules = len(course_info) >= 5 and ('CANCEL' in course_info[4].upper())
-
+    course_info_report = format_meeting_section(course_info_report,2)
     return course_code, course_info_report, cancelled_schedules
 
 
@@ -168,6 +185,5 @@ def get_seminar_information(tr, course_semester):
             course_info_report.append('')
 
     cancelled = len(course_info) >= 4 and ('CANCEL' in course_info[3].upper())
-
-
+    course_info_report = format_meeting_section(course_info_report,1)
     return course_info_report, cancelled
