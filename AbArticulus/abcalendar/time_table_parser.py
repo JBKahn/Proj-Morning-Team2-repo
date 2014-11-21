@@ -160,7 +160,6 @@ def get_course_information(tr):
             course_info_report.append('')
 
     cancelled_schedules = len(course_info) >= 5 and ('CANCEL' in course_info[4].upper())
-    #course_info_report = format_meeting_section(course_info_report,2)
     course_info_report[2] = format_meeting_section(course_info_report[2])
     return course_code, course_info_report, cancelled_schedules
 
