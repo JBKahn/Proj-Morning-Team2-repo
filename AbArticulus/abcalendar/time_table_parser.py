@@ -138,21 +138,12 @@ def soupified(uoft_timetable_website, some_string):
     table = parse_website_content.find(some_string)
 
     return table
-
-def format_meeting_section(course_info_report, index):
+   
+def format_meeting_section(section):
     ''' Formats meeting section code '''
-    m_section_code = course_info_report[index]
-    
-    if (len(m_section_code) <= 5):
-        if 'T' in m_section_code:
-            course_info_report = [re.sub("[T]", "TUT-",c_info) if i==index else c_info for i,c_info in enumerate(course_info_report)] 
-        if 'L' in m_section_code:
-            course_info_report = [re.sub("[L]", "LEC-",c_info) if i==index else c_info for i,c_info in enumerate(course_info_report)] 
-        if 'P' in m_section_code:
-            course_info_report = [re.sub("[P]", "PRA-",c_info) if i==index else c_info for i,c_info in enumerate(course_info_report)] 
-    return course_info_report
-        
-    
+    if (len(section) <= 5):
+        return section.replace('T', 'TUT-').replace('L', 'LEC-').replace('P', 'PRA-')
+    return section
 
 def get_course_information(tr):
     ''' Returns course code, courses schedule offerings, and status of sched.'''
@@ -169,7 +160,8 @@ def get_course_information(tr):
             course_info_report.append('')
 
     cancelled_schedules = len(course_info) >= 5 and ('CANCEL' in course_info[4].upper())
-    course_info_report = format_meeting_section(course_info_report,2)
+    #course_info_report = format_meeting_section(course_info_report,2)
+    course_info_report[2] = format_meeting_section(course_info_report[2])
     return course_code, course_info_report, cancelled_schedules
 
 
@@ -185,5 +177,5 @@ def get_seminar_information(tr, course_semester):
             course_info_report.append('')
 
     cancelled = len(course_info) >= 4 and ('CANCEL' in course_info[3].upper())
-    course_info_report = format_meeting_section(course_info_report,1)
+    course_info_report[1] = format_meeting_section(course_info_report[1])
     return course_info_report, cancelled
