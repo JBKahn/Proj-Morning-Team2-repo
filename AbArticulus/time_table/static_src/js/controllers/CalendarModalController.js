@@ -11,7 +11,7 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
             'calendars': [],
             'usersCalendars': usersAppCalendars,
             calendarData: {
-                'title': '',    
+                'title': '',
                 'errors': {}
             }
         };
@@ -32,6 +32,46 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
     $scope.$watch('modalData.calendarData', function(newValue, oldValue) {
         $scope.validateForm();
     }, true);
+
+    $scope.addMoreCourses = function() {
+        $scope.modalData.calendarData.courses.push({
+            'title': ''
+        });
+        $scope.modalData.calendarData.errors.courses.push('');
+    };
+
+    $scope.removeCourseFromList = function(index) {
+        if ($scope.modalData.calendarData.courses.length < 2) {
+            return;
+        }
+        $scope.modalData.calendarData.courses.splice(index, 1);
+        $scope.modalData.calendarData.errors.courses.splice(index, 1);
+    };
+
+    $scope.getCoursesFromRosi = function() {
+        promise = RosiService.getCourses($scope.modalData.calendarData.username, $scope.modalData.calendarData.password);
+
+        promise.then(
+            function (data) {
+                var calendarsToExclude = [],
+                    i;
+                for (i = 0; i < $scope.modalData.usersCalendars.length; i++) {
+                    calendarsToExclude.push($scope.modalData.usersCalendars[i]);
+                }
+                for (i = 0; i < $scope.modalData.calendarData.courses.length; i++) {
+                    calendarsToExclude.push($scope.modalData.calendarData.courses[i].title);
+                }
+                for (i = 0; i < data.length; i++) {
+                    if (calendarsToExclude.indexOf(data[i].trim()) === -1) {
+                        $scope.modalData.calendarData.courses.push({title: data[i].trim()});
+                    }
+                }
+                $scope.validateForm();
+            }, function (reason) {
+                // Do nothing. The update failed.
+            }
+        );
+    };
 
     $scope.validateForm = function() {
         var calendarData = $scope.modalData.calendarData;
