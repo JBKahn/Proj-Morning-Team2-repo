@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from authentication.models import CustomUser
 
 
-course_matcher = re.compile(u'^[A-Za-z]{3}[0-9]{3}(H1 S|H1 F|Y1 Y) (LEC|TUT)-[0-9]{4}$')
+course_matcher = re.compile(u'^[A-Za-z]{3}[0-9]{3}(H1 S|H1 F|Y1 Y) (LEC|TUT|PRA)-[0-9]{4}$')
 
 
 class UoftEmailForm(forms.Form):

@@ -43,8 +43,16 @@ angular.module("timeTable.controllers.calendar", [])
         editable: true,
         header:{
           left: 'title',
-          center: 'month agendaWeek agendaDay',
+          center: 'month agendaWeek agendaDay basicWeek basicDay',
           right: 'today prev,next'
+        },
+        buttonText: {
+            today:    'today',
+            month:    'month',
+            week:     'week',
+            day:      'day',
+            agendaDay: 'agenda day',
+            agendaWeek: 'agenda week'
         },
         eventClick: $scope.editEvent,
         dayClick: $scope.dayClick,
@@ -60,8 +68,8 @@ angular.module("timeTable.controllers.calendar", [])
         EventService.getEvents()
             .then(function (data) {
                 var sourceNames = Object.keys(data);
-                //TODO: Add more before merging.
-                var eventColors = ['#E8860C', '#FF0000', '#7C0CE8', '#0D88FF', '#0DFFF9', '#92FF25', '#A8A8FF'];
+                //var eventColors = ['#E1BEE7', '#F8BBD0', '#B2DFDB', '#F0F4C3', '#FFECB3', '#C8E6C9', '#B3E5FC', '#FFCCBC', '#D7CCC8', '#B2EBF2', '#DCEDC8', '#C5CAE9', '#FFCDD2', '#BBDEFB', '#D1C4E9'];
+                var eventColors = ['#CE93D8', '#F48FB1', '#80CBC4', '#E6EE9C', '#FFE082', '#A5D6A7', '#81D4FA', '#FFAB91', '#BCAAA4', '#80DEEA', '#C5E1A5', '#9FA8DA', '#EF9A9A', '#90CAF9', '#B39DDB'];
                 for (var i = 0; i < sourceNames.length; i++) {
                     var source = sourceNames[i];
                     self.sources.push({

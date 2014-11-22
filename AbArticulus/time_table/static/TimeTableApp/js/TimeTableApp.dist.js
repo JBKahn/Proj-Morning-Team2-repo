@@ -25817,7 +25817,9 @@ var defaults = {
 		today: 'today',
 		month: 'month',
 		week: 'week',
-		day: 'day'
+		day: 'day',
+		adgendaWeek: 'adgenda week',
+		adgendaDay: 'adgenda day'
 	},
 	
 	// jquery-ui theming
@@ -29714,6 +29716,7 @@ function AgendaEventRenderer() {
 		if (seg.isEnd) {
 			classes.push('fc-event-end');
 		}
+		classes.push('md-whiteframe-z1');
 		classes = classes.concat(event.className);
 		if (event.source) {
 			classes = classes.concat(event.source.className || []);
@@ -31087,7 +31090,7 @@ function DayEventRenderer() {
 			html += "<div";
 		}
 		html +=
-			" class='md-whiteframe-z2 " + classNames.join(' ') + "'" +
+			" class='md-whiteframe-z1 " + classNames.join(' ') + "'" +
 			" style=" +
 				"'" +
 				"position:absolute;" +
@@ -62502,6 +62505,9 @@ function MdButtonDirective(ngHrefDirectives, $mdInkRipple, $mdAria, $mdUtil, $md
         $mdTheming(element);
         $mdAria.expect(element, 'aria-label', element.text());
         $mdInkRipple.attachButtonBehavior(element);
+        scope.$watch(attr.ngDisabled, function(isDisabled) {
+          element.attr('tabindex', isDisabled ? -1 : 0);
+        });
       };
     }
   };
@@ -62657,6 +62663,11 @@ function MdCheckboxDirective(inputDirectives, $mdInkRipple, $mdAria, $mdConstant
 
       $mdAria.expect(tElement, 'aria-label', true);
 
+      scope.$watch(attr.ngDisabled, function(isDisabled) {
+        element.attr('aria-disabled', !!isDisabled);
+        element.attr('tabindex', isDisabled ? -1 : 0);
+      })
+
       // Reuse the original input[type=checkbox] directive from Angular core.
       // This is a bit hacky as we need our own event listener and own render
       // function.
@@ -62676,7 +62687,7 @@ function MdCheckboxDirective(inputDirectives, $mdInkRipple, $mdAria, $mdConstant
         }
       }
       function listener(ev) {
-        if (element[0].hasAttribute('disabled')) return;
+        if (element[0].hasAttribute('disabled') || element[0].getAttribute('aria-disabled') === 'true') return;
 
         scope.$apply(function() {
           checked = !checked;
@@ -67595,8 +67606,18 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "        </md-list>\n" +
     "\n" +
     "        <h3>Add a Calendar</h3>\n" +
-    "        <form>\n" +
-    "            <md-text-float label=\"Course e.g. CSC301H1 S LEC-0101\" hasErrors=\"{{modalData.calendarData.errors.title}}\" ng-model=\"modalData.calendarData.title\" templateUrl=\"templates/typeaheadMdInput.html\" ng-attr-courses=\"{{modalData.calendars}}\"> </md-text-float>\n" +
+    "        <form id=\"AddCalendarForm\">\n" +
+    "            <div ng-repeat=\"course in modalData.calendarData.courses\">\n" +
+    "                <md-text-float label=\"Course e.g. CSC301H1 S LEC-0101\" hasErrors=\"{{modalData.calendarData.errors.courses[$index]}}\" ng-model=\"modalData.calendarData.courses[$index].title\" templateUrl=\"templates/typeaheadMdInput.html\" ng-attr-courses=\"{{modalData.calendars}}\"> </md-text-float>\n" +
+    "                <md-button ng-if=\"modalData.calendarData.errors.courses.length > 1\" ng-click=\"removeCourseFromList($index)\">X</md-button>\n" +
+    "            </div>\n" +
+    "            <md-button ng-click=\"addMoreCourses()\">Add Another</md-button>\n" +
+    "            <h3>Get Courses From Rosi</h3>\n" +
+    "            <div class=\"row\">\n" +
+    "                <md-text-float label=\"Username\" hasErrors=\"{{modalData.calendarData.errors.username}}\" ng-model=\"modalData.calendarData.username\" templateUrl=\"templates/standardMdInput.html\"> </md-text-float>\n" +
+    "                <md-text-float label=\"Password\" type=\"password\" hasErrors=\"{{modalData.calendarData.errors.password}}\" ng-model=\"modalData.calendarData.password\" templateUrl=\"templates/standardMdInput.html\"> </md-text-float>\n" +
+    "            </div>\n" +
+    "            <md-button ng-click=\"getCoursesFromRosi()\">Get Courses</md-button>\n" +
     "        </form>\n" +
     "    </md-content>\n" +
     "    <div class=\"md-actions modal-buttons\">\n" +
@@ -67618,40 +67639,72 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "            </div>\n" +
     "            <div class=\"row\">\n" +
     "                <md-radio-group ng-model=\"modalData.eventData.calendar\" ng-show=\"shouldShowField('calendar')\" ng-change=\"selectCalendar()\">\n" +
-    "                    <md-radio-button ng-repeat=\"calendar in modalData.calendars\" ng-value=\"calendar\" aria-label=\"{{ calendar.name }}\">\n" +
+    "                    <md-radio-button ng-disabled=\"shouldDisabledField('calendar')\" ng-repeat=\"calendar in modalData.calendars\" ng-value=\"calendar\" aria-label=\"{{ calendar.name }}\">\n" +
     "                        {{ calendar.name }}\n" +
     "                    </md-radio-button>\n" +
     "                </md-radio-group>\n" +
     "                <md-radio-group ng-model=\"modalData.eventData.tagType\" ng-show=\"shouldShowField('tagType')\">\n" +
-    "                    <md-radio-button ng-repeat=\"tag in modalData.tagTypes\" ng-value=\"tag\" aria-label=\"{{ tag }}\">\n" +
+    "                    <md-radio-button ng-disabled=\"shouldDisabledField('tagType')\" ng-repeat=\"tag in modalData.tagTypes\" ng-value=\"tag\" aria-label=\"{{ tag }}\">\n" +
     "                        {{ tag }}\n" +
     "                    </md-radio-button>\n" +
     "                </md-radio-group>\n" +
     "            </div>\n" +
-    "            <md-text-float label=\"Type Number\" hasErrors=\"{{modalData.eventData.errors.tagNumber}}\" ng-show=\"shouldShowField('tagNumber')\" ng-model=\"modalData.eventData.tagNumber\"> </md-text-float>\n" +
-    "            <md-text-float label=\"Event Title\" hasErrors=\"{{modalData.eventData.errors.title}}\" ng-show=\"shouldShowField('title')\" ng-model=\"modalData.eventData.title\"> </md-text-float>\n" +
+    "            <md-text-float label=\"Type Number\" ng-disabled=\"shouldDisabledField('tagNumber')\" hasErrors=\"{{modalData.eventData.errors.tagNumber}}\" ng-show=\"shouldShowField('tagNumber')\" ng-model=\"modalData.eventData.tagNumber\"> </md-text-float>\n" +
+    "            <md-text-float label=\"Event Title\" ng-disabled=\"shouldDisabledField('title')\" hasErrors=\"{{modalData.eventData.errors.title}}\" ng-show=\"shouldShowField('title')\" ng-model=\"modalData.eventData.title\"> </md-text-float>\n" +
     "            <div class=\"row\">\n" +
-    "                <md-text-float label=\"Start Date\" hasErrors=\"{{modalData.eventData.errors.startDay}}\" ng-show=\"shouldShowField('startDate')\" ng-model=\"modalData.eventData.startDay\"> </md-text-float>\n" +
-    "                <md-text-float label=\"Start Time\" hasErrors=\"{{modalData.eventData.errors.startTime}}\" ng-show=\"shouldShowField('startTime')\" ng-model=\"modalData.eventData.startTime\"> </md-text-float>\n" +
+    "                <md-text-float label=\"Start Date\" ng-disabled=\"shouldDisabledField('startDay')\" hasErrors=\"{{modalData.eventData.errors.startDay}}\" ng-show=\"shouldShowField('startDate')\" ng-model=\"modalData.eventData.startDay\"> </md-text-float>\n" +
+    "                <md-text-float label=\"Start Time\" ng-disabled=\"shouldDisabledField('startTime')\" hasErrors=\"{{modalData.eventData.errors.startTime}}\" ng-show=\"shouldShowField('startTime')\" ng-model=\"modalData.eventData.startTime\"> </md-text-float>\n" +
     "            </div>\n" +
     "            <div class=\"row\">\n" +
-    "                <md-text-float label=\"End Date\" hasErrors=\"{{modalData.eventData.errors.endDay}}\" ng-show=\"shouldShowField('endDate')\" ng-model=\"modalData.eventData.endDay\"> </md-text-float>\n" +
-    "                <md-text-float label=\"End Time\" hasErrors=\"{{modalData.eventData.errors.endTime}}\" ng-show=\"shouldShowField('endTime')\" ng-model=\"modalData.eventData.endTime\"> </md-text-float>\n" +
+    "                <md-text-float label=\"End Date\" ng-disabled=\"shouldDisabledField('endDay')\" hasErrors=\"{{modalData.eventData.errors.endDay}}\" ng-show=\"shouldShowField('endDate')\" ng-model=\"modalData.eventData.endDay\"> </md-text-float>\n" +
+    "                <md-text-float label=\"End Time\" ng-disabled=\"shouldDisabledField('endTime')\" hasErrors=\"{{modalData.eventData.errors.endTime}}\" ng-show=\"shouldShowField('endTime')\" ng-model=\"modalData.eventData.endTime\"> </md-text-float>\n" +
     "            </div>\n" +
-    "            <md-switch aria-label=\"allDay\" ng-show=\"shouldShowField('allDay')\" ng-model=\"modalData.eventData.allDay\">\n" +
+    "            <md-switch aria-label=\"allDay\" ng-disabled=\"shouldDisabledField('allDay')\" ng-show=\"shouldShowField('allDay')\" ng-model=\"modalData.eventData.allDay\">\n" +
     "                All day event\n" +
     "            </md-switch>\n" +
     "        </form>\n" +
-    "        <p ng-show=\"shouldShowField('alternateTimes')\">events</p>\n" +
-    "        <p ng-show=\"shouldShowField('alternateTimes')\">{{ modalData.alternateTimes }}</p>\n" +
-    "        <p ng-show=\"shouldShowField('comments')\">comments</p>\n" +
-    "        <p ng-show=\"shouldShowField('comments')\">{{ modalData.comments }}</p>\n" +
+    "\n" +
+    "        <md-list ng-show=\"shouldShowField('alternateTimes')\">\n" +
+    "            <h4>Other Suggested Times</h4>\n" +
+    "            <md-item ng-repeat=\"item in modalData.alternateTimes\">\n" +
+    "                <md-item-content>\n" +
+    "                    <div class=\"md-tile-left\">\n" +
+    "                        <section layout=\"row\" layout-phone=\"column\" layout-align=\"center center\">\n" +
+    "                            <md-button ng-click=\"voteOnAlternative(item, 1)\" ng-disabled=\"item.userVote === 1\" class=\"md-raised md-primary\">+</md-button>\n" +
+    "                            <md-button ng-click=\"voteOnAlternative(item, -1)\" ng-disabled=\"item.userVote === -1\" class=\"md-raised md-warn\">-</md-button>\n" +
+    "                        </section>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"md-tile-content\">\n" +
+    "                        <h3>Start: {{item.startFormatted}}</h3>\n" +
+    "                        <h3>End: {{item.endFormatted}}</h3>\n" +
+    "                        <h3>Votes: {{item.voteTotal}}</h3>\n" +
+    "                    </div>\n" +
+    "                </md-item-content>\n" +
+    "          </md-item>\n" +
+    "        </md-list>\n" +
+    "\n" +
+    "        <md-list id=\"CommentList\" ng-show=\"shouldShowField('comments')\">\n" +
+    "            <h4>Comments</h4>\n" +
+    "            <md-item ng-repeat=\"item in modalData.comments\">\n" +
+    "                <md-item-content>\n" +
+    "                    <div class=\"md-tile-content\">\n" +
+    "                        <h3>\"{{item.comment}}\"</h3>\n" +
+    "                        <h4>-{{item.user}}</h4>\n" +
+    "                    </div>\n" +
+    "                </md-item-content>\n" +
+    "            </md-item>\n" +
+    "            <form>\n" +
+    "                <md-text-float id=\"CommentInput\" label=\"Comment\" hasErrors=\"{{modalData.eventData.errors.tagNumber}}\" ng-model=\"modalData.newComment\"> </md-text-float>\n" +
+    "                <md-button id=\"CommentSubmit\" ng-click=\"addComment()\" class=\"md-raised md-primary\">Add Comment</md-button>\n" +
+    "            </form>\n" +
+    "\n" +
+    "        </md-list>\n" +
     "    </md-content>\n" +
     "    <div class=\"md-actions modal-buttons\">\n" +
-    "        <md-button ng-disabled=\"isSaveDisabled()\" ng-click=\"save()\">Save</md-button>\n" +
+    "        <md-button ng-disabled=\"isSaveDisabled()\" ng-click=\"save()\" ng-if=\"!(modalData.eventData.calendar.isAppCalendar && !modalData.eventChanged)\">{{ modalData.saveButtonText }}</md-button>\n" +
     "        <md-button ng-click=\"cancel()\">Cancel</md-button>\n" +
     "    </div>\n" +
-    "</md-dialog>"
+    "</md-dialog>\n"
   );
 
 
@@ -67673,8 +67726,6 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
 
 }]);
 
-
-
 Error.stackTraceLimit = Infinity;
 var myApp = angular.module("TimeTableApp", [
     "ngRoute",
@@ -67687,7 +67738,8 @@ var myApp = angular.module("TimeTableApp", [
     "timeTable.controllers.eventModal",
     "timeTable.controllers.calendarModal",
     "timeTable.service.eventService",
-    "timeTable.service.calendarService"
+    "timeTable.service.calendarService",
+    "timeTable.service.rosiService"
 ])
 .config(["$httpProvider", "$routeProvider", function($httpProvider, $routeProvider) {
     $httpProvider.defaults.xsrfCookieName = "csrftoken";
@@ -67711,13 +67763,42 @@ angular.module("timeTable.constants", [])
         calendarListUrl: jsBootstrap.calendarListUrl || "",
         eventListUrl: jsBootstrap.eventListUrl || "",
         eventUpdateUrl: jsBootstrap.eventUpdateUrl || "",
+        voteCreateUrl: jsBootstrap.voteCreateUrl || "",
+        commentCreateUrl: jsBootstrap.commentCreateUrl || "",
+        rosiCourseListUrl: jsBootstrap.rosiCourseListUrl || "",
         tagTypes: jsBootstrap.tagTypes || "",
-        staticUrl: jsBootstrap.staticUrl || ""
+        staticUrl: jsBootstrap.staticUrl || "",
+        userId: jsBootstrap.userId || ""
     };
 
     return {
         get: function(name) {
             return constants[name];
+        }
+    };
+}]);
+
+angular.module("timeTable.service.rosiService", [])
+.factory("RosiService", ["$q", "$http", "Constants", function($q, $http, Constants) {
+    return {
+        getCourses: function(username, password) {
+            var url = Constants.get('rosiCourseListUrl');
+            var params = {
+                'student_num': username,
+                'password': password
+            };
+
+            var defer = $q.defer();
+
+            $http({method: "POST", url: url, data: params})
+            .success(function(result){
+                defer.resolve(result);
+            })
+            .error(function(error){
+                defer.reject(error);
+            });
+
+            return defer.promise;
         }
     };
 }]);
@@ -67742,10 +67823,10 @@ angular.module("timeTable.service.calendarService", [])
             return defer.promise;
         },
 
-        addCalendar: function(title) {
+        addCalendar: function(courses) {
             var url = Constants.get('calendarListUrl');
             var params = {
-                title: title,
+                courses: courses,
             };
 
             var defer = $q.defer();
@@ -67799,7 +67880,7 @@ angular.module("timeTable.service.eventService", [])
 
             $http({method: "POST", url: url, data: params})
             .success(function(result){
-                defer.resolve(result, 1);
+                defer.resolve(result);
             })
             .error(function(error){
                 defer.reject(error);
@@ -67824,7 +67905,55 @@ angular.module("timeTable.service.eventService", [])
 
             $http({method: "PUT", url: url, data: params})
             .success(function(result){
-                defer.resolve(result, 1);
+                defer.resolve(result);
+            })
+            .error(function(error){
+                defer.reject(error);
+            });
+
+            return defer.promise;
+        },
+
+        voteForEvent: function(calendar, title, startDate, endDate, allDay, tagType, tagNumber, vote) {
+            var url = Constants.get('voteCreateUrl');
+            var params = {
+                calendar: calendar,
+                title: title,
+                start: startDate,
+                end: endDate,
+                all_day: allDay,
+                tag_type: tagType.toUpperCase(),
+                number: tagNumber,
+                vote: vote
+            };
+
+            var defer = $q.defer();
+
+            $http({method: "POST", url: url, data: params})
+            .success(function(result){
+                defer.resolve(result);
+            })
+            .error(function(error){
+                defer.reject(error);
+            });
+
+            return defer.promise;
+        },
+
+        commentOnEvent: function(calendar, tagType, tagNumber, comment) {
+            var url = Constants.get('commentCreateUrl');
+            var params = {
+                calendar: calendar,
+                tag_type: tagType.toUpperCase(),
+                number: tagNumber,
+                comment: comment
+            };
+
+            var defer = $q.defer();
+
+            $http({method: "POST", url: url, data: params})
+            .success(function(result){
+                defer.resolve(result);
             })
             .error(function(error){
                 defer.reject(error);
@@ -67835,7 +67964,7 @@ angular.module("timeTable.service.eventService", [])
     };
 }]);
 
-var calendarModalController = function ($scope, $mdDialog, Constants, CalendarService, calendars) {
+var calendarModalController = function ($scope, $mdDialog, Constants, CalendarService, RosiService, calendars) {
     var usersAppCalendars = [];
     for (i = 0; i < calendars.length; i++) {
         if (calendars[i].isAppCalendar) {
@@ -67848,8 +67977,10 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
             'calendars': [],
             'usersCalendars': usersAppCalendars,
             calendarData: {
-                'title': '',    
-                'errors': {}
+                'courses': [{'title': ''}],
+                'errors': {
+                    'courses': ['']
+                }
             }
         };
         CalendarService.getCalendars().then(function (data) {
@@ -67870,26 +68001,65 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
         $scope.validateForm();
     }, true);
 
+    $scope.addMoreCourses = function() {
+        $scope.modalData.calendarData.courses.push({
+            'title': ''
+        });
+        $scope.modalData.calendarData.errors.courses.push('');
+    };
+
+    $scope.removeCourseFromList = function(index) {
+        if ($scope.modalData.calendarData.courses.length < 2) {
+            return;
+        }
+        $scope.modalData.calendarData.courses.splice(index, 1);
+        $scope.modalData.calendarData.errors.courses.splice(index, 1);
+    };
+
+    $scope.getCoursesFromRosi = function() {
+        promise = RosiService.getCourses($scope.modalData.calendarData.username, $scope.modalData.calendarData.password);
+
+        promise.then(
+            function (data) {
+                var calendarsToExclude = [],
+                    i;
+                for (i = 0; i < $scope.modalData.usersCalendars.length; i++) {
+                    calendarsToExclude.push($scope.modalData.usersCalendars[i]);
+                }
+                for (i = 0; i < $scope.modalData.calendarData.courses.length; i++) {
+                    calendarsToExclude.push($scope.modalData.calendarData.courses[i].title);
+                }
+                for (i = 0; i < data.length; i++) {
+                    if (calendarsToExclude.indexOf(data[i].trim() === -1)) {
+                        $scope.modalData.calendarData.courses.push({title: data[i].trim()});
+                    }
+                }
+                $scope.validateForm();
+            }, function (reason) {
+                // Do nothing. The update failed.
+            }
+        );
+    };
+
     $scope.validateForm = function() {
         var calendarData = $scope.modalData.calendarData;
-        var errors = [];
-        $scope.modalData.calendarData.errors = {};
-        if (!calendarData.title) {
-            $scope.modalData.calendarData.errors.title = 'title is required';
-        } else {
-            var validCourse = calendarData.title.match("^([A-Z]{3})[0-9]{3}(H|Y)1 (F|S|Y) (LEC|TUT)-[0-9]{4}$");
-            if (!validCourse) {
-                $scope.modalData.calendarData.errors.title = 'invalid course format';
+        for (var i = 0; i < calendarData.courses.length; i++) {
+            calendarData.errors.courses[i] = '';
+            if (!calendarData.courses[i].title) {
+                calendarData.errors.courses[i] = 'title is required';
+            } else {
+                var validCourse = calendarData.courses[i].title.match("^([A-Z]{3})[0-9]{3}(H|Y)1 (F|S|Y) (LEC|TUT|PRA)-[0-9]{4}$");
+                if (!validCourse) {
+                    calendarData.errors.courses[i] = 'invalid course format';
+                }
             }
         }
         return {
-            'errors': errors
+            'errors': calendarData.errors
         };
     };
 
-
-
-    $scope.addCalendar = function() {
+    $scope.addCalendars = function() {
         var calendarData = $scope.modalData.calendarData;
         var validate = $scope.validateForm();
         if (validate.errors.length > 0) {
@@ -67898,7 +68068,11 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
         }
 
         var promise;
-        promise = CalendarService.addCalendar(calendarData.title);
+        var courses = [];
+        for (var i = 0; i < calendarData.courses.length; i++) {
+            courses.push(calendarData.courses[i].title);
+        }
+        promise = CalendarService.addCalendar(courses);
 
         promise.then(
             function (data) {
@@ -67910,7 +68084,7 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
     };
 
     $scope.save = function () {
-        $scope.addCalendar();
+        $scope.addCalendars();
     };
 
     $scope.cancel = function () {
@@ -67921,7 +68095,7 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
 };
 
 angular.module("timeTable.controllers.calendarModal", [])
-.controller("CalendarModalController", ["$scope", "$mdDialog", "Constants", "CalendarService", "calendars", calendarModalController]);
+.controller("CalendarModalController", ["$scope", "$mdDialog", "Constants", "CalendarService", "RosiService", "calendars", calendarModalController]);
 
 var eventModalController = function ($scope, $mdDialog, Constants, EventService, eventData, calendars) {
     $scope.open = function($event, opened) {
@@ -67947,9 +68121,11 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         return '';
     };
 
-
     $scope.$watch('modalData.eventData', function(newValue, oldValue) {
         $scope.validateForm();
+        if (newValue != oldValue) {
+            $scope.modalData.eventChanged = true;
+        }
     }, true);
 
     $scope.shouldShowField = function(field) {
@@ -67969,7 +68145,103 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
     };
 
     $scope.isSaveDisabled = function() {
-        return !($scope.modalData.eventData.calendar && (!$scope.modalData.eventData.calendar.isAppCalendar || !$scope.modalData.eventData.calendar.canEditEvents));
+        return !($scope.modalData.eventData.calendar && (!$scope.modalData.eventData.calendar.isAppCalendar || !$scope.modalData.eventData.calendar.canEditEvents)) && $scope.validateForm().errors.length > 0;
+    };
+
+    $scope.getUserVote = function(votes) {
+        for (var i = 0; i < votes.length; i++) {
+            if (votes[i].user === parseInt(Constants.get('userId'))) {
+                return votes[i].number;
+            }
+        }
+        return 0;
+    };
+
+    $scope.setUserVoteOnAlternative = function(alternative, vote) {
+        for (var i = 0; i < alternative.votes.length; i++) {
+            if (alternative.votes[i].user === parseInt(Constants.get('userId'))) {
+                alternative.votes[i].number = vote;
+                return;
+            }
+        }
+        alternative.votes.push({number: vote, user: parseInt(Constants.get('userId'))});
+    };
+
+    $scope.getVoteTotalForEvent = function(votes) {
+        var total = 0;
+        for (var i = 0; i < votes.length; i++) {
+            total = total + votes[i].number;
+        }
+        return total;
+    };
+
+    $scope.voteOnAlternative = function(alternative, vote) {
+        eventData = $scope.modalData.eventData;
+        promise = EventService.voteForEvent(eventData.calendar.id, eventData.title, alternative.start, alternative.end, alternative.all_day, $scope.modalData.initialEvent.description.tag.tag_type, $scope.modalData.initialEvent.description.tag.number, vote);
+        promise.then(
+            function (data) {
+                $scope.modalData.initialEvent.allDay = data.allDay;
+                $scope.modalData.initialEvent.start = data.start;
+                $scope.modalData.initialEvent.end = data.end;
+                $scope.modalData.initialEvent.description = data.description;
+                $scope.modalData.initialEvent.sequence = data.sequence;
+                $scope.modalData.comments = data.description.comments;
+                $scope.updateAlternatives(data.description.events);
+                $scope.modalData.alternateTimes = data.description.events;
+
+                $scope.modalData.sequence = data.sequence;
+                $scope.modalData.startDay = moment(data.start).format("YYYY/MM/DD");
+                $scope.modalData.startTime = moment(data.start).format("h:mma");
+                $scope.modalData.endDay = moment(data.end).format("YYYY/MM/DD");
+                $scope.modalData.endTime = moment(data.end).format("h:mma");
+                $scope.modalData.allDay = data.allDay;
+            }, function (reason) {
+                // Do nothing. The update failed.
+            }
+        );
+    };
+
+    $scope.updateAlternatives = function(events) {
+        for (var i = 0; i < events.length; i++) {
+            var formatStr;
+            if (events[i].allDay) {
+                formatStr = 'ddd, MMM Do';
+            } else {
+                formatStr = "ddd, MMM Do YYYY, h:mma";
+            }
+            events[i].startFormatted = moment(events[i].start).format(formatStr);
+            events[i].endFormatted = moment(events[i].end).format(formatStr);
+            events[i].userVote = $scope.getUserVote(events[i].votes);
+            events[i].voteTotal = $scope.getVoteTotalForEvent(events[i].votes);
+        }
+    };
+
+    $scope.addComment = function() {
+        var comment = $scope.modalData.newComment;
+        if (comment !== '' && comment !== undefined) {
+            promise = EventService.commentOnEvent(eventData.calendar.id, $scope.modalData.initialEvent.description.tag.tag_type, $scope.modalData.initialEvent.description.tag.number, comment);
+            promise.then(
+                function (data) {
+                    $scope.modalData.initialEvent.allDay = data.allDay;
+                    $scope.modalData.initialEvent.start = data.start;
+                    $scope.modalData.initialEvent.end = data.end;
+                    $scope.modalData.initialEvent.description = data.description;
+                    $scope.modalData.initialEvent.sequence = data.sequence;
+                    $scope.modalData.comments = data.description.comments;
+                    $scope.updateAlternatives(data.description.events);
+                    $scope.modalData.alternateTimes = data.description.events;
+
+                    $scope.modalData.sequence = data.sequence;
+                    $scope.modalData.startDay = moment(data.start).format("YYYY/MM/DD");
+                    $scope.modalData.startTime = moment(data.start).format("h:mma");
+                    $scope.modalData.endDay = moment(data.end).format("YYYY/MM/DD");
+                    $scope.modalData.endTime = moment(data.end).format("h:mma");
+                    $scope.modalData.allDay = data.allDay;
+                }, function (reason) {
+                    // Do nothing. The update failed.
+                }
+            );
+        }
     };
 
     $scope.init = function() {
@@ -67981,9 +68253,14 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
             userEventFields = ['calendar', 'id', 'title', 'sequence', 'startDate', 'endDate', 'startTime', 'endTime', 'allDay'];
             var calendar = $scope.getCalendarOption(calendars, eventData.calendar.id),
                 hasJsonDescription = (Object(eventData.description) === eventData.description);
+            if (hasJsonDescription) {
+                $scope.updateAlternatives(eventData.description.events);
+            }
             if (calendar.isAppCalendar) {
                 $scope.modalData = {
-                    'modalTitle': "Edit Event",
+                    'modalTitle': "Vote or Suggest a New Date and Time",
+                    'initialEvent': eventData,
+                    'saveButtonText': 'Suggest New Date',
                     'appEventFields': appEventFields,
                     'userEventFields': userEventFields,
                     'disabledEventFields': ['calendar', 'id', 'tagType', 'tagNumber'],
@@ -67992,11 +68269,13 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                     'comments': (hasJsonDescription && eventData.description.comments) || '',
                     'calendars': [calendar],
                     'tagTypes': (hasJsonDescription && eventData.description.tag && [(eventData.description.tag.tag_type.charAt(0).toUpperCase() + eventData.description.tag.tag_type.slice(1).toLowerCase())]) || [],
+                    'eventChanged': false,
                     eventData: {
                         'errors': {},
                         'calendar': calendar,
                         'id': eventData.id,
                         'sequence': eventData.sequence,
+                        'title': eventData.title,
                         'startDay': moment(eventData.start).format("YYYY/MM/DD"),
                         'endDay': moment(eventData.end).format("YYYY/MM/DD"),
                         'startTime': moment(eventData.start).format("h:mma"),
@@ -68009,7 +68288,9 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
             } else {
                 if (eventData.canEditEvents) {
                     $scope.modalData = {
+                        'saveButtonText': 'Save Changes',
                         'modalTitle': "Edit Event",
+                        'initialEvent': eventData,
                         'appEventFields': appEventFields,
                         'userEventFields': userEventFields,
                         'disabledEventFields': [],
@@ -68022,15 +68303,17 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                             'sequence': eventData.sequence,
                             'title': eventData.title,
                             'startDay': moment(eventData.start).format("YYYY/MM/DD"),
-                            'endDay': moment(eventData.end).add('hours', 1).format("YYYY/MM/DD"),
+                            'endDay': moment(eventData.end).format("YYYY/MM/DD"),
                             'startTime': moment(eventData.start).format("h:mma"),
-                            'endTime': moment(eventData.end).add('hours', 1).format("h:mma"),
+                            'endTime': moment(eventData.end).format("h:mma"),
                             'allDay': eventData.allDay,
                         }
                     };
                 } else {
                     $scope.modalData = {
-                        'modalTitle': "Edit Event",
+                        'saveButtonText': '',
+                        'modalTitle': "View Event",
+                        'initialEvent': eventData,
                         'appEventFields': appEventFields,
                         'userEventFields': userEventFields,
                         'disabledEventFields': ['title', 'startDay', 'endDay', 'startTime', 'endTime', 'allDay', 'calendar'],
@@ -68045,7 +68328,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                             'startDay': moment(eventData.start).format("YYYY/MM/DD"),
                             'endDay': moment(eventData.end).format("YYYY/MM/DD"),
                             'startTime': moment(eventData.start).format("h:mma"),
-                            'endTime': moment(eventData.end).add('hours', 1).format("h:mma"),
+                            'endTime': moment(eventData.end).format("h:mma"),
                             'allDay': eventData.allDay,
                         }
                     };
@@ -68054,7 +68337,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         } else {
             // new
             var eligableCreationCalendars = [];
-            for (i =0; i < calendars.length; i++) {
+            for (var i = 0; i < calendars.length; i++) {
                 if (calendars[i].isAppCalendar || calendars[i].canCreateEvents) {
                     eligableCreationCalendars.push(calendars[i]);
                 }
@@ -68062,6 +68345,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
             appEventFields = ['calendar', 'tagType', 'tagNumber', 'startDate', 'endDate', 'startTime', 'endTime', 'allDay'];
             userEventFields = ['calendar', 'title', 'startDate', 'endDate', 'startTime', 'endTime', 'allDay'];
             $scope.modalData = {
+                'saveButtonText': 'Add Event',
                 'modalTitle': "Create Event",
                 'calendars': eligableCreationCalendars,
                 'tagTypes': Constants.get('tagTypes'),
@@ -68086,6 +68370,11 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
     };
 
     $scope.validateForm = function() {
+        if (!$scope.modalData) {
+            return {
+                'errors': ['modal data is not defined']
+            };
+        }
         var eventData = $scope.modalData.eventData;
         var fields;
         var errors = [];
@@ -68252,8 +68541,16 @@ angular.module("timeTable.controllers.calendar", [])
         editable: true,
         header:{
           left: 'title',
-          center: 'month agendaWeek agendaDay',
+          center: 'month agendaWeek agendaDay basicWeek basicDay',
           right: 'today prev,next'
+        },
+        buttonText: {
+            today:    'today',
+            month:    'month',
+            week:     'week',
+            day:      'day',
+            agendaDay: 'agenda day',
+            agendaWeek: 'agenda week'
         },
         eventClick: $scope.editEvent,
         dayClick: $scope.dayClick,
@@ -68269,8 +68566,8 @@ angular.module("timeTable.controllers.calendar", [])
         EventService.getEvents()
             .then(function (data) {
                 var sourceNames = Object.keys(data);
-                //TODO: Add more before merging.
-                var eventColors = ['#E8860C', '#FF0000', '#7C0CE8', '#0D88FF', '#0DFFF9', '#92FF25', '#A8A8FF'];
+                //var eventColors = ['#E1BEE7', '#F8BBD0', '#B2DFDB', '#F0F4C3', '#FFECB3', '#C8E6C9', '#B3E5FC', '#FFCCBC', '#D7CCC8', '#B2EBF2', '#DCEDC8', '#C5CAE9', '#FFCDD2', '#BBDEFB', '#D1C4E9'];
+                var eventColors = ['#CE93D8', '#F48FB1', '#80CBC4', '#E6EE9C', '#FFE082', '#A5D6A7', '#81D4FA', '#FFAB91', '#BCAAA4', '#80DEEA', '#C5E1A5', '#9FA8DA', '#EF9A9A', '#90CAF9', '#B39DDB'];
                 for (var i = 0; i < sourceNames.length; i++) {
                     var source = sourceNames[i];
                     self.sources.push({

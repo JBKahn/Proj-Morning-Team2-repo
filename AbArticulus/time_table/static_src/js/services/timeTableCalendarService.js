@@ -18,10 +18,10 @@ angular.module("timeTable.service.calendarService", [])
             return defer.promise;
         },
 
-        addCalendar: function(title) {
+        addCalendar: function(courses) {
             var url = Constants.get('calendarListUrl');
             var params = {
-                title: title,
+                courses: courses,
             };
 
             var defer = $q.defer();

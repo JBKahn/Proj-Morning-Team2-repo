@@ -14,8 +14,8 @@ class GoogleApiInterface(object):
 
     @classmethod
     def get_events_from_calendar(cls, user, calendar_id):
-        url = get_google_api_endpoint_url(api_name="events", calendar_id=calendar_id)
-        return make_request(user=user, url=url, params=None)
+        url = get_google_api_endpoint_url(api_name="events", calendar_id=calendar_id) + '?singleEvents=True&showDeleted=False'
+        return make_request(user=user, url=url, method="GET")
 
     @classmethod
     def get_event_from_calendar(cls, user, calendar_id, event_id):

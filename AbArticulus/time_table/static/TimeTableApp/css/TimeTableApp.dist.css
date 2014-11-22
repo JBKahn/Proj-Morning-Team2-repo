@@ -637,6 +637,11 @@ table.fc-border-separate {
 
 #createEventModal {
   max-width: 500px; }
+  #createEventModal .md-tile-left {
+    height: 30px; }
+    #createEventModal .md-tile-left md-button {
+      margin: 0 5px;
+      width: 25px; }
 
 #createEventModal form {
   padding: 20px; }
@@ -686,10 +691,8 @@ table.fc-border-separate {
 .calendar {
   width: 828px; }
 
-#CreateCalendarModal {
-  overflow: inherit; }
-  #CreateCalendarModal input {
-    width: 193px; }
+#CreateCalendarModal input {
+  width: 193px; }
 
 md-toolbar#toolbar {
   background-color: #d14836; }
@@ -714,5 +717,25 @@ label.error {
 
 md-content.md-default-theme md-input-group input[haserrors="true"] {
   border-color: red; }
+
+.fc-event-container div {
+  color: #212121; }
+
+#CommentList .md-tile-content {
+  padding-top: 0;
+  padding-bottom: 0; }
+  #CommentList .md-tile-content h4 {
+    text-align: right; }
+
+#CommentInput input {
+  width: 100%; }
+
+#CommentSubmit {
+  height: 30px; }
+
+#AddCalendarForm button {
+  height: 30px; }
+#AddCalendarForm md-input-group {
+  display: inline-block; }
 
 /*# sourceMappingURL=app.css.map */
