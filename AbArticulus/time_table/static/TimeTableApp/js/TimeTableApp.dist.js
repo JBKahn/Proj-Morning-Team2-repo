@@ -67609,6 +67609,12 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "                <md-button ng-if=\"modalData.calendarData.errors.courses.length > 1\" ng-click=\"removeCourseFromList($index)\">X</md-button>\n" +
     "            </div>\n" +
     "            <md-button ng-click=\"addMoreCourses()\">Add Another</md-button>\n" +
+    "            <h3>Get Courses From Rosi</h3>\n" +
+    "            <div class=\"row\">\n" +
+    "                <md-text-float label=\"Username\" hasErrors=\"{{modalData.calendarData.errors.username}}\" ng-model=\"modalData.calendarData.username\" templateUrl=\"templates/standardMdInput.html\"> </md-text-float>\n" +
+    "                <md-text-float label=\"Password\" type=\"password\" hasErrors=\"{{modalData.calendarData.errors.password}}\" ng-model=\"modalData.calendarData.password\" templateUrl=\"templates/standardMdInput.html\"> </md-text-float>\n" +
+    "            </div>\n" +
+    "            <md-button ng-click=\"getCoursesFromRosi()\">Get Courses</md-button>\n" +
     "        </form>\n" +
     "    </md-content>\n" +
     "    <div class=\"md-actions modal-buttons\">\n" +
@@ -67717,8 +67723,6 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
 
 }]);
 
-
-
 Error.stackTraceLimit = Infinity;
 var myApp = angular.module("TimeTableApp", [
     "ngRoute",
@@ -67731,7 +67735,8 @@ var myApp = angular.module("TimeTableApp", [
     "timeTable.controllers.eventModal",
     "timeTable.controllers.calendarModal",
     "timeTable.service.eventService",
-    "timeTable.service.calendarService"
+    "timeTable.service.calendarService",
+    "timeTable.service.rosiService"
 ])
 .config(["$httpProvider", "$routeProvider", function($httpProvider, $routeProvider) {
     $httpProvider.defaults.xsrfCookieName = "csrftoken";
@@ -67757,6 +67762,7 @@ angular.module("timeTable.constants", [])
         eventUpdateUrl: jsBootstrap.eventUpdateUrl || "",
         voteCreateUrl: jsBootstrap.voteCreateUrl || "",
         commentCreateUrl: jsBootstrap.commentCreateUrl || "",
+        rosiCourseListUrl: jsBootstrap.rosiCourseListUrl || "",
         tagTypes: jsBootstrap.tagTypes || "",
         staticUrl: jsBootstrap.staticUrl || "",
         userId: jsBootstrap.userId || ""
@@ -67765,6 +67771,31 @@ angular.module("timeTable.constants", [])
     return {
         get: function(name) {
             return constants[name];
+        }
+    };
+}]);
+
+angular.module("timeTable.service.rosiService", [])
+.factory("RosiService", ["$q", "$http", "Constants", function($q, $http, Constants) {
+    return {
+        getCourses: function(username, password) {
+            var url = Constants.get('rosiCourseListUrl');
+            var params = {
+                'student_num': username,
+                'password': password
+            };
+
+            var defer = $q.defer();
+
+            $http({method: "POST", url: url, data: params})
+            .success(function(result){
+                defer.resolve(result);
+            })
+            .error(function(error){
+                defer.reject(error);
+            });
+
+            return defer.promise;
         }
     };
 }]);
@@ -67930,7 +67961,7 @@ angular.module("timeTable.service.eventService", [])
     };
 }]);
 
-var calendarModalController = function ($scope, $mdDialog, Constants, CalendarService, calendars) {
+var calendarModalController = function ($scope, $mdDialog, Constants, CalendarService, RosiService, calendars) {
     var usersAppCalendars = [];
     for (i = 0; i < calendars.length; i++) {
         if (calendars[i].isAppCalendar) {
@@ -67980,6 +68011,31 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
         }
         $scope.modalData.calendarData.courses.splice(index, 1);
         $scope.modalData.calendarData.errors.courses.splice(index, 1);
+    };
+
+    $scope.getCoursesFromRosi = function() {
+        promise = RosiService.getCourses($scope.modalData.calendarData.username, $scope.modalData.calendarData.password);
+
+        promise.then(
+            function (data) {
+                var calendarsToExclude = [],
+                    i;
+                for (i = 0; i < $scope.modalData.usersCalendars.length; i++) {
+                    calendarsToExclude.push($scope.modalData.usersCalendars[i]);
+                }
+                for (i = 0; i < $scope.modalData.calendarData.courses.length; i++) {
+                    calendarsToExclude.push($scope.modalData.calendarData.courses[i].title);
+                }
+                for (i = 0; i < data.length; i++) {
+                    if (calendarsToExclude.indexOf(data[i].name) === -1) {
+                        $scope.modalData.calendarData.courses.push({title: data[i]});
+                    }
+                }
+                $scope.validateForm();
+            }, function (reason) {
+                // Do nothing. The update failed.
+            }
+        );
     };
 
     $scope.validateForm = function() {
@@ -68036,7 +68092,7 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
 };
 
 angular.module("timeTable.controllers.calendarModal", [])
-.controller("CalendarModalController", ["$scope", "$mdDialog", "Constants", "CalendarService", "calendars", calendarModalController]);
+.controller("CalendarModalController", ["$scope", "$mdDialog", "Constants", "CalendarService", "RosiService", "calendars", calendarModalController]);
 
 var eventModalController = function ($scope, $mdDialog, Constants, EventService, eventData, calendars) {
     $scope.open = function($event, opened) {
