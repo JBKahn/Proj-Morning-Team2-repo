@@ -64,7 +64,7 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
                     calendarsToExclude.push($scope.modalData.calendarData.courses[i].title);
                 }
                 for (i = 0; i < data.length; i++) {
-                    if (calendarsToExclude.indexOf(data[i].trim() === -1)) {
+                    if (calendarsToExclude.indexOf(data[i].trim()) === -1) {
                         $scope.modalData.calendarData.courses.push({title: data[i].trim()});
                     }
                 }
