@@ -3,5 +3,5 @@ from rosi_parse.views import RosiParseAPIView
 
 urlpatterns = patterns(
     '',
-    url(r'^courses/', RosiParseAPIView.as_view(), name='get_courses'),
+    url(r'^courses/', RosiParseAPIView.as_view(), name='list_courses'),
 )

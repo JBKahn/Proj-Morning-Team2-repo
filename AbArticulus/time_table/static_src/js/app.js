@@ -1,5 +1,3 @@
-
-
 Error.stackTraceLimit = Infinity;
 var myApp = angular.module("TimeTableApp", [
     "ngRoute",
@@ -12,7 +10,8 @@ var myApp = angular.module("TimeTableApp", [
     "timeTable.controllers.eventModal",
     "timeTable.controllers.calendarModal",
     "timeTable.service.eventService",
-    "timeTable.service.calendarService"
+    "timeTable.service.calendarService",
+    "timeTable.service.rosiService"
 ])
 .config(["$httpProvider", "$routeProvider", function($httpProvider, $routeProvider) {
     $httpProvider.defaults.xsrfCookieName = "csrftoken";
@@ -38,6 +37,7 @@ angular.module("timeTable.constants", [])
         eventUpdateUrl: jsBootstrap.eventUpdateUrl || "",
         voteCreateUrl: jsBootstrap.voteCreateUrl || "",
         commentCreateUrl: jsBootstrap.commentCreateUrl || "",
+        rosiCourseListUrl: jsBootstrap.rosiCourseListUrl || "",
         tagTypes: jsBootstrap.tagTypes || "",
         staticUrl: jsBootstrap.staticUrl || "",
         userId: jsBootstrap.userId || ""

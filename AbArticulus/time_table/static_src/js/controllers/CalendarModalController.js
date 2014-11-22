@@ -1,4 +1,4 @@
-var calendarModalController = function ($scope, $mdDialog, Constants, CalendarService, calendars) {
+var calendarModalController = function ($scope, $mdDialog, Constants, CalendarService, RosiService, calendars) {
     var usersAppCalendars = [];
     for (i = 0; i < calendars.length; i++) {
         if (calendars[i].isAppCalendar) {
@@ -48,6 +48,31 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
         }
         $scope.modalData.calendarData.courses.splice(index, 1);
         $scope.modalData.calendarData.errors.courses.splice(index, 1);
+    };
+
+    $scope.getCoursesFromRosi = function() {
+        promise = RosiService.getCourses($scope.modalData.calendarData.username, $scope.modalData.calendarData.password);
+
+        promise.then(
+            function (data) {
+                var calendarsToExclude = [],
+                    i;
+                for (i = 0; i < $scope.modalData.usersCalendars.length; i++) {
+                    calendarsToExclude.push($scope.modalData.usersCalendars[i]);
+                }
+                for (i = 0; i < $scope.modalData.calendarData.courses.length; i++) {
+                    calendarsToExclude.push($scope.modalData.calendarData.courses[i].title);
+                }
+                for (i = 0; i < data.length; i++) {
+                    if (calendarsToExclude.indexOf(data[i].name) === -1) {
+                        $scope.modalData.calendarData.courses.push({title: data[i]});
+                    }
+                }
+                $scope.validateForm();
+            }, function (reason) {
+                // Do nothing. The update failed.
+            }
+        );
     };
 
     $scope.validateForm = function() {
@@ -104,4 +129,4 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
 };
 
 angular.module("timeTable.controllers.calendarModal", [])
-.controller("CalendarModalController", ["$scope", "$mdDialog", "Constants", "CalendarService", "calendars", calendarModalController]);
+.controller("CalendarModalController", ["$scope", "$mdDialog", "Constants", "CalendarService", "RosiService", "calendars", calendarModalController]);

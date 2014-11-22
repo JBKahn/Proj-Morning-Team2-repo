@@ -41,8 +41,9 @@ def make_request(user, url, params=None, method="GET", data=None):
             sleep(0.5)
         # Default params will pass other params if we need more.
         if params is None:
-            social = user.social_auth.get(provider='google-oauth2')
-            params = {'access_token': social.extra_data['access_token']}
+            params = {}
+        social = user.social_auth.get(provider='google-oauth2')
+        params.update({'access_token': social.extra_data['access_token']})
         if method == "GET":
             response = requests.get(
                 url=url,

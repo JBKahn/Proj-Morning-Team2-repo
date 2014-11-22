@@ -1,12 +1,12 @@
-from subprocess import check_output
+from subprocess import check_output, CalledProcessError
+
+from django.views.decorators.debug import sensitive_variables
 
 
+@sensitive_variables('username', 'password')
 def get_courses_from_rosi(username, password):
-    raw_courses = check_output(['./rosi_parse/casperjs', './rosi_parse/schedule_parser.js', username, password])
-    courses = []
-    for course in raw_courses.split(','):
-        courses.append({
-            'course_code': course.split('-')[0],
-            'lecture_section': course.split('-')[1]
-        })
-    return courses
+    try:
+        raw_courses = check_output(['./rosi_parse/casperjs', './rosi_parse/schedule_parser.js', username, password])
+    except CalledProcessError:
+        raise Exception('You must login to your account once before we can, there is a capcha. Or your credentials are bad.')
+    return raw_courses.split(',')

@@ -5,6 +5,9 @@ from rest_framework.response import Response
 from rosi_parse.forms import ROSIForm
 from rosi_parse.utils import get_courses_from_rosi
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.debug import sensitive_variables
+
 
 class RosiParseAPIView(APIView):
     """
@@ -12,6 +15,7 @@ class RosiParseAPIView(APIView):
     Only accepts post requests.
     """
 
+    @method_decorator(sensitive_variables('password'))
     def post(self, request, format='JSON', *args, **kwargs):
         form = ROSIForm(request.DATA)
 
