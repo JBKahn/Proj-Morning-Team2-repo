@@ -5,7 +5,7 @@ from rest_framework import status
 from abcalendar.constants import TAG_CHOICES
 from abcalendar.models import Calendar
 from api.interfaces.api_interface import ApiInterface
-from time_table.serializers import SimpleEventSerializer, SimpleEventUpdateSerializer, SimpleTagSerializer, SimpleCalendarSerializer, SimpleDatabaseCalendarSerializer
+from time_table.serializers import SimpleEventSerializer, SimpleEventUpdateSerializer, SimpleTagSerializer, SimpleCalendarSerializer, SimpleDatabaseCalendarSerializer, SimpleVoteSerializer, SimpleCommentSerializer
 
 from django.conf import settings
 from django.views.generic import TemplateView
@@ -45,6 +45,36 @@ class EventCreateView(APIView):
         errors = {}
         errors.update(event_serializer.errors)
         errors.update(tag_serializer.errors)
+        return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class VoteCreateView(APIView):
+    def post(self, request, format='JSON', *args, **kwargs):
+        event_serializer = SimpleEventSerializer(data=request.DATA)
+        tag_serializer = SimpleTagSerializer(data=request.DATA)
+        vote_serializer = SimpleVoteSerializer(data=request.DATA)
+        if event_serializer.is_valid() and (Calendar.objects.filter(gid=request.DATA.get('calendar')).exists() and tag_serializer.is_valid()) and vote_serializer.is_valid():
+            new_event_data = ApiInterface.vote_for_user_event(user=request.user, calendar_id=request.DATA.get('calendar'), event_data=event_serializer.data, tag_data=tag_serializer.data, vote_data=vote_serializer.data)
+            new_event_data['calendar_id'] = request.DATA.get('calendar')
+            return Response(new_event_data)
+        errors = {}
+        errors.update(event_serializer.errors)
+        errors.update(tag_serializer.errors)
+        errors.update(vote_serializer.errors)
+        return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CommentCreateView(APIView):
+    def post(self, request, format='JSON', *args, **kwargs):
+        tag_serializer = SimpleTagSerializer(data=request.DATA)
+        comment_serializer = SimpleCommentSerializer(data=request.DATA)
+        if comment_serializer.is_valid() and (Calendar.objects.filter(gid=request.DATA.get('calendar')).exists() and tag_serializer.is_valid()):
+            new_event_data = ApiInterface.add_comment_to_event(user=request.user, calendar_id=request.DATA.get('calendar'), tag_data=tag_serializer.data, comment_data=comment_serializer.data)
+            new_event_data['calendar_id'] = request.DATA.get('calendar')
+            return Response(new_event_data)
+        errors = {}
+        errors.update(tag_serializer.errors)
+        errors.update(comment_serializer.errors)
         return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
 

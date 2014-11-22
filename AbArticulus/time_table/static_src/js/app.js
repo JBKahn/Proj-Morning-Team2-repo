@@ -36,6 +36,8 @@ angular.module("timeTable.constants", [])
         calendarListUrl: jsBootstrap.calendarListUrl || "",
         eventListUrl: jsBootstrap.eventListUrl || "",
         eventUpdateUrl: jsBootstrap.eventUpdateUrl || "",
+        voteCreateUrl: jsBootstrap.voteCreateUrl || "",
+        commentCreateUrl: jsBootstrap.commentCreateUrl || "",
         tagTypes: jsBootstrap.tagTypes || "",
         staticUrl: jsBootstrap.staticUrl || "",
         userId: jsBootstrap.userId || ""

@@ -145,3 +145,21 @@ md-content.md-default-theme md-input-group input[haserrors="true"] {
 .fc-event-container div {
     color: #212121;
 }
+
+#CommentList {
+    .md-tile-content {
+        padding-top: 0;
+        padding-bottom: 0;
+        h4 {
+            text-align: right;
+        }
+    }
+}
+
+#CommentInput input {
+    width: 100%;
+}
+
+#CommentSubmit {
+    height: 30px;
+}
