@@ -34,6 +34,10 @@ class ApiInterface(object):
         return response.json()
 
     @classmethod
+    def user_add_calendars(cls, user, titles):
+        return [cls.user_add_calendar(user, title) for title in titles]
+
+    @classmethod
     def user_add_calendar(cls, user, title):
         calendar_user = get_user_model().objects.get(email=settings.EMAIL_OF_USER_WITH_CALENDARS)
         calendars = cls.get_calendars_from_user(calendar_user)

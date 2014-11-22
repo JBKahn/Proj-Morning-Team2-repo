@@ -11,8 +11,10 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
             'calendars': [],
             'usersCalendars': usersAppCalendars,
             calendarData: {
-                'title': '',    
-                'errors': {}
+                'courses': [{'title': ''}],
+                'errors': {
+                    'courses': ['']
+                }
             }
         };
         CalendarService.getCalendars().then(function (data) {
@@ -33,26 +35,40 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
         $scope.validateForm();
     }, true);
 
+    $scope.addMoreCourses = function() {
+        $scope.modalData.calendarData.courses.push({
+            'title': ''
+        });
+        $scope.modalData.calendarData.errors.courses.push('');
+    };
+
+    $scope.removeCourseFromList = function(index) {
+        if ($scope.modalData.calendarData.courses.length < 2) {
+            return;
+        }
+        $scope.modalData.calendarData.courses.splice(index, 1);
+        $scope.modalData.calendarData.errors.courses.splice(index, 1);
+    };
+
     $scope.validateForm = function() {
         var calendarData = $scope.modalData.calendarData;
-        var errors = [];
-        $scope.modalData.calendarData.errors = {};
-        if (!calendarData.title) {
-            $scope.modalData.calendarData.errors.title = 'title is required';
-        } else {
-            var validCourse = calendarData.title.match("^([A-Z]{3})[0-9]{3}(H|Y)1 (F|S|Y) (LEC|TUT)-[0-9]{4}$");
-            if (!validCourse) {
-                $scope.modalData.calendarData.errors.title = 'invalid course format';
+        for (var i = 0; i < calendarData.courses.length; i++) {
+            calendarData.errors.courses[i] = '';
+            if (!calendarData.courses[i].title) {
+                calendarData.errors.courses[i] = 'title is required';
+            } else {
+                var validCourse = calendarData.courses[i].title.match("^([A-Z]{3})[0-9]{3}(H|Y)1 (F|S|Y) (LEC|TUT|PRA)-[0-9]{4}$");
+                if (!validCourse) {
+                    calendarData.errors.courses[i] = 'invalid course format';
+                }
             }
         }
         return {
-            'errors': errors
+            'errors': calendarData.errors
         };
     };
 
-
-
-    $scope.addCalendar = function() {
+    $scope.addCalendars = function() {
         var calendarData = $scope.modalData.calendarData;
         var validate = $scope.validateForm();
         if (validate.errors.length > 0) {
@@ -61,7 +77,11 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
         }
 
         var promise;
-        promise = CalendarService.addCalendar(calendarData.title);
+        var courses = [];
+        for (var i = 0; i < calendarData.courses.length; i++) {
+            courses.push(calendarData.courses[i].title);
+        }
+        promise = CalendarService.addCalendar(courses);
 
         promise.then(
             function (data) {
@@ -73,7 +93,7 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
     };
 
     $scope.save = function () {
-        $scope.addCalendar();
+        $scope.addCalendars();
     };
 
     $scope.cancel = function () {

@@ -735,4 +735,9 @@ md-content.md-default-theme md-input-group input[haserrors="true"] {
 #CommentSubmit {
   height: 30px; }
 
+#AddCalendarForm button {
+  height: 30px; }
+#AddCalendarForm md-input-group {
+  display: inline-block; }
+
 /*# sourceMappingURL=app.css.map */
