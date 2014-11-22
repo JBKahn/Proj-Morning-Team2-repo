@@ -22,7 +22,6 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         return '';
     };
 
-
     $scope.$watch('modalData.eventData', function(newValue, oldValue) {
         $scope.validateForm();
         if (newValue != oldValue) {
@@ -78,16 +77,72 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
     };
 
     $scope.voteOnAlternative = function(alternative, vote) {
-        for (var i = 0; i < $scope.modalData.alternateTimes.length; i++) {
-            if (vote === 1) {
-                $scope.setUserVoteOnAlternative($scope.modalData.alternateTimes[i], 0);
-                $scope.modalData.alternateTimes[i].userVote = 0;
-                $scope.modalData.alternateTimes[i].voteTotal = $scope.getVoteTotalForEvent($scope.modalData.alternateTimes[i]);
+        eventData = $scope.modalData.eventData;
+        promise = EventService.voteForEvent(eventData.calendar.id, eventData.title, alternative.start, alternative.end, alternative.all_day, $scope.modalData.initialEvent.description.tag.tag_type, $scope.modalData.initialEvent.description.tag.number, vote);
+        promise.then(
+            function (data) {
+                $scope.modalData.initialEvent.allDay = data.allDay;
+                $scope.modalData.initialEvent.start = data.start;
+                $scope.modalData.initialEvent.end = data.end;
+                $scope.modalData.initialEvent.description = data.description;
+                $scope.modalData.initialEvent.sequence = data.sequence;
+                $scope.modalData.comments = data.description.comments;
+                $scope.updateAlternatives(data.description.events);
+                $scope.modalData.alternateTimes = data.description.events;
+
+                $scope.modalData.sequence = data.sequence;
+                $scope.modalData.startDay = moment(data.start).format("YYYY/MM/DD");
+                $scope.modalData.startTime = moment(data.start).format("h:mma");
+                $scope.modalData.endDay = moment(data.end).format("YYYY/MM/DD");
+                $scope.modalData.endTime = moment(data.end).format("h:mma");
+                $scope.modalData.allDay = data.allDay;
+            }, function (reason) {
+                // Do nothing. The update failed.
             }
+        );
+    };
+
+    $scope.updateAlternatives = function(events) {
+        for (var i = 0; i < events.length; i++) {
+            var formatStr;
+            if (events[i].allDay) {
+                formatStr = 'ddd, MMM Do';
+            } else {
+                formatStr = "ddd, MMM Do YYYY, h:mma";
+            }
+            events[i].startFormatted = moment(events[i].start).format(formatStr);
+            events[i].endFormatted = moment(events[i].end).format(formatStr);
+            events[i].userVote = $scope.getUserVote(events[i].votes);
+            events[i].voteTotal = $scope.getVoteTotalForEvent(events[i].votes);
         }
-        $scope.setUserVoteOnAlternative(alternative, vote);
-        alternative.userVote = vote;
-        alternative.voteTotal = $scope.getVoteTotalForEvent(alternative.votes);
+    };
+
+    $scope.addComment = function() {
+        var comment = $scope.modalData.newComment;
+        if (comment !== '' && comment !== undefined) {
+            promise = EventService.commentOnEvent(eventData.calendar.id, $scope.modalData.initialEvent.description.tag.tag_type, $scope.modalData.initialEvent.description.tag.number, comment);
+            promise.then(
+                function (data) {
+                    $scope.modalData.initialEvent.allDay = data.allDay;
+                    $scope.modalData.initialEvent.start = data.start;
+                    $scope.modalData.initialEvent.end = data.end;
+                    $scope.modalData.initialEvent.description = data.description;
+                    $scope.modalData.initialEvent.sequence = data.sequence;
+                    $scope.modalData.comments = data.description.comments;
+                    $scope.updateAlternatives(data.description.events);
+                    $scope.modalData.alternateTimes = data.description.events;
+
+                    $scope.modalData.sequence = data.sequence;
+                    $scope.modalData.startDay = moment(data.start).format("YYYY/MM/DD");
+                    $scope.modalData.startTime = moment(data.start).format("h:mma");
+                    $scope.modalData.endDay = moment(data.end).format("YYYY/MM/DD");
+                    $scope.modalData.endTime = moment(data.end).format("h:mma");
+                    $scope.modalData.allDay = data.allDay;
+                }, function (reason) {
+                    // Do nothing. The update failed.
+                }
+            );
+        }
     };
 
     $scope.init = function() {
@@ -100,22 +155,12 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
             var calendar = $scope.getCalendarOption(calendars, eventData.calendar.id),
                 hasJsonDescription = (Object(eventData.description) === eventData.description);
             if (hasJsonDescription) {
-                for (var i = 0; i < eventData.description.events.length; i++) {
-                    var formatStr;
-                    if (eventData.description.events[i].allDay) {
-                        formatStr = 'ddd, MMM Do';
-                    } else {
-                        formatStr = "ddd, MMM Do YYYY, h:mma";
-                    }
-                    eventData.description.events[i].startFormatted = moment(eventData.description.events[i].start).format(formatStr);
-                    eventData.description.events[i].endFormatted = moment(eventData.description.events[i].end).format(formatStr);
-                    eventData.description.events[i].userVote = $scope.getUserVote(eventData.description.events[i].votes);
-                    eventData.description.events[i].voteTotal = $scope.getVoteTotalForEvent(eventData.description.events[i].votes);
-                }
+                $scope.updateAlternatives(eventData.description.events);
             }
             if (calendar.isAppCalendar && !eventData.isreccuring) {
                 $scope.modalData = {
                     'modalTitle': "Vote or Suggest a New Date and Time",
+                    'initialEvent': eventData,
                     'saveButtonText': 'Suggest New Date',
                     'appEventFields': appEventFields,
                     'userEventFields': userEventFields,
@@ -131,10 +176,11 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                         'calendar': calendar,
                         'id': eventData.id,
                         'sequence': eventData.sequence,
+                        'title': eventData.title,
                         'startDay': moment(eventData.start).format("YYYY/MM/DD"),
-                        'endDay': moment(eventData.end).format("YYYY/MM/DD"),
+                        'endDay': moment(eventData.end).add('hours', 1).format("YYYY/MM/DD"),
                         'startTime': moment(eventData.start).format("h:mma"),
-                        'endTime': moment(eventData.end).format("h:mma"),
+                        'endTime': moment(eventData.end).add('hours', 1).format("h:mma"),
                         'allDay': eventData.allDay,
                         'tagType':(hasJsonDescription && eventData.description.tag  && (eventData.description.tag.tag_type.charAt(0).toUpperCase() + eventData.description.tag.tag_type.slice(1).toLowerCase())) || '',
                         'tagNumber':hasJsonDescription && eventData.description.tag && eventData.description.tag.number || 0
@@ -145,6 +191,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                     $scope.modalData = {
                         'saveButtonText': 'Save Changes',
                         'modalTitle': "Edit Event",
+                        'initialEvent': eventData,
                         'appEventFields': appEventFields,
                         'userEventFields': userEventFields,
                         'disabledEventFields': [],
@@ -167,6 +214,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                     $scope.modalData = {
                         'saveButtonText': '',
                         'modalTitle': "View Event",
+                        'initialEvent': eventData,
                         'appEventFields': appEventFields,
                         'userEventFields': userEventFields,
                         'disabledEventFields': ['title', 'startDay', 'endDay', 'startTime', 'endTime', 'allDay', 'calendar'],

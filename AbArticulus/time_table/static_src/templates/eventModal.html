@@ -52,7 +52,7 @@
           </md-item>
         </md-list>
 
-        <md-list ng-show="shouldShowField('comments')">
+        <md-list id="CommentList" ng-show="shouldShowField('comments')">
             <h4>Comments</h4>
             <md-item ng-repeat="item in modalData.comments">
                 <md-item-content>
@@ -61,7 +61,12 @@
                         <h4>-{{item.user}}</h4>
                     </div>
                 </md-item-content>
-          </md-item>
+            </md-item>
+            <form>
+                <md-text-float id="CommentInput" label="Comment" hasErrors="{{modalData.eventData.errors.tagNumber}}" ng-model="modalData.newComment"> </md-text-float>
+                <md-button id="CommentSubmit" ng-click="addComment()" class="md-raised md-primary">Add Comment</md-button>
+            </form>
+
         </md-list>
     </md-content>
     <div class="md-actions modal-buttons">
