@@ -105,6 +105,6 @@ class CalendarListCreateView(APIView):
     def post(self, request, format='JSON', *args, **kwargs):
         calendar_serializer = SimpleCalendarSerializer(data=request.DATA)
         if calendar_serializer.is_valid():
-            new_calendar_data = ApiInterface.user_add_calendar(user=request.user, title=calendar_serializer.data.get('title'))
+            new_calendar_data = ApiInterface.user_add_calendars(user=request.user, titles=calendar_serializer.data.get('courses'))
             return Response(new_calendar_data)
         return Response(calendar_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
