@@ -157,7 +157,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
             if (hasJsonDescription) {
                 $scope.updateAlternatives(eventData.description.events);
             }
-            if (calendar.isAppCalendar && !eventData.isreccuring) {
+            if (calendar.isAppCalendar) {
                 $scope.modalData = {
                     'modalTitle': "Vote or Suggest a New Date and Time",
                     'initialEvent': eventData,
@@ -178,16 +178,16 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                         'sequence': eventData.sequence,
                         'title': eventData.title,
                         'startDay': moment(eventData.start).format("YYYY/MM/DD"),
-                        'endDay': moment(eventData.end).add('hours', 1).format("YYYY/MM/DD"),
+                        'endDay': moment(eventData.end).format("YYYY/MM/DD"),
                         'startTime': moment(eventData.start).format("h:mma"),
-                        'endTime': moment(eventData.end).add('hours', 1).format("h:mma"),
+                        'endTime': moment(eventData.end).format("h:mma"),
                         'allDay': eventData.allDay,
                         'tagType':(hasJsonDescription && eventData.description.tag  && (eventData.description.tag.tag_type.charAt(0).toUpperCase() + eventData.description.tag.tag_type.slice(1).toLowerCase())) || '',
                         'tagNumber':hasJsonDescription && eventData.description.tag && eventData.description.tag.number || 0
                     }
                 };
             } else {
-                if (eventData.canEditEvents && !eventData.isReccuring) {
+                if (eventData.canEditEvents) {
                     $scope.modalData = {
                         'saveButtonText': 'Save Changes',
                         'modalTitle': "Edit Event",
@@ -204,9 +204,9 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                             'sequence': eventData.sequence,
                             'title': eventData.title,
                             'startDay': moment(eventData.start).format("YYYY/MM/DD"),
-                            'endDay': moment(eventData.end).add('hours', 1).format("YYYY/MM/DD"),
+                            'endDay': moment(eventData.end).format("YYYY/MM/DD"),
                             'startTime': moment(eventData.start).format("h:mma"),
-                            'endTime': moment(eventData.end).add('hours', 1).format("h:mma"),
+                            'endTime': moment(eventData.end).format("h:mma"),
                             'allDay': eventData.allDay,
                         }
                     };
@@ -229,7 +229,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                             'startDay': moment(eventData.start).format("YYYY/MM/DD"),
                             'endDay': moment(eventData.end).format("YYYY/MM/DD"),
                             'startTime': moment(eventData.start).format("h:mma"),
-                            'endTime': moment(eventData.end).add('hours', 1).format("h:mma"),
+                            'endTime': moment(eventData.end).format("h:mma"),
                             'allDay': eventData.allDay,
                         }
                     };
