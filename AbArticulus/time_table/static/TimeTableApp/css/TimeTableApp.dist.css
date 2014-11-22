@@ -691,10 +691,8 @@ table.fc-border-separate {
 .calendar {
   width: 828px; }
 
-#CreateCalendarModal {
-  overflow: inherit; }
-  #CreateCalendarModal input {
-    width: 193px; }
+#CreateCalendarModal input {
+  width: 193px; }
 
 md-toolbar#toolbar {
   background-color: #d14836; }
