@@ -86,7 +86,7 @@ def parse_course_offerings(course_link):
         course_code_out, course_info_out, is_cancelled = get_course_information(table_rows[row])
 
         if not is_cancelled:
-            
+
             course_offering_and_info[course_code_out].append(course_info_out)
         row += 1
 
@@ -138,23 +138,23 @@ def soupified(uoft_timetable_website, some_string):
     table = parse_website_content.find(some_string)
 
     return table
-   
+
+
 def format_meeting_section(section):
     ''' Formats meeting section code '''
     if (len(section) <= 5):
         return section.replace('T', 'TUT-').replace('L', 'LEC-').replace('P', 'PRA-')
     return section
 
+
 def get_course_information(tr):
     ''' Returns course code, courses schedule offerings, and status of sched.'''
     course_info = [", ".join(cell.findAll(text=True)) for cell in tr.findAll('td')]
     course_code = clean_text(course_info[0].encode('utf-8'))
     course_info_report = []
-    
 
     for content in [1, 2, 3, 5, 6, 7]:
         if content < len(course_info):
-            
             course_info_report.append(clean_text(course_info[content].encode('utf-8')))
         else:
             course_info_report.append('')

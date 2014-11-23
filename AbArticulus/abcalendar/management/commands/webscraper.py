@@ -3,44 +3,70 @@ import re
 from datetime import datetime, timedelta
 from string import ascii_letters
 
+from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
 from abcalendar.time_table_parser import University_of_Toronto_Timetable
 from api.interfaces.api_interface import ApiInterface
-from authentication.models import CustomUser
 
 
 class Command(BaseCommand):
     help = 'Adds a course in the timetable database.'
 
     def handle(self, *args, **options):
-        calendar_id = 'primary'
-        if CustomUser.objects.filter(is_staff=True).exists():
-            user = CustomUser.objects.filter(is_staff=True)[0]
-        else:
-            print "This command requires a staff account to exist. Please create one and try again"
-            return
-        timetable_info = self.timetable_information()
-        for course, course_info in timetable_info.iteritems():
-            # for each course, create a tag object
-            for lecture in course_info:
 
-                # returns sec_code, course_desc, meeting_sec, course_time, course_loc, instructor
-                # Michelle: this doesn't always work.
+        if not get_user_model().objects.filter(email=settings.EMAIL_OF_USER_WITH_CALENDARS).exists():
+            print "This command requires you authenticate or login with {}.".format(settings.EMAIL_OF_USER_WITH_CALENDARS)
+            return
+
+        calendar_user = get_user_model().objects.get(email=settings.EMAIL_OF_USER_WITH_CALENDARS)
+        timetable_info = University_of_Toronto_Timetable()
+        for course, course_info in timetable_info.iteritems():
+            for lecture in course_info:
+                # TODO: unsure if you looked into this, but Michelle: this didn't always work.
                 sec_code, course_desc, meeting_sec, course_time, course_loc, instructor = lecture
                 course_title = course + " : " + course_desc
                 lecture_times = self.convert_lecture_time_codes(course_time)
 
-                print lecture
-                # Hard coding Y till I figure out where you put it.
+                course_name = course + " : " + course_desc  # Must be the same format accepted by the frontend
+                #
+                #
+                # DO NOT UNCOMMENT UNTIL THIS IS READY FOR FINAL TESTING AND NOT WITHOUT TALKING TO ME FIRST
+                # clander_info = ApiInterface.add_calendar(course_name)
+
+
+                # TODO: Michelle hook this up to wherever you get it from
+                season = 'Y'
                 for weekday, start_time, duration in lecture_times:
-                    event_start, event_end, recur_until = self.get_reccuring_time_until('Y', weekday, start_time, duration)
+                    # TODO: Fix am/pm in this function and ensure it works using the print statement
+                    event_start, event_end, recur_until = self.get_reccuring_time_until(season, weekday, start_time, duration)
                     print weekday, start_time, duration
-#                    try:
-#                        event = ApiInterface.create_google_json(title=course_title, start=event_start, end=event_end, all_day=False, description=None, location=None, recur_until=recur_until)
-#                        ApiInterface.post_event_to_calendar(user=user, calendar_id=calendar_id, event=event, tag="LECTURE", org=course)
-#                    except Exception:
-#                        print "failed to add course: {}".format(course_title)
+
+                    event_data = {
+                        'title': '',  # e.g. `CSC301 Lecture 01`
+                        'start': event_start,
+                        'end': event_end,
+                        'all_day': False,
+                        'reccur_until': recur_until
+                    }
+
+                    tag_data = {
+                        'number': 1,
+                        'tag_type': 'LECTURE'
+                    }
+
+                    #
+                    #
+                    #
+                    # TODO: Uncomment when ready for testing. DO NOT TEST THIS PART WITHOUT TALKING TO ME FIRST.
+                    #
+                    #
+                    #try:
+                    #    ApiInterface.add_user_event(calendar_user, calendar_info.get('id'), event_data, tag_data)
+                    #except Exception as e:
+                    #    print e
+                    #    print "failed to add course: {}".format(course_title)
         return
 
     def get_reccuring_time_until(self, time_period, day_of_week, hour_start, duration):
@@ -86,12 +112,16 @@ class Command(BaseCommand):
         current_time = ''
         lecture_times = []
         reset_time = False
-        # TODO: FIX
+        # TODO: FIX, this shouldn't get in here.
         if time_code_string == 'Cancel' or len(time_code_string) == 1:
-            #TODO: Michelle, cancelled courses can get in.
+            # TODO: Michelle, cancelled courses can get in.
             return lecture_times
+        # TODO: Michelle find a way to fix these. I still
+        # want you to add the TBA courses to the list of courses you return just not the times with TBA in them.
         if time_code_string in ['TBA', 'See Details']:
             return lecture_times
+
+        # TODO: Michelle fix The lines with `+ 12` are the original demo am vs pm stuff. Not good eoungh.
         for char in backwards_timecode:
             if char not in ascii_letters:
                 if reset_time:
@@ -128,7 +158,3 @@ class Command(BaseCommand):
                 lecture_times.append((char, start, duration))
                 reset_time = True
         return lecture_times
-
-    def timetable_information(self):
-        ''' Returns a dictionary containing course offerings in UofT. '''
-        return University_of_Toronto_Timetable()
