@@ -1,17 +1,16 @@
+from django.conf import settings
 from django.db import models
 
 from constants import TAG_CHOICES, VOTE_CHOICES
 
 
-class Organization(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    user = models.ForeignKey('authentication.CustomUser')
+class Calendar(models.Model):
+    name = models.CharField(max_length=255, unique=True)  # e.g. `CSC301H1S-L0101`
+    gid = models.CharField(max_length=255, unique=True)
 
 
 class Tag(models.Model):
     tag_type = models.CharField(max_length=25, choices=TAG_CHOICES)
-    organization = models.ForeignKey(Organization)
-    class_section = models.CharField(max_length=25, null=True)
     number = models.IntegerField(default=1, blank=True, null=True)
 
     def save(self, *args, **kwargs):
@@ -20,20 +19,29 @@ class Tag(models.Model):
         super(Tag, self).save(*args, **kwargs)
 
 
+class GoogleEvent(models.Model):
+    tag = models.ForeignKey(Tag)
+    calendar = models.ForeignKey(Calendar)
+    gid = models.CharField(max_length=255, unique=True)
+    revision = models.IntegerField()
+
+
 class Event(models.Model):
-    gevent_id = models.CharField(max_length=255)  # Google event id
-    tag = models.ForeignKey(Tag, default=None)
-    user = models.ForeignKey('authentication.CustomUser')
+    gevent = models.ForeignKey(GoogleEvent, related_name='events')
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+    reccur_until = models.DateTimeField(blank=True, null=True)
+    all_day = models.BooleanField(default=False)
 
 
 class Comment(models.Model):
-    event = models.ForeignKey(Event)
-    user = models.ForeignKey('authentication.CustomUser')
+    gevent = models.ForeignKey(GoogleEvent, related_name='comments')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     comment = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
 
 
 class Vote(models.Model):
-    user = models.ForeignKey('authentication.CustomUser')
-    event = models.ForeignKey(Event)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    event = models.ForeignKey(Event, related_name='votes')
     number = models.IntegerField(choices=VOTE_CHOICES)

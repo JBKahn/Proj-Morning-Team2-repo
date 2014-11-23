@@ -18,7 +18,6 @@ class LoggedInView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         if not self.request.user.is_authenticated():
             return reverse('home:home_page')
-        # TODO: Signup flow
         return reverse('time_table:home')
 
 

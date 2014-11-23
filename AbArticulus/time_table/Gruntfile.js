@@ -23,11 +23,18 @@ module.exports = function(grunt) {
                 src: [
                     appConfig.path.bowerPath + 'moment/min/moment-with-locales.js',
                     appConfig.path.bowerPath + "jquery/dist/jquery.min.js",
-                    appConfig.path.bowerPath + "fullcalendar/fullcalendar.min.js",
+                    appConfig.path.bowerPath + "jquery-ui/jquery-ui.js",
+                    appConfig.path.appPath + "js/fullcalendar.old.js",
                     appConfig.path.bowerPath + 'angular/angular.js',
                     appConfig.path.bowerPath + 'angular-route/angular-route.js',
                     appConfig.path.bowerPath + "bootstrap/dist/js/bootstrap.min.js",
-                    appConfig.path.bowerPath + "angular-ui-calendar/src/calendar.js"
+                    appConfig.path.bowerPath + "angular-ui-calendar/src/calendar.js",
+                    appConfig.path.bowerPath + "angular-bootstrap/ui-bootstrap-tpls.min.js",
+                    appConfig.path.bowerPath + "ui-bootstrap/src/modal.js",
+                    appConfig.path.bowerPath + "angular-animate/angular-animate.min.js",
+                    appConfig.path.bowerPath + "angular-aria/angular-aria.min.js",
+                    appConfig.path.bowerPath + "hammerjs/hammer.js",
+                    appConfig.path.appPath + "js/angular-material.js"
                 ],
                 dest: appConfig.path.buildPath + "js/requirements.dist.js"
             },
@@ -35,7 +42,10 @@ module.exports = function(grunt) {
                 src: [
                     appConfig.path.bowerPath + "bootstrap/dist/css/bootstrap.min.css",
                     appConfig.path.bowerPath + "font-awesome/css/font-awesome.min.css",
-                    appConfig.path.bowerPath + "fullcalendar/fullcalendar.css"
+                    appConfig.path.bowerPath + "fullcalendar/dist/fullcalendar.css",
+                    appConfig.path.bowerPath + "fullcalendar/fullcalendar.css",
+                    appConfig.path.bowerPath + "ui-bootstrap/docs/css/style.css",
+                    appConfig.path.bowerPath + "angular-material/angular-material.min.css"
                 ],
                 dest: appConfig.path.buildPath + "css/deps.style.dist.css"
             },
@@ -105,7 +115,7 @@ module.exports = function(grunt) {
                 files: [
                     appPath + "sass/*",
                     appPath + "js/*",
-                    appPath + "html/*",
+                    appPath + "templates/*",
                 ],
                 tasks: ['default']
             }
@@ -126,7 +136,7 @@ module.exports = function(grunt) {
             templates: {
                 cwd: appConfig.path.appPath,
                 options: {
-                    module: "templates",
+                    module: "AppTemplates",
                     standalone: true
                 },
                 src: "templates/**.html",

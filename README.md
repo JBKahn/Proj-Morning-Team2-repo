@@ -8,7 +8,7 @@ The PDF version of phase1 is available in the repository.
 Application Setup and Usage
 ---------------------------
 
-Alll can be found in the [Application Readme](./AbArticulus/README.md).
+All can be found in the [Application Readme](./AbArticulus/README.md).
 
 What We're Working On
 ---------------------

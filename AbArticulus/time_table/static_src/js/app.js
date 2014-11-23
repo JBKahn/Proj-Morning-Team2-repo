@@ -1,13 +1,17 @@
-
-
 Error.stackTraceLimit = Infinity;
 var myApp = angular.module("TimeTableApp", [
     "ngRoute",
-    "templates",
+    "AppTemplates",
     "ui.calendar",
+    "ui.bootstrap",
+    "ngMaterial",
+    "timeTable.constants",
     "timeTable.controllers.calendar",
-    "timeTable.services.event",
-    "timeTable.constants"
+    "timeTable.controllers.eventModal",
+    "timeTable.controllers.calendarModal",
+    "timeTable.service.eventService",
+    "timeTable.service.calendarService",
+    "timeTable.service.rosiService"
 ])
 .config(["$httpProvider", "$routeProvider", function($httpProvider, $routeProvider) {
     $httpProvider.defaults.xsrfCookieName = "csrftoken";
@@ -28,8 +32,15 @@ angular.module("timeTable.constants", [])
 .factory("Constants", ["$window", function($window) {
     var jsBootstrap = $window.jsBootstrap || {};
     var constants = {
-        timeTableUrl: jsBootstrap.timeTableUrl || "",
-        staticUrl: jsBootstrap.staticUrl || ""
+        calendarListUrl: jsBootstrap.calendarListUrl || "",
+        eventListUrl: jsBootstrap.eventListUrl || "",
+        eventUpdateUrl: jsBootstrap.eventUpdateUrl || "",
+        voteCreateUrl: jsBootstrap.voteCreateUrl || "",
+        commentCreateUrl: jsBootstrap.commentCreateUrl || "",
+        rosiCourseListUrl: jsBootstrap.rosiCourseListUrl || "",
+        tagTypes: jsBootstrap.tagTypes || "",
+        staticUrl: jsBootstrap.staticUrl || "",
+        userId: jsBootstrap.userId || ""
     };
 
     return {
