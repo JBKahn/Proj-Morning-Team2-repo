@@ -19,15 +19,3 @@
  * I tended to take the `if you want it done right, do it yourself` mentality. I spent a lot of time on code reviews (e.g. [here](https://github.com/csc301-fall2014/Proj-Morning-Team2-repo/pull/5) and [here](https://github.com/csc301-fall2014/Proj-Morning-Team2-repo/pull/7)) which could have been more productively used pair programming to better help on-board my team in the skills and conventions of our stack. In the end, I sent a tutorial or two and pointed people to docs but, aside from the demo, I could have been a better teacher of the skills I knew.
 
 ----
-
-## Name (GitHub username)
-
-TODO: Fill in the report
-
-
-----
-
-...
-
-
-
