@@ -36,3 +36,9 @@
  * Grunt usage to split up CSS files. AngularJS and all that entailed, seperate URL routing over the core application, JS library wrapping, serialization/deserialization of objects between Angular and Django.
  * Presentation and writing skills
  * Avaliability, as the semester ramped up, I got swamped and had trouble finding time to set aside for this project
+
+----
+## Allen Ji (jixuan90)
+
+* Mainly worked on ROSI student account and schedule browser automation script. Worked with Phantom JS, and tried to use AJAX to initiate the phantom script on the website when student inputs their information.
+* I have learned how to use Django framework and angular JS. I have bcome more familiar with the general build structure of a Django application integrated with Angular JS. 
