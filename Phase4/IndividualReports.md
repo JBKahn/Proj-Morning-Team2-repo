@@ -30,7 +30,7 @@
 * We had a gatekeeper who is always monitoring the merges, we had little issues on merging branches. Nobody is allowed to merge until their work has been code reviewed. I made a few commits on my webscraping branch to fix up the code for efficiency, readability as adviced by my team members.[webscraping branch] (https://github.com/csc301-fall2014/Proj-Morning-Team2-repo/pull/7)
 
 ----
-## Taras Gordiyenko
+## Taras Gordiyenko (Taras-G)
 
  * backend api wrappers for google calendar event creation calls [here](https://github.com/csc301-fall2014/Proj-Morning-Team2-repo/pull/10/files)
  * Grunt usage to split up CSS files. AngularJS and all that entailed, seperate URL routing over the core application, JS library wrapping, serialization/deserialization of objects between Angular and Django.
