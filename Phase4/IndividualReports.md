@@ -42,3 +42,4 @@
 
 * Mainly worked on ROSI student account and schedule browser automation script. Worked with Phantom JS, and tried to use AJAX to initiate the phantom script on the website when student inputs their information.
 * I have learned how to use Django framework and angular JS. I have bcome more familiar with the general build structure of a Django application integrated with Angular JS. 
+* I think I should take more initiative to work with the team and learn more from my team members.
