@@ -19,8 +19,15 @@
  * I tended to take the `if you want it done right, do it yourself` mentality. I spent a lot of time on code reviews (e.g. [here](https://github.com/csc301-fall2014/Proj-Morning-Team2-repo/pull/5) and [here](https://github.com/csc301-fall2014/Proj-Morning-Team2-repo/pull/7)) which could have been more productively used pair programming to better help on-board my team in the skills and conventions of our stack. In the end, I sent a tutorial or two and pointed people to docs but, aside from the demo, I could have been a better teacher of the skills I knew.
 
 ----
-## Michelle Bianca Data 
-*mdata2*
+## Michelle Bianca Data (mdata2)
+
+* My most significant contribution was webscraping the uoft timetable so that our application can support adding the info into our db and then auto population of courses instead of manually typing and setting up the times etc in their own personal calendar. My contribution was mainly on the backend side. [command](https://github.com/csc301-fall2014/Proj-Morning-Team2-repo/blob/web-scraping-timetable/AbArticulus/abcalendar/management/commands/webscraper.py)
+
+* While working on our application, I have learned working on the backend (i.e setting up databases or models), a bit of frontend work and how powerful the MVC mode is through the guidance of my team members, and code reviewing their work.
+
+* Code reviewing is mandatory throughout our project journey. I have a little background on both backend and frontend during the whole phase. However, I participated on code reviewing each others work and helped proof read most of our written reports.
+
+* We had a gatekeeper who is always monitoring the merges, we had little issues on merging branches. Nobody is allowed to merge until their work has been code reviewed. I made a few commits on my webscraping branch to fix up the code for efficiency, readability as adviced by my team members.
 
 ----
 ## Taras Gordiyenko
