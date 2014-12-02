@@ -21,3 +21,11 @@
 ----
 ## Michelle Bianca Data 
 *mdata2*
+
+----
+## Taras Gordiyenko
+
+ * backend api wrappers for google calendar event creation calls [here](https://github.com/csc301-fall2014/Proj-Morning-Team2-repo/pull/10/files)
+ * Grunt usage to split up CSS files. AngularJS and all that entailed, seperate URL routing over the core application, JS library wrapping, serialization/deserialization of objects between Angular and Django.
+ * Presentation and writing skills
+ * Avaliability, as the semester ramped up, I got swamped and had trouble finding time to set aside for this project
