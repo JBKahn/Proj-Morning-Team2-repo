@@ -27,7 +27,7 @@
 
 * Code reviewing is mandatory throughout our project journey. I have a little background on both backend and frontend during the whole phase. However, I participated on code reviewing each others work and helped proof read most of our written reports.
 
-* We had a gatekeeper who is always monitoring the merges, we had little issues on merging branches. Nobody is allowed to merge until their work has been code reviewed. I made a few commits on my webscraping branch to fix up the code for efficiency, readability as adviced by my team members.
+* We had a gatekeeper who is always monitoring the merges, we had little issues on merging branches. Nobody is allowed to merge until their work has been code reviewed. I made a few commits on my webscraping branch to fix up the code for efficiency, readability as adviced by my team members.[webscraping branch] (https://github.com/csc301-fall2014/Proj-Morning-Team2-repo/pull/7)
 
 ----
 ## Taras Gordiyenko
