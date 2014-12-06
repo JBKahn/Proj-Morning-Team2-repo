@@ -1,6 +1,33 @@
 AbArticulus
 ===========
 
+Note
+----
+
+You require a set of credentials for the Google API which is free, and need to put that information [here](https://github.com/csc301-fall2014/Proj-Morning-Team2-repo/blob/master/AbArticulus/mysite/common.py#L98)
+
+You also need the following APIs turned on:
+
+`BigQuery API`
+
+`CalDAV API`
+
+`Calendar API`
+
+`Google Cloud SQL`
+
+`Google Cloud Storage`
+
+`Google Cloud Storage JSON API`
+
+`Google+ API`
+
+And the settings for redirection:
+
+`REDIRECT URIS`:  `http://127.0.0.1:8000/complete/google-oauth2/`
+
+`JAVASCRIPT ORIGINS`: `http://127.0.0.1:8000/`
+
 Setup
 -----
 
