@@ -1,4 +1,4 @@
-    //! moment.js
+//! moment.js
 //! version : 2.8.3
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
@@ -25753,7 +25753,7 @@ var tooltip = $.widget( "ui.tooltip", {
  * For event drag & drop, requires jQuery UI draggable.
  * For event resizing, requires jQuery UI resizable.
  */
-
+ 
 (function($, undefined) {
 
 
@@ -25773,20 +25773,20 @@ var defaults = {
 	weekNumbers: false,
 	weekNumberCalculation: 'iso',
 	weekNumberTitle: 'W',
-
+	
 	// editing
 	//editable: false,
 	//disableDragging: false,
 	//disableResizing: false,
-
+	
 	allDayDefault: true,
 	ignoreTimezone: true,
-
+	
 	// event ajax
 	lazyFetching: true,
 	startParam: 'start',
 	endParam: 'end',
-
+	
 	// time formats
 	titleFormat: {
 		month: 'MMMM yyyy',
@@ -25801,7 +25801,7 @@ var defaults = {
 	timeFormat: { // for event elements
 		'': 'h(:mm)t' // default
 	},
-
+	
 	// locale
 	isRTL: false,
 	firstDay: 0,
@@ -25817,23 +25817,25 @@ var defaults = {
 		today: 'today',
 		month: 'month',
 		week: 'week',
-		day: 'day'
+		day: 'day',
+		adgendaWeek: 'adgenda week',
+		adgendaDay: 'adgenda day'
 	},
-
+	
 	// jquery-ui theming
 	theme: false,
 	buttonIcons: {
 		prev: 'circle-triangle-w',
 		next: 'circle-triangle-e'
 	},
-
+	
 	//selectable: false,
 	unselectAuto: true,
-
+	
 	dropAccept: '*',
-
+	
 	handleWindowResize: true
-
+	
 };
 
 // right-to-left defaults
@@ -25889,7 +25891,7 @@ $.fn.fullCalendar = function(options) {
 	}
 
 	options = options || {};
-
+	
 	// would like to have this logic in EventManager, but needs to happen before options are recursively extended
 	var eventSources = options.eventSources || [];
 	delete options.eventSources;
@@ -25897,25 +25899,25 @@ $.fn.fullCalendar = function(options) {
 		eventSources.push(options.events);
 		delete options.events;
 	}
-
+	
 
 	options = $.extend(true, {},
 		defaults,
 		(options.isRTL || options.isRTL===undefined && defaults.isRTL) ? rtlDefaults : {},
 		options
 	);
-
-
+	
+	
 	this.each(function(i, _element) {
 		var element = $(_element);
 		var calendar = new Calendar(element, options, eventSources);
 		element.data('fullCalendar', calendar); // TODO: look into memory leak implications
 		calendar.render();
 	});
-
-
+	
+	
 	return this;
-
+	
 };
 
 
@@ -25928,11 +25930,11 @@ function setDefaults(d) {
 
 ;;
 
-
+ 
 function Calendar(element, options, eventSources) {
 	var t = this;
-
-
+	
+	
 	// exports
 	t.options = options;
 	t.render = render;
@@ -25957,14 +25959,14 @@ function Calendar(element, options, eventSources) {
 	t.getView = getView;
 	t.option = option;
 	t.trigger = trigger;
-
-
+	
+	
 	// imports
 	EventManager.call(t, options, eventSources);
 	var isFetchNeeded = t.isFetchNeeded;
 	var fetchEvents = t.fetchEvents;
-
-
+	
+	
 	// locals
 	var _element = element[0];
 	var header;
@@ -25979,16 +25981,16 @@ function Calendar(element, options, eventSources) {
 	var date = new Date();
 	var events = [];
 	var _dragElement;
-
-
-
+	
+	
+	
 	/* Main Rendering
 	-----------------------------------------------------------------------------*/
-
-
+	
+	
 	setYMD(date, options.year, options.month, options.date);
-
-
+	
+	
 	function render(inc) {
 		if (!content) {
 			initialRender();
@@ -25999,8 +26001,8 @@ function Calendar(element, options, eventSources) {
 			_renderView(inc);
 		}
 	}
-
-
+	
+	
 	function initialRender() {
 		tm = options.theme ? 'ui' : 'fc';
 		element.addClass('fc');
@@ -26034,8 +26036,8 @@ function Calendar(element, options, eventSources) {
 			lateRender();
 		}
 	}
-
-
+	
+	
 	// called when we know the calendar couldn't be rendered when it was initialized,
 	// but we think it's ready now
 	function lateRender() {
@@ -26045,8 +26047,8 @@ function Calendar(element, options, eventSources) {
 			}
 		},0);
 	}
-
-
+	
+	
 	function destroy() {
 
 		if (currentView) {
@@ -26060,22 +26062,22 @@ function Calendar(element, options, eventSources) {
 		content.remove();
 		element.removeClass('fc fc-rtl ui-widget');
 	}
-
-
+	
+	
 	function elementVisible() {
 		return element.is(':visible');
 	}
-
-
+	
+	
 	function bodyVisible() {
 		return $('body').is(':visible');
 	}
-
-
-
+	
+	
+	
 	/* View Rendering
 	-----------------------------------------------------------------------------*/
-
+	
 
 	function changeView(newViewName) {
 		if (!currentView || newViewName != currentView.name) {
@@ -26148,13 +26150,13 @@ function Calendar(element, options, eventSources) {
 
 		getAndRenderEvents();
 	}
-
-
+	
+	
 
 	/* Resizing
 	-----------------------------------------------------------------------------*/
-
-
+	
+	
 	function updateSize() {
 		if (elementVisible()) {
 			unselect();
@@ -26164,8 +26166,8 @@ function Calendar(element, options, eventSources) {
 			renderEvents();
 		}
 	}
-
-
+	
+	
 	function calcSize() { // assumes elementVisible
 		if (options.contentHeight) {
 			suggestedViewHeight = options.contentHeight;
@@ -26177,8 +26179,8 @@ function Calendar(element, options, eventSources) {
 			suggestedViewHeight = Math.round(content.width() / Math.max(options.aspectRatio, .5));
 		}
 	}
-
-
+	
+	
 	function setSize() { // assumes elementVisible
 
 		if (suggestedViewHeight === undefined) {
@@ -26194,8 +26196,8 @@ function Calendar(element, options, eventSources) {
 
 		elementOuterWidth = element.outerWidth();
 	}
-
-
+	
+	
 	function windowResize() {
 		if (!ignoreWindowResize) {
 			if (currentView.start) { // view has already been rendered
@@ -26216,9 +26218,9 @@ function Calendar(element, options, eventSources) {
 			}
 		}
 	}
-
-
-
+	
+	
+	
 	/* Event Fetching/Rendering
 	-----------------------------------------------------------------------------*/
 	// TODO: going forward, most of this stuff should be directly handled by the view
@@ -26250,7 +26252,7 @@ function Calendar(element, options, eventSources) {
 		currentView.clearEvents(); // actually remove the DOM elements
 		currentView.clearEventData(); // for View.js, TODO: unify with clearEvents
 	}
-
+	
 
 	function getAndRenderEvents() {
 		if (!options.lazyFetching || isFetchNeeded(currentView.visStart, currentView.visEnd)) {
@@ -26268,7 +26270,7 @@ function Calendar(element, options, eventSources) {
 			// ... which will call renderEvents
 	}
 
-
+	
 	// called when event data arrives
 	function reportEvents(_events) {
 		events = _events;
@@ -26301,58 +26303,58 @@ function Calendar(element, options, eventSources) {
 			header.enableButton('today');
 		}
 	}
-
+	
 
 
 	/* Selection
 	-----------------------------------------------------------------------------*/
-
+	
 
 	function select(start, end, allDay) {
 		currentView.select(start, end, allDay===undefined ? true : allDay);
 	}
-
+	
 
 	function unselect() { // safe to be called before renderView
 		if (currentView) {
 			currentView.unselect();
 		}
 	}
-
-
-
+	
+	
+	
 	/* Date
 	-----------------------------------------------------------------------------*/
-
-
+	
+	
 	function prev() {
 		renderView(-1);
 	}
-
-
+	
+	
 	function next() {
 		renderView(1);
 	}
-
-
+	
+	
 	function prevYear() {
 		addYears(date, -1);
 		renderView();
 	}
-
-
+	
+	
 	function nextYear() {
 		addYears(date, 1);
 		renderView();
 	}
-
-
+	
+	
 	function today() {
 		date = new Date();
 		renderView();
 	}
-
-
+	
+	
 	function gotoDate(year, month, dateOfMonth) {
 		if (year instanceof Date) {
 			date = cloneDate(year); // provided 1 argument, a Date
@@ -26361,8 +26363,8 @@ function Calendar(element, options, eventSources) {
 		}
 		renderView();
 	}
-
-
+	
+	
 	function incrementDate(years, months, days) {
 		if (years !== undefined) {
 			addYears(date, years);
@@ -26375,8 +26377,8 @@ function Calendar(element, options, eventSources) {
 		}
 		renderView();
 	}
-
-
+	
+	
 	function getDate() {
 		return cloneDate(date);
 	}
@@ -26403,18 +26405,18 @@ function Calendar(element, options, eventSources) {
 			overflow: ''
 		});
 	}
-
-
-
+	
+	
+	
 	/* Misc
 	-----------------------------------------------------------------------------*/
-
-
+	
+	
 	function getView() {
 		return currentView;
 	}
-
-
+	
+	
 	function option(name, value) {
 		if (value === undefined) {
 			return options[name];
@@ -26424,8 +26426,8 @@ function Calendar(element, options, eventSources) {
 			updateSize();
 		}
 	}
-
-
+	
+	
 	function trigger(name, thisObj) {
 		if (options[name]) {
 			return options[name].apply(
@@ -26434,12 +26436,12 @@ function Calendar(element, options, eventSources) {
 			);
 		}
 	}
-
-
-
+	
+	
+	
 	/* External Dragging
 	------------------------------------------------------------------------*/
-
+	
 	if (options.droppable) {
 		$(document)
 			.bind('dragstart', function(ev, ui) {
@@ -26460,7 +26462,7 @@ function Calendar(element, options, eventSources) {
 				}
 			});
 	}
-
+	
 
 }
 
@@ -26468,8 +26470,8 @@ function Calendar(element, options, eventSources) {
 
 function Header(calendar, options) {
 	var t = this;
-
-
+	
+	
 	// exports
 	t.render = render;
 	t.destroy = destroy;
@@ -26478,12 +26480,12 @@ function Header(calendar, options) {
 	t.deactivateButton = deactivateButton;
 	t.disableButton = disableButton;
 	t.enableButton = enableButton;
-
-
+	
+	
 	// locals
 	var element = $([]);
 	var tm;
-
+	
 
 
 	function render() {
@@ -26500,13 +26502,13 @@ function Header(calendar, options) {
 			return element;
 		}
 	}
-
-
+	
+	
 	function destroy() {
 		element.remove();
 	}
-
-
+	
+	
 	function renderSection(position) {
 		var e = $("<td class='fc-header-" + position + "'/>");
 		var buttonStr = options.header[position];
@@ -26591,32 +26593,32 @@ function Header(calendar, options) {
 		}
 		return e;
 	}
-
-
+	
+	
 	function updateTitle(html) {
 		element.find('h2')
 			.html(html);
 	}
-
-
+	
+	
 	function activateButton(buttonName) {
 		element.find('span.fc-button-' + buttonName)
 			.addClass(tm + '-state-active');
 	}
-
-
+	
+	
 	function deactivateButton(buttonName) {
 		element.find('span.fc-button-' + buttonName)
 			.removeClass(tm + '-state-active');
 	}
-
-
+	
+	
 	function disableButton(buttonName) {
 		element.find('span.fc-button-' + buttonName)
 			.addClass(tm + '-state-disabled');
 	}
-
-
+	
+	
 	function enableButton(buttonName) {
 		element.find('span.fc-button-' + buttonName)
 			.removeClass(tm + '-state-disabled');
@@ -26640,8 +26642,8 @@ var eventGUID = 1;
 
 function EventManager(options, _sources) {
 	var t = this;
-
-
+	
+	
 	// exports
 	t.isFetchNeeded = isFetchNeeded;
 	t.fetchEvents = fetchEvents;
@@ -26652,14 +26654,14 @@ function EventManager(options, _sources) {
 	t.removeEvents = removeEvents;
 	t.clientEvents = clientEvents;
 	t.normalizeEvent = normalizeEvent;
-
-
+	
+	
 	// imports
 	var trigger = t.trigger;
 	var getView = t.getView;
 	var reportEvents = t.reportEvents;
-
-
+	
+	
 	// locals
 	var stickySource = { events: [] };
 	var sources = [ stickySource ];
@@ -26668,23 +26670,23 @@ function EventManager(options, _sources) {
 	var pendingSourceCnt = 0;
 	var loadingLevel = 0;
 	var cache = [];
-
-
+	
+	
 	for (var i=0; i<_sources.length; i++) {
 		_addEventSource(_sources[i]);
 	}
-
-
-
+	
+	
+	
 	/* Fetching
 	-----------------------------------------------------------------------------*/
-
-
+	
+	
 	function isFetchNeeded(start, end) {
 		return !rangeStart || start < rangeStart || end > rangeEnd;
 	}
-
-
+	
+	
 	function fetchEvents(start, end) {
 		rangeStart = start;
 		rangeEnd = end;
@@ -26696,8 +26698,8 @@ function EventManager(options, _sources) {
 			fetchEventSource(sources[i], fetchID);
 		}
 	}
-
-
+	
+	
 	function fetchEventSource(source, fetchID) {
 		_fetchEventSource(source, function(events) {
 			if (fetchID == currentFetchID) {
@@ -26711,7 +26713,7 @@ function EventManager(options, _sources) {
 					}
 					// TODO: this technique is not ideal for static array event sources.
 					//  For arrays, we'll want to process all events right in the beginning, then never again.
-
+				
 					for (var i=0; i<events.length; i++) {
 						events[i].source = source;
 						normalizeEvent(events[i]);
@@ -26725,8 +26727,8 @@ function EventManager(options, _sources) {
 			}
 		});
 	}
-
-
+	
+	
 	function _fetchEventSource(source, callback) {
 		var i;
 		var fetchers = fc.sourceFetchers;
@@ -26814,12 +26816,12 @@ function EventManager(options, _sources) {
 			}
 		}
 	}
-
-
-
+	
+	
+	
 	/* Sources
 	-----------------------------------------------------------------------------*/
-
+	
 
 	function addEventSource(source) {
 		source = _addEventSource(source);
@@ -26828,8 +26830,8 @@ function EventManager(options, _sources) {
 			fetchEventSource(source, currentFetchID); // will eventually call reportEvents
 		}
 	}
-
-
+	
+	
 	function _addEventSource(source) {
 		if ($.isFunction(source) || $.isArray(source)) {
 			source = { events: source };
@@ -26843,7 +26845,7 @@ function EventManager(options, _sources) {
 			return source;
 		}
 	}
-
+	
 
 	function removeEventSource(source) {
 		sources = $.grep(sources, function(src) {
@@ -26855,13 +26857,13 @@ function EventManager(options, _sources) {
 		});
 		reportEvents(cache);
 	}
-
-
-
+	
+	
+	
 	/* Manipulation
 	-----------------------------------------------------------------------------*/
-
-
+	
+	
 	function updateEvent(event) { // update an existing event
 		var i, len = cache.length, e,
 			defaultEventEnd = getView().defaultEventEnd, // getView???
@@ -26897,8 +26899,8 @@ function EventManager(options, _sources) {
 		normalizeEvent(event);
 		reportEvents(cache);
 	}
-
-
+	
+	
 	function renderEvent(event, stick) {
 		normalizeEvent(event);
 		if (!event.source) {
@@ -26910,8 +26912,8 @@ function EventManager(options, _sources) {
 		}
 		reportEvents(cache);
 	}
-
-
+	
+	
 	function removeEvents(filter) {
 		if (!filter) { // remove all
 			cache = [];
@@ -26938,8 +26940,8 @@ function EventManager(options, _sources) {
 		}
 		reportEvents(cache);
 	}
-
-
+	
+	
 	function clientEvents(filter) {
 		if ($.isFunction(filter)) {
 			return $.grep(cache, filter);
@@ -26952,32 +26954,32 @@ function EventManager(options, _sources) {
 		}
 		return cache; // else, return all
 	}
-
-
-
+	
+	
+	
 	/* Loading State
 	-----------------------------------------------------------------------------*/
-
-
+	
+	
 	function pushLoading() {
 		if (!loadingLevel++) {
 			trigger('loading', null, true, getView());
 		}
 	}
-
-
+	
+	
 	function popLoading() {
 		if (!--loadingLevel) {
 			trigger('loading', null, false, getView());
 		}
 	}
-
-
-
+	
+	
+	
 	/* Event Normalization
 	-----------------------------------------------------------------------------*/
-
-
+	
+	
 	function normalizeEvent(event) {
 		var source = event.source || {};
 		var ignoreTimezone = firstDefined(source.ignoreTimezone, options.ignoreTimezone);
@@ -27006,13 +27008,13 @@ function EventManager(options, _sources) {
 		}
 		// TODO: if there is no start date, return false to indicate an invalid event
 	}
-
-
-
+	
+	
+	
 	/* Utils
 	------------------------------------------------------------------------------*/
-
-
+	
+	
 	function normalizeSource(source) {
 		if (source.className) {
 			// TODO: repeat code, same code for event classNames
@@ -27027,13 +27029,13 @@ function EventManager(options, _sources) {
 			normalizers[i](source);
 		}
 	}
-
-
+	
+	
 	function isSourcesEqual(source1, source2) {
 		return source1 && source2 && getSourcePrimitive(source1) == getSourcePrimitive(source2);
 	}
-
-
+	
+	
 	function getSourcePrimitive(source) {
 		return ((typeof source == 'object') ? (source.events || source.url) : '') || source;
 	}
@@ -27061,7 +27063,7 @@ var dayIDs = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'],
 	DAY_MS = 86400000,
 	HOUR_MS = 3600000,
 	MINUTE_MS = 60000;
-
+	
 
 function addYears(d, n, keepTime) {
 	d.setFullYear(d.getFullYear() + n);
@@ -27124,7 +27126,7 @@ function addMinutes(d, n) {
 function clearTime(d) {
 	d.setHours(0);
 	d.setMinutes(0);
-	d.setSeconds(0);
+	d.setSeconds(0); 
 	d.setMilliseconds(0);
 	return d;
 }
@@ -27400,7 +27402,7 @@ fc.dateFormatters = dateFormatters;
 
 
 /* thanks jQuery UI (https://github.com/jquery/jquery-ui/blob/master/ui/jquery.ui.datepicker.js)
- *
+ * 
  * Set as calculateWeek to determine the week of the year based on the ISO 8601 definition.
  * `date` - the date to get the week for
  * `number` - the number of the week within the year that contains this date
@@ -27692,12 +27694,12 @@ fcViews.month = MonthView;
 
 function MonthView(element, calendar) {
 	var t = this;
-
-
+	
+	
 	// exports
 	t.render = render;
-
-
+	
+	
 	// imports
 	BasicView.call(t, element, calendar, 'month');
 	var opt = t.opt;
@@ -27705,8 +27707,8 @@ function MonthView(element, calendar) {
 	var skipHiddenDays = t.skipHiddenDays;
 	var getCellsPerWeek = t.getCellsPerWeek;
 	var formatDate = calendar.formatDate;
-
-
+	
+	
 	function render(date, delta) {
 
 		if (delta) {
@@ -27746,8 +27748,8 @@ function MonthView(element, calendar) {
 
 		renderBasic(rowCnt, colCnt, true);
 	}
-
-
+	
+	
 }
 
 ;;
@@ -27756,12 +27758,12 @@ fcViews.basicWeek = BasicWeekView;
 
 function BasicWeekView(element, calendar) {
 	var t = this;
-
-
+	
+	
 	// exports
 	t.render = render;
-
-
+	
+	
 	// imports
 	BasicView.call(t, element, calendar, 'basicWeek');
 	var opt = t.opt;
@@ -27769,8 +27771,8 @@ function BasicWeekView(element, calendar) {
 	var skipHiddenDays = t.skipHiddenDays;
 	var getCellsPerWeek = t.getCellsPerWeek;
 	var formatDates = calendar.formatDates;
-
-
+	
+	
 	function render(date, delta) {
 
 		if (delta) {
@@ -27801,8 +27803,8 @@ function BasicWeekView(element, calendar) {
 
 		renderBasic(1, colCnt, false);
 	}
-
-
+	
+	
 }
 
 ;;
@@ -27812,20 +27814,20 @@ fcViews.basicDay = BasicDayView;
 
 function BasicDayView(element, calendar) {
 	var t = this;
-
-
+	
+	
 	// exports
 	t.render = render;
-
-
+	
+	
 	// imports
 	BasicView.call(t, element, calendar, 'basicDay');
 	var opt = t.opt;
 	var renderBasic = t.renderBasic;
 	var skipHiddenDays = t.skipHiddenDays;
 	var formatDate = calendar.formatDate;
-
-
+	
+	
 	function render(date, delta) {
 
 		if (delta) {
@@ -27843,8 +27845,8 @@ function BasicDayView(element, calendar) {
 
 		renderBasic(1, 1, false);
 	}
-
-
+	
+	
 }
 
 ;;
@@ -27856,8 +27858,8 @@ setDefaults({
 
 function BasicView(element, calendar, viewName) {
 	var t = this;
-
-
+	
+	
 	// exports
 	t.renderBasic = renderBasic;
 	t.setHeight = setHeight;
@@ -27881,8 +27883,8 @@ function BasicView(element, calendar, viewName) {
 	t.getColCnt = function() { return colCnt };
 	t.getColWidth = function() { return colWidth };
 	t.getDaySegmentContainer = function() { return daySegmentContainer };
-
-
+	
+	
 	// imports
 	View.call(t, element, calendar, viewName);
 	OverlayManager.call(t);
@@ -27897,10 +27899,10 @@ function BasicView(element, calendar, viewName) {
 	var dateToCell = t.dateToCell;
 	var rangeToSegments = t.rangeToSegments;
 	var formatDate = calendar.formatDate;
-
-
+	
+	
 	// locals
-
+	
 	var table;
 	var head;
 	var headCells;
@@ -27911,34 +27913,34 @@ function BasicView(element, calendar, viewName) {
 	var firstRowCellInners;
 	var firstRowCellContentInners;
 	var daySegmentContainer;
-
+	
 	var viewWidth;
 	var viewHeight;
 	var colWidth;
 	var weekNumberWidth;
-
+	
 	var rowCnt, colCnt;
 	var showNumbers;
 	var coordinateGrid;
 	var hoverListener;
 	var colPositions;
 	var colContentPositions;
-
+	
 	var tm;
 	var colFormat;
 	var showWeekNumbers;
 	var weekNumberTitle;
 	var weekNumberFormat;
-
-
-
+	
+	
+	
 	/* Rendering
 	------------------------------------------------------------*/
-
-
+	
+	
 	disableTextSelection(element.addClass('fc-grid'));
-
-
+	
+	
 	function renderBasic(_rowCnt, _colCnt, _showNumbers) {
 		rowCnt = _rowCnt;
 		colCnt = _colCnt;
@@ -27951,8 +27953,8 @@ function BasicView(element, calendar, viewName) {
 
 		buildTable();
 	}
-
-
+	
+	
 	function updateOptions() {
 		tm = opt('theme') ? 'ui' : 'fc';
 		colFormat = opt('columnFormat');
@@ -27967,15 +27969,15 @@ function BasicView(element, calendar, viewName) {
 			weekNumberFormat = "W";
 		}
 	}
-
-
+	
+	
 	function buildEventContainer() {
 		daySegmentContainer =
 			$("<div class='fc-event-container' style='position:absolute;z-index:8;top:0;left:0'/>")
 				.appendTo(element);
 	}
-
-
+	
+	
 	function buildTable() {
 		var html = buildTableHTML();
 
@@ -27993,7 +27995,7 @@ function BasicView(element, calendar, viewName) {
 
 		firstRowCellInners = bodyRows.eq(0).find('.fc-day > div');
 		firstRowCellContentInners = bodyRows.eq(0).find('.fc-day-content > div');
-
+		
 		markFirstLast(head.add(head.find('tr'))); // marks first+last tr/th's
 		markFirstLast(bodyRows); // marks first+last td's
 		bodyRows.eq(0).addClass('fc-first');
@@ -28145,23 +28147,23 @@ function BasicView(element, calendar, viewName) {
 
 	/* Dimensions
 	-----------------------------------------------------------*/
-
-
+	
+	
 	function setHeight(height) {
 		viewHeight = height;
-
+		
 		var bodyHeight = viewHeight - head.height();
 		var rowHeight;
 		var rowHeightLast;
 		var cell;
-
+			
 		if (opt('weekMode') == 'variable') {
 			rowHeight = rowHeightLast = Math.floor(bodyHeight / (rowCnt==1 ? 2 : 6));
 		}else{
 			rowHeight = Math.floor(bodyHeight / rowCnt);
 			rowHeightLast = bodyHeight - rowHeight * (rowCnt-1);
 		}
-
+		
 		bodyFirstCells.each(function(i, _cell) {
 			if (i < rowCnt) {
 				cell = $(_cell);
@@ -28171,10 +28173,10 @@ function BasicView(element, calendar, viewName) {
 				);
 			}
 		});
-
+		
 	}
-
-
+	
+	
 	function setWidth(width) {
 		viewWidth = width;
 		colPositions.clear();
@@ -28188,28 +28190,28 @@ function BasicView(element, calendar, viewName) {
 		colWidth = Math.floor((viewWidth - weekNumberWidth) / colCnt);
 		setOuterWidth(headCells.slice(0, -1), colWidth);
 	}
-
-
-
+	
+	
+	
 	/* Day clicking and binding
 	-----------------------------------------------------------*/
-
-
+	
+	
 	function dayBind(days) {
 		days.click(dayClick)
 			.mousedown(daySelectionMousedown);
 	}
-
-
+	
+	
 	function dayClick(ev) {
 		if (!opt('selectable')) { // if selectable, SelectionManager will worry about dayClick
 			var date = parseISO8601($(this).data('date'));
 			trigger('dayClick', this, date, true, ev);
 		}
 	}
-
-
-
+	
+	
+	
 	/* Semi-transparent Overlay Helpers
 	------------------------------------------------------*/
 	// TODO: should be consolidated with AgendaView's methods
@@ -28236,45 +28238,45 @@ function BasicView(element, calendar, viewName) {
 		}
 	}
 
-
+	
 	function renderCellOverlay(row0, col0, row1, col1) { // row1,col1 is inclusive
 		var rect = coordinateGrid.rect(row0, col0, row1, col1, element);
 		return renderOverlay(rect, element);
 	}
-
-
-
+	
+	
+	
 	/* Selection
 	-----------------------------------------------------------------------*/
-
-
+	
+	
 	function defaultSelectionEnd(startDate, allDay) {
 		return cloneDate(startDate);
 	}
-
-
+	
+	
 	function renderSelection(startDate, endDate, allDay) {
 		renderDayOverlay(startDate, addDays(cloneDate(endDate), 1), true); // rebuild every time???
 	}
-
-
+	
+	
 	function clearSelection() {
 		clearOverlays();
 	}
-
-
+	
+	
 	function reportDayClick(date, allDay, ev) {
 		var cell = dateToCell(date);
 		var _element = bodyCells[cell.row*colCnt + cell.col];
 		trigger('dayClick', _element, date, allDay, ev);
 	}
-
-
-
+	
+	
+	
 	/* External Dragging
 	-----------------------------------------------------------------------*/
-
-
+	
+	
 	function dragStart(_dragElement, ev, ui) {
 		hoverListener.start(function(cell) {
 			clearOverlays();
@@ -28283,8 +28285,8 @@ function BasicView(element, calendar, viewName) {
 			}
 		}, ev);
 	}
-
-
+	
+	
 	function dragStop(_dragElement, ev, ui) {
 		var cell = hoverListener.stop();
 		clearOverlays();
@@ -28293,18 +28295,18 @@ function BasicView(element, calendar, viewName) {
 			trigger('drop', _dragElement, d, true, ev, ui);
 		}
 	}
-
-
-
+	
+	
+	
 	/* Utilities
 	--------------------------------------------------------*/
-
-
+	
+	
 	function defaultEventEnd(event) {
 		return cloneDate(event.start);
 	}
-
-
+	
+	
 	coordinateGrid = new CoordinateGrid(function(rows, cols) {
 		var e, n, p;
 		headCells.each(function(i, _e) {
@@ -28330,10 +28332,10 @@ function BasicView(element, calendar, viewName) {
 		});
 		p[1] = n + e.outerHeight();
 	});
-
-
+	
+	
 	hoverListener = new HoverListener(coordinateGrid);
-
+	
 	colPositions = new HorizontalPositionCache(function(col) {
 		return firstRowCellInners.eq(col);
 	});
@@ -28351,44 +28353,44 @@ function BasicView(element, calendar, viewName) {
 	function colRight(col) {
 		return colPositions.right(col);
 	}
-
-
+	
+	
 	function colContentLeft(col) {
 		return colContentPositions.left(col);
 	}
-
-
+	
+	
 	function colContentRight(col) {
 		return colContentPositions.right(col);
 	}
-
-
+	
+	
 	function allDayRow(i) {
 		return bodyRows.eq(i);
 	}
-
+	
 }
 
 ;;
 
 function BasicEventRenderer() {
 	var t = this;
-
-
+	
+	
 	// exports
 	t.renderEvents = renderEvents;
 	t.clearEvents = clearEvents;
-
+	
 
 	// imports
 	DayEventRenderer.call(t);
 
-
+	
 	function renderEvents(events, modifiedEventId) {
 		t.renderDayEvents(events, modifiedEventId);
 	}
-
-
+	
+	
 	function clearEvents() {
 		t.getDaySegmentContainer().empty();
 	}
@@ -28404,12 +28406,12 @@ fcViews.agendaWeek = AgendaWeekView;
 
 function AgendaWeekView(element, calendar) {
 	var t = this;
-
-
+	
+	
 	// exports
 	t.render = render;
-
-
+	
+	
 	// imports
 	AgendaView.call(t, element, calendar, 'agendaWeek');
 	var opt = t.opt;
@@ -28418,7 +28420,7 @@ function AgendaWeekView(element, calendar) {
 	var getCellsPerWeek = t.getCellsPerWeek;
 	var formatDates = calendar.formatDates;
 
-
+	
 	function render(date, delta) {
 
 		if (delta) {
@@ -28459,20 +28461,20 @@ fcViews.agendaDay = AgendaDayView;
 
 function AgendaDayView(element, calendar) {
 	var t = this;
-
-
+	
+	
 	// exports
 	t.render = render;
-
-
+	
+	
 	// imports
 	AgendaView.call(t, element, calendar, 'agendaDay');
 	var opt = t.opt;
 	var renderAgenda = t.renderAgenda;
 	var skipHiddenDays = t.skipHiddenDays;
 	var formatDate = calendar.formatDate;
-
-
+	
+	
 	function render(date, delta) {
 
 		if (delta) {
@@ -28490,7 +28492,7 @@ function AgendaDayView(element, calendar) {
 
 		renderAgenda(1);
 	}
-
+	
 
 }
 
@@ -28521,8 +28523,8 @@ setDefaults({
 
 function AgendaView(element, calendar, viewName) {
 	var t = this;
-
-
+	
+	
 	// exports
 	t.renderAgenda = renderAgenda;
 	t.setWidth = setWidth;
@@ -28555,8 +28557,8 @@ function AgendaView(element, calendar, viewName) {
 	t.reportDayClick = reportDayClick; // selection mousedown hack
 	t.dragStart = dragStart;
 	t.dragStop = dragStop;
-
-
+	
+	
 	// imports
 	View.call(t, element, calendar, viewName);
 	OverlayManager.call(t);
@@ -28574,10 +28576,10 @@ function AgendaView(element, calendar, viewName) {
 	var dateToCell = t.dateToCell;
 	var rangeToSegments = t.rangeToSegments;
 	var formatDate = calendar.formatDate;
-
-
+	
+	
 	// locals
-
+	
 	var dayTable;
 	var dayHead;
 	var dayHeadCells;
@@ -28596,7 +28598,7 @@ function AgendaView(element, calendar, viewName) {
 	var slotSegmentContainer;
 	var slotTable;
 	var selectionHelper;
-
+	
 	var viewWidth;
 	var viewHeight;
 	var axisWidth;
@@ -28607,7 +28609,7 @@ function AgendaView(element, calendar, viewName) {
 	var snapMinutes;
 	var snapRatio; // ratio of number of "selection" slots to normal slots. (ex: 1, 2, 4)
 	var snapHeight; // holds the pixel hight of a "selection" slot
-
+	
 	var colCnt;
 	var slotCnt;
 	var coordinateGrid;
@@ -28615,7 +28617,7 @@ function AgendaView(element, calendar, viewName) {
 	var colPositions;
 	var colContentPositions;
 	var slotTopCache = {};
-
+	
 	var tm;
 	var rtl;
 	var minMinute, maxMinute;
@@ -28623,16 +28625,16 @@ function AgendaView(element, calendar, viewName) {
 	var showWeekNumbers;
 	var weekNumberTitle;
 	var weekNumberFormat;
+	
 
-
-
+	
 	/* Rendering
 	-----------------------------------------------------------------------------*/
-
-
+	
+	
 	disableTextSelection(element.addClass('fc-agenda'));
-
-
+	
+	
 	function renderAgenda(c) {
 		colCnt = c;
 		updateOptions();
@@ -28644,8 +28646,8 @@ function AgendaView(element, calendar, viewName) {
 			buildDayTable(); // rebuilds day table
 		}
 	}
-
-
+	
+	
 	function updateOptions() {
 
 		tm = opt('theme') ? 'ui' : 'fc';
@@ -28682,19 +28684,19 @@ function AgendaView(element, calendar, viewName) {
 		var maxd;
 		var minutes;
 		var slotNormal = opt('slotMinutes') % 15 == 0;
-
+		
 		buildDayTable();
-
+		
 		slotLayer =
 			$("<div style='position:absolute;z-index:2;left:0;width:100%'/>")
 				.appendTo(element);
-
+				
 		if (opt('allDaySlot')) {
-
+		
 			daySegmentContainer =
 				$("<div class='fc-event-container' style='position:absolute;z-index:8;top:0;left:0'/>")
 					.appendTo(slotLayer);
-
+		
 			s =
 				"<table style='width:100%' class='fc-agenda-allday' cellspacing='0'>" +
 				"<tr>" +
@@ -28707,33 +28709,33 @@ function AgendaView(element, calendar, viewName) {
 				"</table>";
 			allDayTable = $(s).appendTo(slotLayer);
 			allDayRow = allDayTable.find('tr');
-
+			
 			dayBind(allDayRow.find('td'));
-
+			
 			slotLayer.append(
 				"<div class='fc-agenda-divider " + headerClass + "'>" +
 				"<div class='fc-agenda-divider-inner'/>" +
 				"</div>"
 			);
-
+			
 		}else{
-
+		
 			daySegmentContainer = $([]); // in jQuery 1.4, we can just do $()
-
+		
 		}
-
+		
 		slotScroller =
 			$("<div style='position:absolute;width:100%;overflow-x:hidden;overflow-y:auto'/>")
 				.appendTo(slotLayer);
-
+				
 		slotContainer =
 			$("<div style='position:relative;width:100%;overflow:hidden'/>")
 				.appendTo(slotScroller);
-
+				
 		slotSegmentContainer =
 			$("<div class='fc-event-container' style='position:absolute;z-index:8;top:0;left:0'/>")
 				.appendTo(slotContainer);
-
+		
 		s =
 			"<table class='fc-agenda-slots' style='width:100%' cellspacing='0'>" +
 			"<tbody>";
@@ -28759,7 +28761,7 @@ function AgendaView(element, calendar, viewName) {
 			"</tbody>" +
 			"</table>";
 		slotTable = $(s).appendTo(slotContainer);
-
+		
 		slotBind(slotTable.find('td'));
 	}
 
@@ -28786,7 +28788,7 @@ function AgendaView(element, calendar, viewName) {
 
 		dayBodyFirstCell = dayBodyCells.eq(0);
 		dayBodyFirstCellStretcher = dayBodyCellInners.eq(0);
-
+		
 		markFirstLast(dayHead.add(dayHead.find('tr')));
 		markFirstLast(dayBody.add(dayBody.find('tr')));
 
@@ -28915,19 +28917,19 @@ function AgendaView(element, calendar, viewName) {
 
 	// TODO: data-date on the cells
 
-
-
+	
+	
 	/* Dimensions
 	-----------------------------------------------------------------------*/
 
-
+	
 	function setHeight(height) {
 		if (height === undefined) {
 			height = viewHeight;
 		}
 		viewHeight = height;
 		slotTopCache = {};
-
+	
 		var headHeight = dayBody.position().top;
 		var allDayHeight = slotScroller.position().top; // including divider
 		var bodyHeight = Math.min( // total body height, including borders
@@ -28937,11 +28939,11 @@ function AgendaView(element, calendar, viewName) {
 
 		dayBodyFirstCellStretcher
 			.height(bodyHeight - vsides(dayBodyFirstCell));
-
+		
 		slotLayer.css('top', headHeight);
-
+		
 		slotScroller.height(bodyHeight - allDayHeight - 1);
-
+		
 		// the stylesheet guarantees that the first row has no border.
 		// this allows .height() to work well cross-browser.
 		slotHeight = slotTable.find('tr:first').height() + 1; // +1 for bottom border
@@ -28949,8 +28951,8 @@ function AgendaView(element, calendar, viewName) {
 		snapRatio = opt('slotMinutes') / snapMinutes;
 		snapHeight = slotHeight / snapRatio;
 	}
-
-
+	
+	
 	function setWidth(width) {
 		viewWidth = width;
 		colPositions.clear();
@@ -28961,7 +28963,7 @@ function AgendaView(element, calendar, viewName) {
 			axisFirstCells = axisFirstCells.add(allDayTable.find('th:first'));
 		}
 		axisFirstCells = axisFirstCells.add(slotTable.find('th:first'));
-
+		
 		axisWidth = 0;
 		setOuterWidth(
 			axisFirstCells
@@ -28971,14 +28973,14 @@ function AgendaView(element, calendar, viewName) {
 				}),
 			axisWidth
 		);
-
+		
 		var gutterCells = dayTable.find('.fc-agenda-gutter');
 		if (allDayTable) {
 			gutterCells = gutterCells.add(allDayTable.find('th.fc-agenda-gutter'));
 		}
 
 		var slotTableWidth = slotScroller[0].clientWidth; // needs to be done after axisWidth (for IE7)
-
+		
 		gutterWidth = slotScroller.width() - slotTableWidth;
 		if (gutterWidth) {
 			setOuterWidth(gutterCells, gutterWidth);
@@ -28992,11 +28994,11 @@ function AgendaView(element, calendar, viewName) {
 				.prev()
 				.addClass('fc-last');
 		}
-
+		
 		colWidth = Math.floor((slotTableWidth - axisWidth) / colCnt);
 		setOuterWidth(dayHeadCells.slice(0, -1), colWidth);
 	}
-
+	
 
 
 	/* Scrolling
@@ -29019,12 +29021,12 @@ function AgendaView(element, calendar, viewName) {
 	function afterRender() { // after the view has been freshly rendered and sized
 		resetScroll();
 	}
-
-
-
+	
+	
+	
 	/* Slot/Day clicking and binding
 	-----------------------------------------------------------------------*/
-
+	
 
 	function dayBind(cells) {
 		cells.click(slotClick)
@@ -29036,8 +29038,8 @@ function AgendaView(element, calendar, viewName) {
 		cells.click(slotClick)
 			.mousedown(slotSelectionMousedown);
 	}
-
-
+	
+	
 	function slotClick(ev) {
 		if (!opt('selectable')) { // if selectable, SelectionManager will worry about dayClick
 			var col = Math.min(colCnt-1, Math.floor((ev.pageX - dayTable.offset().left - axisWidth) / colWidth));
@@ -29054,9 +29056,9 @@ function AgendaView(element, calendar, viewName) {
 			}
 		}
 	}
-
-
-
+	
+	
+	
 	/* Semi-transparent Overlay Helpers
 	-----------------------------------------------------*/
 	// TODO: should be consolidated with BasicView's methods
@@ -29082,13 +29084,13 @@ function AgendaView(element, calendar, viewName) {
 			);
 		}
 	}
-
-
+	
+	
 	function renderCellOverlay(row0, col0, row1, col1) { // only for all-day?
 		var rect = coordinateGrid.rect(row0, col0, row1, col1, slotLayer);
 		return renderOverlay(rect, slotLayer);
 	}
-
+	
 
 	function renderSlotOverlay(overlayStart, overlayEnd) {
 		for (var i=0; i<colCnt; i++) {
@@ -29108,13 +29110,13 @@ function AgendaView(element, calendar, viewName) {
 			}
 		}
 	}
-
-
-
+	
+	
+	
 	/* Coordinate Utilities
 	-----------------------------------------------------------------------------*/
-
-
+	
+	
 	coordinateGrid = new CoordinateGrid(function(rows, cols) {
 		var e, n, p;
 		dayHeadCells.each(function(i, _e) {
@@ -29145,19 +29147,19 @@ function AgendaView(element, calendar, viewName) {
 			]);
 		}
 	});
-
-
+	
+	
 	hoverListener = new HoverListener(coordinateGrid);
-
+	
 	colPositions = new HorizontalPositionCache(function(col) {
 		return dayBodyCellInners.eq(col);
 	});
-
+	
 	colContentPositions = new HorizontalPositionCache(function(col) {
 		return dayBodyCellContentInners.eq(col);
 	});
-
-
+	
+	
 	function colLeft(col) {
 		return colPositions.left(col);
 	}
@@ -29171,8 +29173,8 @@ function AgendaView(element, calendar, viewName) {
 	function colRight(col) {
 		return colPositions.right(col);
 	}
-
-
+	
+	
 	function colContentRight(col) {
 		return colContentPositions.right(col);
 	}
@@ -29194,8 +29196,8 @@ function AgendaView(element, calendar, viewName) {
 		}
 		return d;
 	}
-
-
+	
+	
 	// get the Y coordinate of the given time on the given day (both Date objects)
 	function timePosition(day, time) { // both date objects. day holds 00:00 of current day
 		day = cloneDate(day, true);
@@ -29220,13 +29222,13 @@ function AgendaView(element, calendar, viewName) {
 			slotTop - 1 + slotHeight * ((minutes % slotMinutes) / slotMinutes)
 		));
 	}
-
-
+	
+	
 	function getAllDayRow(index) {
 		return allDayRow;
 	}
-
-
+	
+	
 	function defaultEventEnd(event) {
 		var start = cloneDate(event.start);
 		if (event.allDay) {
@@ -29234,21 +29236,21 @@ function AgendaView(element, calendar, viewName) {
 		}
 		return addMinutes(start, opt('defaultEventMinutes'));
 	}
-
-
-
+	
+	
+	
 	/* Selection
 	---------------------------------------------------------------------------------*/
-
-
+	
+	
 	function defaultSelectionEnd(startDate, allDay) {
 		if (allDay) {
 			return cloneDate(startDate);
 		}
 		return addMinutes(cloneDate(startDate), opt('slotMinutes'));
 	}
-
-
+	
+	
 	function renderSelection(startDate, endDate, allDay) { // only for all-day
 		if (allDay) {
 			if (opt('allDaySlot')) {
@@ -29258,8 +29260,8 @@ function AgendaView(element, calendar, viewName) {
 			renderSlotSelection(startDate, endDate);
 		}
 	}
-
-
+	
+	
 	function renderSlotSelection(startDate, endDate) {
 		var helperOption = opt('selectHelper');
 		coordinateGrid.build();
@@ -29309,8 +29311,8 @@ function AgendaView(element, calendar, viewName) {
 			renderSlotOverlay(startDate, endDate);
 		}
 	}
-
-
+	
+	
 	function clearSelection() {
 		clearOverlays();
 		if (selectionHelper) {
@@ -29318,8 +29320,8 @@ function AgendaView(element, calendar, viewName) {
 			selectionHelper = null;
 		}
 	}
-
-
+	
+	
 	function slotSelectionMousedown(ev) {
 		if (ev.which == 1 && opt('selectable')) { // ev.which==1 means left mouse button
 			unselect(ev);
@@ -29331,7 +29333,7 @@ function AgendaView(element, calendar, viewName) {
 					var d2 = realCellToDate(cell);
 					dates = [
 						d1,
-						addMinutes(cloneDate(d1), snapMinutes), // calculate minutes depending on selection slot minutes
+						addMinutes(cloneDate(d1), snapMinutes), // calculate minutes depending on selection slot minutes 
 						d2,
 						addMinutes(cloneDate(d2), snapMinutes)
 					].sort(dateCompare);
@@ -29356,13 +29358,13 @@ function AgendaView(element, calendar, viewName) {
 	function reportDayClick(date, allDay, ev) {
 		trigger('dayClick', dayBodyCells[dateToCell(date).col], date, allDay, ev);
 	}
-
-
-
+	
+	
+	
 	/* External Dragging
 	--------------------------------------------------------------------------------*/
-
-
+	
+	
 	function dragStart(_dragElement, ev, ui) {
 		hoverListener.start(function(cell) {
 			clearOverlays();
@@ -29377,8 +29379,8 @@ function AgendaView(element, calendar, viewName) {
 			}
 		}, ev);
 	}
-
-
+	
+	
 	function dragStop(_dragElement, ev, ui) {
 		var cell = hoverListener.stop();
 		clearOverlays();
@@ -29386,7 +29388,7 @@ function AgendaView(element, calendar, viewName) {
 			trigger('drop', _dragElement, realCellToDate(cell), getIsCellAllDay(cell), ev, ui);
 		}
 	}
-
+	
 
 }
 
@@ -29394,14 +29396,14 @@ function AgendaView(element, calendar, viewName) {
 
 function AgendaEventRenderer() {
 	var t = this;
-
-
+	
+	
 	// exports
 	t.renderEvents = renderEvents;
 	t.clearEvents = clearEvents;
 	t.slotSegHtml = slotSegHtml;
-
-
+	
+	
 	// imports
 	DayEventRenderer.call(t);
 	var opt = t.opt;
@@ -29442,11 +29444,11 @@ function AgendaEventRenderer() {
 	// overrides
 	t.draggableDayEvent = draggableDayEvent;
 
-
-
+	
+	
 	/* Rendering
 	----------------------------------------------------------------------------*/
-
+	
 
 	function renderEvents(events, modifiedEventId) {
 		var i, len=events.length,
@@ -29467,14 +29469,14 @@ function AgendaEventRenderer() {
 
 		renderSlotSegs(compileSlotSegs(slotEvents), modifiedEventId);
 	}
-
-
+	
+	
 	function clearEvents() {
 		getDaySegmentContainer().empty();
 		getSlotSegmentContainer().empty();
 	}
 
-
+	
 	function compileSlotSegs(events) {
 		var colCnt = getColCnt(),
 			minMinute = getMinMinute(),
@@ -29556,14 +29558,14 @@ function AgendaEventRenderer() {
 			return addMinutes(cloneDate(event.start), opt('defaultEventMinutes'));
 		}
 	}
-
-
+	
+	
 	// renders events in the 'time slots' at the bottom
 	// TODO: when we refactor this, when user returns `false` eventRender, don't have empty space
 	// TODO: refactor will include using pixels to detect collisions instead of dates (handy for seg cmp)
-
+	
 	function renderSlotSegs(segs, modifiedEventId) {
-
+	
 		var i, segCnt=segs.length, seg,
 			event,
 			top,
@@ -29582,7 +29584,7 @@ function AgendaEventRenderer() {
 			height,
 			slotSegmentContainer = getSlotSegmentContainer(),
 			isRTL = opt('isRTL');
-
+			
 		// calculate position/dimensions, create html
 		for (i=0; i<segCnt; i++) {
 			seg = segs[i];
@@ -29633,7 +29635,7 @@ function AgendaEventRenderer() {
 
 		slotSegmentContainer[0].innerHTML = html; // faster than html()
 		eventElements = slotSegmentContainer.children();
-
+		
 		// retrieve elements, run through eventRender callback, bind event handlers
 		for (i=0; i<segCnt; i++) {
 			seg = segs[i];
@@ -29662,9 +29664,9 @@ function AgendaEventRenderer() {
 				reportEventElement(event, eventElement);
 			}
 		}
-
+		
 		lazySegBind(slotSegmentContainer, segs, bindSlotSeg);
-
+		
 		// record event sides and title positions
 		for (i=0; i<segCnt; i++) {
 			seg = segs[i];
@@ -29677,7 +29679,7 @@ function AgendaEventRenderer() {
 				}
 			}
 		}
-
+		
 		// set all positions/dimensions at once
 		for (i=0; i<segCnt; i++) {
 			seg = segs[i];
@@ -29696,10 +29698,10 @@ function AgendaEventRenderer() {
 				trigger('eventAfterRender', event, event, eventElement);
 			}
 		}
-
+					
 	}
-
-
+	
+	
 	function slotSegHtml(event, seg) {
 		var html = "<";
 		var url = event.url;
@@ -29714,6 +29716,7 @@ function AgendaEventRenderer() {
 		if (seg.isEnd) {
 			classes.push('fc-event-end');
 		}
+		classes.push('md-whiteframe-z1');
 		classes = classes.concat(event.className);
 		if (event.source) {
 			classes = classes.concat(event.source.className || []);
@@ -29750,8 +29753,8 @@ function AgendaEventRenderer() {
 			"</" + (url ? "a" : "div") + ">";
 		return html;
 	}
-
-
+	
+	
 	function bindSlotSeg(event, eventElement, seg) {
 		var timeElement = eventElement.find('div.fc-event-time');
 		if (isEventDraggable(event)) {
@@ -29762,17 +29765,17 @@ function AgendaEventRenderer() {
 		}
 		eventElementHandlers(event, eventElement);
 	}
-
-
-
+	
+	
+	
 	/* Dragging
 	-----------------------------------------------------------------------------------*/
-
-
+	
+	
 	// when event starts out FULL-DAY
 	// overrides DayEventRenderer's version because it needs to account for dragging elements
 	// to and from the slot area.
-
+	
 	function draggableDayEvent(event, eventElement, seg) {
 		var isStart = seg.isStart;
 		var origWidth;
@@ -29865,10 +29868,10 @@ function AgendaEventRenderer() {
 			}
 		}
 	}
-
-
+	
+	
 	// when event starts out IN TIMESLOTS
-
+	
 	function draggableSlotEvent(event, eventElement, timeElement) {
 		var coordinateGrid = t.getCoordinateGrid();
 		var colCnt = getColCnt();
@@ -30021,13 +30024,13 @@ function AgendaEventRenderer() {
 		}
 
 	}
-
-
-
+	
+	
+	
 	/* Resizing
 	--------------------------------------------------------------------------------------*/
-
-
+	
+	
 	function resizableSlotEvent(event, eventElement, timeElement) {
 		var snapDelta, prevSnapDelta;
 		var snapHeight = getSnapHeight();
@@ -30068,7 +30071,7 @@ function AgendaEventRenderer() {
 			}
 		});
 	}
-
+	
 
 }
 
@@ -30284,8 +30287,8 @@ function compareSlotSegs(seg1, seg2) {
 
 function View(element, calendar, viewName) {
 	var t = this;
-
-
+	
+	
 	// exports
 	t.element = element;
 	t.calendar = calendar;
@@ -30307,22 +30310,22 @@ function View(element, calendar, viewName) {
 	// t.title
 	// t.start, t.end
 	// t.visStart, t.visEnd
-
-
+	
+	
 	// imports
 	var defaultEventEnd = t.defaultEventEnd;
 	var normalizeEvent = calendar.normalizeEvent; // in EventManager
 	var reportEventChange = calendar.reportEventChange;
-
-
+	
+	
 	// locals
 	var eventsByID = {}; // eventID mapped to array of events (there can be multiple b/c of repeating events)
 	var eventElementsByID = {}; // eventID mapped to array of jQuery elements
 	var eventElementCouples = []; // array of objects, { event, element } // TODO: unify with segment system
 	var options = calendar.options;
-
-
-
+	
+	
+	
 	function opt(name, viewNameOverride) {
 		var v = options[name];
 		if ($.isPlainObject(v)) {
@@ -30331,20 +30334,20 @@ function View(element, calendar, viewName) {
 		return v;
 	}
 
-
+	
 	function trigger(name, thisObj) {
 		return calendar.trigger.apply(
 			calendar,
 			[name, thisObj || t].concat(Array.prototype.slice.call(arguments, 2), [t])
 		);
 	}
-
+	
 
 
 	/* Event Editable Boolean Calculations
 	------------------------------------------------------------------------------*/
 
-
+	
 	function isEventDraggable(event) {
 		var source = event.source || {};
 		return firstDefined(
@@ -30357,8 +30360,8 @@ function View(element, calendar, viewName) {
 			)
 			&& !opt('disableDragging'); // deprecated
 	}
-
-
+	
+	
 	function isEventResizable(event) { // but also need to make sure the seg.isEnd == true
 		var source = event.source || {};
 		return firstDefined(
@@ -30371,13 +30374,13 @@ function View(element, calendar, viewName) {
 			)
 			&& !opt('disableResizing'); // deprecated
 	}
-
-
-
+	
+	
+	
 	/* Event Data
 	------------------------------------------------------------------------------*/
-
-
+	
+	
 	function setEventData(events) { // events are already normalized at this point
 		eventsByID = {};
 		var i, len=events.length, event;
@@ -30397,19 +30400,19 @@ function View(element, calendar, viewName) {
 		eventElementsByID = {};
 		eventElementCouples = [];
 	}
-
-
+	
+	
 	// returns a Date object for an event's end
 	function eventEnd(event) {
 		return event.end ? cloneDate(event.end) : defaultEventEnd(event);
 	}
-
-
-
+	
+	
+	
 	/* Event Elements
 	------------------------------------------------------------------------------*/
-
-
+	
+	
 	// report when view creates an element for an event
 	function reportEventElement(event, element) {
 		eventElementCouples.push({ event: event, element: element });
@@ -30426,8 +30429,8 @@ function View(element, calendar, viewName) {
 			t.trigger('eventDestroy', couple.event, couple.event, couple.element);
 		});
 	}
-
-
+	
+	
 	// attaches eventClick, eventMouseover, eventMouseout
 	function eventElementHandlers(event, eventElement) {
 		eventElement
@@ -30448,18 +30451,18 @@ function View(element, calendar, viewName) {
 		// TODO: don't fire eventMouseover/eventMouseout *while* dragging is occuring (on subject element)
 		// TODO: same for resizing
 	}
-
-
+	
+	
 	function showEvents(event, exceptElement) {
 		eachEventElement(event, exceptElement, 'show');
 	}
-
-
+	
+	
 	function hideEvents(event, exceptElement) {
 		eachEventElement(event, exceptElement, 'hide');
 	}
-
-
+	
+	
 	function eachEventElement(event, exceptElement, funcName) {
 		// NOTE: there may be multiple events per ID (repeating events)
 		// and multiple segments per event
@@ -30471,13 +30474,13 @@ function View(element, calendar, viewName) {
 			}
 		}
 	}
-
-
-
+	
+	
+	
 	/* Event Modification Reporting
 	---------------------------------------------------------------------------------*/
-
-
+	
+	
 	function eventDrop(e, event, dayDelta, minuteDelta, allDay, ev, ui) {
 		var oldAllDay = event.allDay;
 		var eventId = event._id;
@@ -30499,8 +30502,8 @@ function View(element, calendar, viewName) {
 		);
 		reportEventChange(eventId);
 	}
-
-
+	
+	
 	function eventResize(e, event, dayDelta, minuteDelta, ev, ui) {
 		var eventId = event._id;
 		elongateEvents(eventsByID[eventId], dayDelta, minuteDelta);
@@ -30520,13 +30523,13 @@ function View(element, calendar, viewName) {
 		);
 		reportEventChange(eventId);
 	}
-
-
-
+	
+	
+	
 	/* Event Modification Math
 	---------------------------------------------------------------------------------*/
-
-
+	
+	
 	function moveEvents(events, dayDelta, minuteDelta, allDay) {
 		minuteDelta = minuteDelta || 0;
 		for (var e, len=events.length, i=0; i<len; i++) {
@@ -30541,8 +30544,8 @@ function View(element, calendar, viewName) {
 			normalizeEvent(e, options);
 		}
 	}
-
-
+	
+	
 	function elongateEvents(events, dayDelta, minuteDelta) {
 		minuteDelta = minuteDelta || 0;
 		for (var e, len=events.length, i=0; i<len; i++) {
@@ -30817,7 +30820,7 @@ function View(element, calendar, viewName) {
 
 		return segments;
 	}
-
+	
 
 }
 
@@ -30826,13 +30829,13 @@ function View(element, calendar, viewName) {
 function DayEventRenderer() {
 	var t = this;
 
-
+	
 	// exports
 	t.renderDayEvents = renderDayEvents;
 	t.draggableDayEvent = draggableDayEvent; // made public so that subclasses can override
 	t.resizableDayEvent = resizableDayEvent; // "
-
-
+	
+	
 	// imports
 	var opt = t.opt;
 	var trigger = t.trigger;
@@ -31087,7 +31090,7 @@ function DayEventRenderer() {
 			html += "<div";
 		}
 		html +=
-			" class='md-whiteframe-z2 " + classNames.join(' ') + "'" +
+			" class='md-whiteframe-z1 " + classNames.join(' ') + "'" +
 			" style=" +
 				"'" +
 				"position:absolute;" +
@@ -31389,7 +31392,7 @@ function DayEventRenderer() {
 		eventElementHandlers(event, eventElement);
 	}
 
-
+	
 	function draggableDayEvent(event, eventElement) {
 		var hoverListener = getHoverListener();
 		var dayDelta;
@@ -31430,13 +31433,13 @@ function DayEventRenderer() {
 		});
 	}
 
-
+	
 	function resizableDayEvent(event, element, segment) {
 		var isRTL = opt('isRTL');
 		var direction = isRTL ? 'w' : 'e';
 		var handle = element.find('.ui-resizable-' + direction); // TODO: stop using this class because we aren't using jqui for this
 		var isResizing = false;
-
+		
 		// TODO: look into using jquery-ui mouse widget for this stuff
 		disableTextSelection(element); // prevent native <a> selection for IE
 		element
@@ -31450,7 +31453,7 @@ function DayEventRenderer() {
 					                               // (eventElementHandlers needs to be bound after resizableDayEvent)
 				}
 			});
-
+		
 		handle.mousedown(function(ev) {
 			if (ev.which != 1) {
 				return; // needs to be left mouse button
@@ -31512,7 +31515,7 @@ function DayEventRenderer() {
 					);
 				}
 			}, ev);
-
+			
 			function mouseup(ev) {
 				trigger('eventResizeStop', this, event, ev);
 				$('body').css('cursor', '');
@@ -31523,14 +31526,14 @@ function DayEventRenderer() {
 					// event redraw will clear helpers
 				}
 				// otherwise, the drag handler already restored the old events
-
+				
 				setTimeout(function() { // make this happen after the element's click event
 					isResizing = false;
 				},0);
 			}
 		});
 	}
-
+	
 
 }
 
@@ -31580,23 +31583,23 @@ function compareDaySegments(a, b) {
 
 function SelectionManager() {
 	var t = this;
-
-
+	
+	
 	// exports
 	t.select = select;
 	t.unselect = unselect;
 	t.reportSelection = reportSelection;
 	t.daySelectionMousedown = daySelectionMousedown;
-
-
+	
+	
 	// imports
 	var opt = t.opt;
 	var trigger = t.trigger;
 	var defaultSelectionEnd = t.defaultSelectionEnd;
 	var renderSelection = t.renderSelection;
 	var clearSelection = t.clearSelection;
-
-
+	
+	
 	// locals
 	var selected = false;
 
@@ -31614,7 +31617,7 @@ function SelectionManager() {
 			unselect(ev);
 		});
 	}
-
+	
 
 	function select(startDate, endDate, allDay) {
 		unselect();
@@ -31624,8 +31627,8 @@ function SelectionManager() {
 		renderSelection(startDate, endDate, allDay);
 		reportSelection(startDate, endDate, allDay);
 	}
-
-
+	
+	
 	function unselect(ev) {
 		if (selected) {
 			selected = false;
@@ -31633,14 +31636,14 @@ function SelectionManager() {
 			trigger('unselect', null, ev);
 		}
 	}
-
-
+	
+	
 	function reportSelection(startDate, endDate, allDay, ev) {
 		selected = true;
 		trigger('select', null, startDate, endDate, allDay, ev);
 	}
-
-
+	
+	
 	function daySelectionMousedown(ev) { // not really a generic manager method, oh well
 		var cellToDate = t.cellToDate;
 		var getIsCellAllDay = t.getIsCellAllDay;
@@ -31675,21 +31678,21 @@ function SelectionManager() {
 }
 
 ;;
-
+ 
 function OverlayManager() {
 	var t = this;
-
-
+	
+	
 	// exports
 	t.renderOverlay = renderOverlay;
 	t.clearOverlays = clearOverlays;
-
-
+	
+	
 	// locals
 	var usedOverlays = [];
 	var unusedOverlays = [];
-
-
+	
+	
 	function renderOverlay(rect, parent) {
 		var e = unusedOverlays.shift();
 		if (!e) {
@@ -31701,7 +31704,7 @@ function OverlayManager() {
 		usedOverlays.push(e.css(rect).show());
 		return e;
 	}
-
+	
 
 	function clearOverlays() {
 		var e;
@@ -31720,15 +31723,15 @@ function CoordinateGrid(buildFunc) {
 	var t = this;
 	var rows;
 	var cols;
-
-
+	
+	
 	t.build = function() {
 		rows = [];
 		cols = [];
 		buildFunc(rows, cols);
 	};
-
-
+	
+	
 	t.cell = function(x, y) {
 		var rowCnt = rows.length;
 		var colCnt = cols.length;
@@ -31747,8 +31750,8 @@ function CoordinateGrid(buildFunc) {
 		}
 		return (r>=0 && c>=0) ? { row:r, col:c } : null;
 	};
-
-
+	
+	
 	t.rect = function(row0, col0, row1, col1, originElement) { // row1,col1 is inclusive
 		var origin = originElement.offset();
 		return {
@@ -31771,8 +31774,8 @@ function HoverListener(coordinateGrid) {
 	var change;
 	var firstCell;
 	var cell;
-
-
+	
+	
 	t.start = function(_change, ev, _bindType) {
 		change = _change;
 		firstCell = cell = null;
@@ -31781,8 +31784,8 @@ function HoverListener(coordinateGrid) {
 		bindType = _bindType || 'mousemove';
 		$(document).bind(bindType, mouse);
 	};
-
-
+	
+	
 	function mouse(ev) {
 		_fixUIEvent(ev); // see below
 		var newCell = coordinateGrid.cell(ev.pageX, ev.pageY);
@@ -31798,14 +31801,14 @@ function HoverListener(coordinateGrid) {
 			cell = newCell;
 		}
 	}
-
-
+	
+	
 	t.stop = function() {
 		$(document).unbind(bindType, mouse);
 		return cell;
 	};
-
-
+	
+	
 }
 
 
@@ -31829,25 +31832,25 @@ function HorizontalPositionCache(getElement) {
 		elements = {},
 		lefts = {},
 		rights = {};
-
+		
 	function e(i) {
 		return elements[i] = elements[i] || getElement(i);
 	}
-
+	
 	t.left = function(i) {
 		return lefts[i] = lefts[i] === undefined ? e(i).position().left : lefts[i];
 	};
-
+	
 	t.right = function(i) {
 		return rights[i] = rights[i] === undefined ? t.left(i) + e(i).width() : rights[i];
 	};
-
+	
 	t.clear = function() {
 		elements = {};
 		lefts = {};
 		rights = {};
 	};
-
+	
 }
 
 ;;
@@ -61265,7 +61268,7 @@ angular.module('material.core')
 
     /**
      * Checks if the specified element has an ancestor (ancestor being parent, grandparent, etc)
-     * with the given attribute defined.
+     * with the given attribute defined. 
      *
      * Also pass in an optional `limit` (levels of ancestry to scan), default 4.
      */
@@ -61295,7 +61298,7 @@ angular.module('material.core')
      * Checks if two elements have the same parent
      */
     elementIsSibling: function elementIsSibling(element, otherElement) {
-      return element.parent().length &&
+      return element.parent().length && 
         (element.parent()[0] === otherElement.parent()[0]);
     },
 
@@ -61616,7 +61619,7 @@ angular.module('material.core')
     }
 
     /*
-     * Find the next item. If reloop is true and at the end of the list, it will
+     * Find the next item. If reloop is true and at the end of the list, it will 
      * go back to the first item. If given ,the `validate` callback will be used
      * determine whether the next item is valid. If not valid, it will try to find the
      * next item again.
@@ -61638,7 +61641,7 @@ angular.module('material.core')
     }
 
     /*
-     * Find the previous item. If reloop is true and at the beginning of the list, it will
+     * Find the previous item. If reloop is true and at the beginning of the list, it will 
      * go back to the last item. If given ,the `validate` callback will be used
      * determine whether the previous item is valid. If not valid, it will try to find the
      * previous item again.
@@ -61703,7 +61706,7 @@ angular.module('material.core')
   }
 }]);
 
-/*
+/* 
  * Since removing jQuery from the demos, some code that uses `element.focus()` is broken.
  *
  * We need to add `element.focus()`, because it's testable unlike `element[0].focus`.
@@ -61774,9 +61777,9 @@ angular.module('material.decorators', [])
  * Ink and Popup Effects
  */
 angular.module('material.animations', ['material.core'])
-  .service('$mdEffects', [
-    '$rootElement',
-    '$$rAF',
+  .service('$mdEffects', [ 
+    '$rootElement', 
+    '$$rAF', 
     '$sniffer',
     '$q',
     MdEffects
@@ -61802,7 +61805,7 @@ function MdEffects($rootElement, $$rAF, $sniffer, $q) {
 
   var webkit = /webkit/i.test($sniffer.vendorPrefix);
   function vendorProperty(name) {
-    return webkit ?
+    return webkit ? 
       ('webkit' + name.charAt(0).toUpperCase() + name.substring(1)) :
       name;
   }
@@ -61838,7 +61841,7 @@ function MdEffects($rootElement, $$rAF, $sniffer, $q) {
       var clickRect = clickElement[0].getBoundingClientRect();
       startPos = translateString(
         clickRect.left - element[0].offsetWidth,
-        clickRect.top - element[0].offsetHeight,
+        clickRect.top - element[0].offsetHeight, 
         0
       ) + ' scale(0.2)';
     } else {
@@ -61848,7 +61851,7 @@ function MdEffects($rootElement, $$rAF, $sniffer, $q) {
     element
       .css(self.TRANSFORM, startPos)
       .css('opacity', 0);
-
+    
     $$rAF(function() {
       $$rAF(function() {
         element
@@ -62009,7 +62012,7 @@ function InkRippleService($window, $$rAF, $mdEffects, $timeout, $mdUtil) {
       }
 
       var css = {
-        'background-color': $window.getComputedStyle(rippleEl[0]).color ||
+        'background-color': $window.getComputedStyle(rippleEl[0]).color || 
           $window.getComputedStyle(node).color,
         'border-radius': (containerWidth / 2) + 'px',
 
@@ -62055,7 +62058,7 @@ angular.module('material.animations')
 
 /**
  * noink/nobar/nostretch directive: make any element that has one of
- * these attributes be given a controller, so that other directives can
+ * these attributes be given a controller, so that other directives can 
  * `require:` these and see if there is a `no<xxx>` parent attribute.
  *
  * @usage
@@ -62172,7 +62175,7 @@ function MdBottomSheetDirective() {
  * `$mdBottomSheet` opens a bottom sheet over the app and provides a simple promise API.
  *
  * ### Restrictions
- *
+ * 
  * - The bottom sheet's template must have an outer `<md-bottom-sheet>` element.
  * - Add the `md-grid` class to the bottom sheet for a grid layout.
  * - Add the `md-list` class to the bottom sheet for a list layout.
@@ -62213,10 +62216,10 @@ function MdBottomSheetDirective() {
  *   template string.
  *   - `controller` - `{string=}`: The controller to associate with this bottom sheet.
  *   - `locals` - `{string=}`: An object containing key/value pairs. The keys will
- *   be used as names of values to inject into the controller. For example,
+ *   be used as names of values to inject into the controller. For example, 
  *   `locals: {three: 3}` would inject `three` into the controller with the value
  *   of 3.
- *   - `targetEvent` - `{DOMClickEvent=}`: A click's event object. When passed in as an option,
+ *   - `targetEvent` - `{DOMClickEvent=}`: A click's event object. When passed in as an option, 
  *   the location of the click will be used as the starting point for the opening animation
  *   of the the dialog.
  *   - `resolve` - `{object=}`: Similar to locals, except it takes promises as values
@@ -62232,7 +62235,7 @@ function MdBottomSheetDirective() {
  * @name $mdBottomSheet#hide
  *
  * @description
- * Hide the existing bottom sheet and resolve the promise returned from
+ * Hide the existing bottom sheet and resolve the promise returned from 
  * `$mdBottomSheet.show()`.
  *
  * @param {*=} response An argument for the resolved promise.
@@ -62244,7 +62247,7 @@ function MdBottomSheetDirective() {
  * @name $mdBottomSheet#cancel
  *
  * @description
- * Hide the existing bottom sheet and reject the promise returned from
+ * Hide the existing bottom sheet and reject the promise returned from 
  * `$mdBottomSheet.show()`.
  *
  * @param {*=} response An argument for the rejected promise.
@@ -62323,7 +62326,7 @@ function MdBottomSheet($$interimElement, $animate, $mdEffects, $timeout, $$rAF, 
       e.preventDefault();
       startTarget = e.target;
       startY = getY(e);
-
+      
       // Disable transitions on transform so that it feels fast
       transitionDelay = element.css($mdEffects.TRANSITION_DURATION);
       element.css($mdEffects.TRANSITION_DURATION, '0s');
@@ -62355,7 +62358,7 @@ function MdBottomSheet($$interimElement, $animate, $mdEffects, $timeout, $$rAF, 
 
       velocity = currentY - lastY;
       lastY = currentY;
-
+      
       // Do some conversion on delta to get a friction-like effect
       delta = adjustedDelta(delta);
       setTransformY(delta + MAX_OFFSET);
@@ -62502,6 +62505,9 @@ function MdButtonDirective(ngHrefDirectives, $mdInkRipple, $mdAria, $mdUtil, $md
         $mdTheming(element);
         $mdAria.expect(element, 'aria-label', element.text());
         $mdInkRipple.attachButtonBehavior(element);
+        scope.$watch(attr.ngDisabled, function(isDisabled) {
+          element.attr('tabindex', isDisabled ? -1 : 0);
+        });
       };
     }
   };
@@ -62520,7 +62526,7 @@ function MdButtonDirective(ngHrefDirectives, $mdInkRipple, $mdAria, $mdUtil, $md
 angular.module('material.components.card', [
 ])
   .directive('mdCard', [
-    mdCardDirective
+    mdCardDirective 
   ]);
 
 
@@ -62571,7 +62577,7 @@ angular.module('material.components.checkbox', [
   'material.services.theming',
   'material.services.aria'
 ])
-  .directive('mdCheckbox', [
+  .directive('mdCheckbox', [ 
     'inputDirective',
     '$mdInkRipple',
     '$mdAria',
@@ -62624,7 +62630,7 @@ function MdCheckboxDirective(inputDirectives, $mdInkRipple, $mdAria, $mdConstant
     restrict: 'E',
     transclude: true,
     require: '?ngModel',
-    template:
+    template: 
       '<div class="md-container" ink-ripple="checkbox">' +
         '<div class="md-icon"></div>' +
       '</div>' +
@@ -62657,6 +62663,11 @@ function MdCheckboxDirective(inputDirectives, $mdInkRipple, $mdAria, $mdConstant
 
       $mdAria.expect(tElement, 'aria-label', true);
 
+      scope.$watch(attr.ngDisabled, function(isDisabled) {
+        element.attr('aria-disabled', !!isDisabled);
+        element.attr('tabindex', isDisabled ? -1 : 0);
+      })
+
       // Reuse the original input[type=checkbox] directive from Angular core.
       // This is a bit hacky as we need our own event listener and own render
       // function.
@@ -62676,7 +62687,7 @@ function MdCheckboxDirective(inputDirectives, $mdInkRipple, $mdAria, $mdConstant
         }
       }
       function listener(ev) {
-        if (element[0].hasAttribute('disabled')) return;
+        if (element[0].hasAttribute('disabled') || element[0].getAttribute('aria-disabled') === 'true') return;
 
         scope.$apply(function() {
           checked = !checked;
@@ -62817,7 +62828,7 @@ function MdDialogDirective($$rAF, $mdTheming) {
  * - The dialog is always given an isolate scope.
  * - The dialog's template must have an outer `<md-dialog>` element.
  *   Inside, use an `<md-content>` element for the dialog's content, and use
- *   an element with class `md-actions` for the dialog's actions.
+ *   an element with class `md-actions` for the dialog's actions.  
  *
  * @usage
  * <hljs lang="html">
@@ -62835,7 +62846,7 @@ function MdDialogDirective($$rAF, $mdTheming) {
  *     $mdDialog.show({
  *       targetEvent: $event,
  *       controller: 'DialogController',
- *       template:
+ *       template: 
  *         '<md-dialog>' +
  *         '  <md-content>Hello!</md-content>' +
  *         '  <div class="md-actions">' +
@@ -62866,9 +62877,9 @@ function MdDialogDirective($$rAF, $mdTheming) {
  *
  * @param {object} options An options object, with the following properties:
  *   - `templateUrl` - `{string=}`: The url of a template that will be used as the content
- *   of the dialog.
+ *   of the dialog. 
  *   - `template` - `{string=}`: Same as templateUrl, except this is an actual template string.
- *   - `targetEvent` - `{DOMClickEvent=}`: A click's event object. When passed in as an option,
+ *   - `targetEvent` - `{DOMClickEvent=}`: A click's event object. When passed in as an option, 
  *     the location of the click will be used as the starting point for the opening animation
  *     of the the dialog.
  *   - `hasBackdrop` - `{boolean=}`: Whether there should be an opaque backdrop behind the dialog.
@@ -62934,7 +62945,7 @@ function MdDialogService($timeout, $rootElement, $compile, $mdEffects, $animate,
     // Incase the user provides a raw dom element, always wrap it in jqLite
     options.parent = angular.element(options.parent);
 
-    options.popInTarget = angular.element((options.targetEvent || {}).target);
+    options.popInTarget = angular.element((options.targetEvent || {}).target); 
     var closeButton = findCloseButton();
 
     configureAria(element.find('md-dialog'));
@@ -62946,8 +62957,8 @@ function MdDialogService($timeout, $rootElement, $compile, $mdEffects, $animate,
     }
 
     return $mdEffects.popIn(
-      element,
-      options.parent,
+      element, 
+      options.parent, 
       options.popInTarget.length && options.popInTarget
     )
     .then(function() {
@@ -63262,7 +63273,7 @@ function MdProgressCircularDirective($$rAF, $mdEffects, $mdTheming) {
 
   return {
     restrict: 'E',
-    template:
+    template: 
       '<div class="md-wrapper1"><div class="md-wrapper2"><div class="md-circle">' +
         '<div class="md-mask md-full">' +
           '<div class="md-fill"></div>' +
@@ -63340,7 +63351,7 @@ angular.module('material.components.progressLinear', [
   'material.services.aria'
 ])
 .directive('mdProgressLinear', [
-  '$$rAF',
+  '$$rAF', 
   '$mdEffects',
   '$mdTheming',
   MdProgressLinearDirective
@@ -63387,7 +63398,7 @@ function MdProgressLinearDirective($$rAF, $mdEffects, $mdTheming) {
       '</div>',
     compile: compile
   };
-
+  
   function compile(tElement, tAttrs, transclude) {
     tElement.attr('aria-valuemin', 0);
     tElement.attr('aria-valuemax', 100);
@@ -63748,8 +63759,8 @@ angular.module('material.components.sidenav', [
   'material.animations'
 ])
   .factory('$mdSidenav', [
-    '$mdComponentRegistry',
-    mdSidenavService
+    '$mdComponentRegistry', 
+    mdSidenavService 
   ])
   .directive('mdSidenav', [
     '$timeout',
@@ -63759,7 +63770,7 @@ angular.module('material.components.sidenav', [
     '$mdConstant',
     '$compile',
     '$mdTheming',
-    mdSidenavDirective
+    mdSidenavDirective 
   ])
   .controller('$mdSidenavController', [
     '$scope',
@@ -63768,9 +63779,9 @@ angular.module('material.components.sidenav', [
     '$timeout',
     '$mdSidenav',
     '$mdComponentRegistry',
-    mdSidenavController
+    mdSidenavController 
   ]);
-
+  
 /*
  * @private
  * @ngdoc object
@@ -63873,7 +63884,7 @@ function mdSidenavService($mdComponentRegistry) {
  *     </md-button>
  *   </md-content>
  *
- *   <md-sidenav component-id="right"
+ *   <md-sidenav component-id="right" 
  *     is-locked-open="$media('min-width: 333px')"
  *     class="md-sidenav-right">
  *     Right Nav!
@@ -64528,7 +64539,7 @@ function MdSticky($document, $mdEffects, $compile, $$rAF, $mdUtil) {
         return a.top < b.top ? -1 : 1;
       });
 
-      // Find which item in the list should be active,
+      // Find which item in the list should be active, 
       // based upon the content's current scroll position
       var item;
       var currentScrollTop = contentEl.prop('scrollTop');
@@ -64549,7 +64560,7 @@ function MdSticky($document, $mdEffects, $compile, $$rAF, $mdUtil) {
     // Find the `top` of an item relative to the content element,
     // and also the height.
     function refreshPosition(item) {
-      // Find the top of an item by adding to the offsetHeight until we reach the
+      // Find the top of an item by adding to the offsetHeight until we reach the 
       // content element.
       var current = item.element[0];
       item.top = 0;
@@ -64587,7 +64598,7 @@ function MdSticky($document, $mdEffects, $compile, $$rAF, $mdUtil) {
             translate(self.current, null);
           }
         }
-
+        
       // Scrolling up with a current sticky item?
       } else if (!isScrollingDown && self.current) {
         if (scrollTop < self.current.top) {
@@ -64607,7 +64618,7 @@ function MdSticky($document, $mdEffects, $compile, $$rAF, $mdUtil) {
         }
       }
     }
-
+     
    function setCurrentItem(item) {
      if (self.current === item) return;
      // Deactivate currently active item
@@ -64651,7 +64662,7 @@ function MdSticky($document, $mdEffects, $compile, $$rAF, $mdUtil) {
      } else {
        item.translateY = amount;
        item.clone.css(
-         $mdEffects.TRANSFORM,
+         $mdEffects.TRANSFORM, 
          'translate3d(' + item.left + 'px,' + amount + 'px,0)'
        );
      }
@@ -64678,7 +64689,7 @@ function MdSticky($document, $mdEffects, $compile, $$rAF, $mdUtil) {
 
   // Android 4.4 don't accurately give scroll events.
   // To fix this problem, we setup a fake scroll event. We say:
-  // > If a scroll or touchmove event has happened in the last DELAY milliseconds,
+  // > If a scroll or touchmove event has happened in the last DELAY milliseconds, 
   //   then send a `$scroll` event every animationFrame.
   // Additionally, we add $scrollstart and $scrollend events.
   function setupAugmentedScrollEvents(element) {
@@ -64748,7 +64759,7 @@ function MdSubheaderDirective($mdSticky, $compile, $mdTheming) {
     restrict: 'E',
     replace: true,
     transclude: true,
-    template:
+    template: 
       '<h2 class="md-subheader">' +
         '<span class="md-subheader-content"></span>' +
       '</h2>',
@@ -65060,7 +65071,7 @@ function MdSwitch(checkboxDirectives, radioButtonDirectives, $mdTheming) {
   };
 
   function compile(element, attr) {
-
+    
     var thumb = angular.element(element[0].querySelector('.md-switch-thumb'));
     //Copy down disabled attributes for checkboxDirective to use
     thumb.attr('disabled', attr.disabled);
@@ -65201,7 +65212,7 @@ function mdTextFloatDirective($mdTheming, $mdUtil, $parse) {
  * @description
  * Use the `<md-input-group>` directive as the grouping parent of a `<md-input>` element.
  *
- * @usage
+ * @usage 
  * <hljs lang="html">
  * <md-input-group ng-disabled="isDisabled">
  *   <label for="{{fid}}">{{someLabel}}</label>
@@ -65402,7 +65413,7 @@ function MdToastDirective() {
  *   - `template` - `{string=}`: Same as templateUrl, except this is an actual
  *     template string.
  *   - `hideDelay` - `{number=}`: How many milliseconds the toast should stay
- *     active before automatically closing.  Set to 0 or false to have the toast stay open until
+ *     active before automatically closing.  Set to 0 or false to have the toast stay open until 
  *     closed manually. Default: 3000.
  *   - `position` - `{string=}`: Where to place the toast. Available: any combination
  *     of 'bottom', 'left', 'top', 'right', 'fit'. Default: 'bottom left'.
@@ -65437,7 +65448,7 @@ function MdToastDirective() {
  * @name $mdToast#cancel
  *
  * @description
- * Hide the existing toast and reject the promise returned from
+ * Hide the existing toast and reject the promise returned from 
  * `$mdToast.show()`.
  *
  * @param {*=} response An argument for the rejected promise.
@@ -65543,16 +65554,16 @@ angular.module('material.components.toolbar', [
  * </div>
  * </hljs>
  *
- * @param {boolean=} scrollShrink Whether the header should shrink away as
- * the user scrolls down, and reveal itself as the user scrolls up.
- * Note: for scrollShrink to work, the toolbar must be a sibling of a
+ * @param {boolean=} scrollShrink Whether the header should shrink away as 
+ * the user scrolls down, and reveal itself as the user scrolls up. 
+ * Note: for scrollShrink to work, the toolbar must be a sibling of a 
  * `md-content` element, placed before it. See the scroll shrink demo.
  *
  *
  * @param {number=} shrinkSpeedFactor How much to change the speed of the toolbar's
  * shrinking by. For example, if 0.25 is given then the toolbar will shrink
  * at one fourth the rate at which the user scrolls down. Default 0.5.
- */
+ */ 
 function mdToolbarDirective($$rAF, $mdEffects, $mdUtil, $mdTheming) {
 
   return {
@@ -65608,7 +65619,7 @@ function mdToolbarDirective($$rAF, $mdEffects, $mdUtil, $mdTheming) {
           // As the user scrolls down, the content will be transformed up slowly
           // to put the content underneath where the toolbar was.
           contentElement.css(
-            'margin-top',
+            'margin-top', 
             (-toolbarHeight * shrinkSpeedFactor) + 'px'
           );
           onContentScroll();
@@ -65620,16 +65631,16 @@ function mdToolbarDirective($$rAF, $mdEffects, $mdUtil, $mdTheming) {
           debouncedUpdateHeight();
 
           y = Math.min(
-            toolbarHeight / shrinkSpeedFactor,
+            toolbarHeight / shrinkSpeedFactor, 
             Math.max(0, y + scrollTop - prevScrollTop)
           );
 
           element.css(
-            $mdEffects.TRANSFORM,
+            $mdEffects.TRANSFORM, 
             'translate3d(0,' + (-y * shrinkSpeedFactor) + 'px,0)'
           );
           contentElement.css(
-            $mdEffects.TRANSFORM,
+            $mdEffects.TRANSFORM, 
             'translate3d(0,' + ((toolbarHeight - y) * shrinkSpeedFactor) + 'px,0)'
           );
 
@@ -65684,7 +65695,7 @@ angular.module('material.components.tooltip', [
  * </md-icon>
  * </hljs>
  *
- * @param {expression=} visible Boolean bound to whether the tooltip is
+ * @param {expression=} visible Boolean bound to whether the tooltip is 
  * currently visible.
  */
 function MdTooltipDirective($timeout, $window, $$rAF, $document, $mdUtil, $mdTheming) {
@@ -65699,7 +65710,7 @@ function MdTooltipDirective($timeout, $window, $$rAF, $document, $mdUtil, $mdThe
     restrict: 'E',
     transclude: true,
     require: '^?mdContent',
-    template:
+    template: 
       '<div class="md-background"></div>' +
       '<div class="md-content" ng-transclude></div>',
     scope: {
@@ -65730,7 +65741,7 @@ function MdTooltipDirective($timeout, $window, $$rAF, $document, $mdUtil, $mdThe
       if (isVisible) showTooltip();
       else hideTooltip();
     });
-
+    
     var debouncedOnResize = $$rAF.debounce(onWindowResize);
     angular.element($window).on('resize', debouncedOnResize);
     function onWindowResize() {
@@ -65775,7 +65786,7 @@ function MdTooltipDirective($timeout, $window, $$rAF, $document, $mdUtil, $mdThe
       parent.attr('aria-describedby', element.attr('id'));
       tooltipParent.append(element);
 
-      // Wait until the element has been in the dom for two frames before
+      // Wait until the element has been in the dom for two frames before 
       // fading it in.
       // Additionally, we position the tooltip twice to avoid positioning bugs
       //positionTooltip();
@@ -65817,7 +65828,7 @@ function MdTooltipDirective($timeout, $window, $$rAF, $document, $mdUtil, $mdThe
 
       // If element bleeds over left/right of the window, place it on the edge of the window.
       newPosition.left = Math.min(
-        newPosition.left,
+        newPosition.left, 
         $window.innerWidth - tipRect.width - TOOLTIP_WINDOW_EDGE_SPACE
       );
       newPosition.left = Math.max(newPosition.left, TOOLTIP_WINDOW_EDGE_SPACE);
@@ -65914,9 +65925,9 @@ function AriaService($$rAF, $log) {
 angular.module('material.services.attrBind', [
 ])
   .factory('$attrBind', [
-    '$parse',
-    '$interpolate',
-    MdAttrBind
+    '$parse', 
+    '$interpolate', 
+    MdAttrBind 
   ]);
 
 /**
@@ -66070,11 +66081,11 @@ function mdCompilerService($q, $http, $injector, $compile, $controller, $templat
     *      * `key` - `{string}`: a name of a dependency to be injected into the controller.
     *      * `factory` - `{string|function}`: If `string` then it is an alias for a service.
     *        Otherwise if function, then it is injected and the return value is treated as the
-    *        dependency. If the result is a promise, it is resolved before its value is
+    *        dependency. If the result is a promise, it is resolved before its value is 
     *        injected into the controller.
     *
     * @returns {object=} promise A promise, which will be resolved with a `compileData` object.
-    * `compileData` has the following properties:
+    * `compileData` has the following properties: 
     *
     *   - `element` - `{element}`: an uncompiled element matching the provided template.
     *   - `link` - `{function(scope)}`: A link function, which, when called, will compile
@@ -66091,7 +66102,7 @@ function mdCompilerService($q, $http, $injector, $compile, $controller, $templat
     var locals = options.locals || {};
     var transformTemplate = options.transformTemplate || angular.identity;
 
-    // Take resolve values and invoke them.
+    // Take resolve values and invoke them.  
     // Resolves can either be a string (value: 'MyRegisteredAngularConst'),
     // or an invokable 'factory' of sorts: (value: function ValueGetter($dependency) {})
     angular.forEach(resolve, function(value, key) {
@@ -66177,7 +66188,7 @@ angular.module('material.services.interimElement', [
  *
  * @description
  *
- * Factory that contructs `$$interimElement.$service` services.
+ * Factory that contructs `$$interimElement.$service` services. 
  * Used internally in material design for elements that appear on screen temporarily.
  * The service provides a promise-like API for interacting with the temporary
  * elements.
@@ -66392,7 +66403,7 @@ function mdMediaFactory($window, $mdUtil, $timeout) {
   function add(query) {
     return cache.put(query, !!$window.matchMedia(query).matches);
   }
-
+  
   function updateAll() {
     var keys = cache.keys();
     if (keys.length) {
@@ -66418,8 +66429,8 @@ function mdMediaFactory($window, $mdUtil, $timeout) {
 angular.module('material.services.registry', [
 ])
   .factory('$mdComponentRegistry', [
-    '$log',
-    mdComponentRegistry
+    '$log', 
+    mdComponentRegistry 
   ]);
 
 /*
@@ -66542,9 +66553,9 @@ function Theming($injector) {
     applyTheme.inherit = function(el, parent) {
       var ctrl = parent.controller('mdTheme');
 
-      if (angular.isDefined(el.attr('md-theme-watch'))) {
-        var deregisterWatch = $rootScope.$watch(function() {
-          return ctrl && ctrl.$mdTheme || defaultTheme;
+      if (angular.isDefined(el.attr('md-theme-watch'))) { 
+        var deregisterWatch = $rootScope.$watch(function() { 
+          return ctrl && ctrl.$mdTheme || defaultTheme; 
         }, changeTheme);
         el.on('$destroy', deregisterWatch);
       } else {
@@ -66564,7 +66575,7 @@ function Theming($injector) {
 
     function applyTheme(scope, el) {
       // Allow us to be invoked via a linking function signature.
-      if (el === undefined) {
+      if (el === undefined) { 
         el = scope;
         scope = undefined;
       }
@@ -66687,7 +66698,7 @@ function TabPaginationDirective($mdEffects, $window, $$rAF, $$q, $timeout) {
 
   // TODO allow configuration of TAB_MIN_WIDTH
   // Must match tab min-width rule in _tabs.scss
-  var TAB_MIN_WIDTH = 8 * 12;
+  var TAB_MIN_WIDTH = 8 * 12; 
   // Must match (2 * width of paginators) in scss
   var PAGINATORS_WIDTH = (8 * 4) * 2;
 
@@ -66788,7 +66799,7 @@ function TabPaginationDirective($mdEffects, $window, $$rAF, $$q, $timeout) {
         state.pagesCount = Math.ceil((TAB_MIN_WIDTH * tabsCtrl.count()) / tabsWidth);
         state.itemsPerPage = Math.max(1, Math.floor(tabsCtrl.count() / state.pagesCount));
         state.tabWidth = tabsWidth / state.itemsPerPage;
-
+        
         tabsParent.css('width', state.tabWidth * tabsCtrl.count() + 'px');
         tabs.css('width', state.tabWidth + 'px');
 
@@ -66903,7 +66914,7 @@ function TabItemController(scope, element, $compile, $animate, $mdSwipe, $mdUtil
   function isDisabled() {
     return element[0].hasAttribute('disabled');
   }
-
+  
   /**
    * Add the tab's content to the DOM container area in the tabs,
    * @param contentArea the contentArea to add the content of the tab to
@@ -67137,7 +67148,7 @@ function MdTabDirective($mdInkRipple, $compile, $mdAria, $mdUtil, $mdConstant) {
       function watchActiveAttribute() {
         var unwatch = scope.$parent.$watch('!!(' + attr.active + ')', activeWatchAction);
         scope.$on('$destroy', unwatch);
-
+        
         function activeWatchAction(isActive) {
           var isSelected = tabsCtrl.selected() === tabItemCtrl;
 
@@ -67151,7 +67162,7 @@ function MdTabDirective($mdInkRipple, $compile, $mdAria, $mdUtil, $mdConstant) {
 
       function watchDisabled() {
         scope.$watch(tabItemCtrl.isDisabled, disabledWatchAction);
-
+        
         function disabledWatchAction(isDisabled) {
           element.attr('aria-disabled', isDisabled);
 
@@ -67195,7 +67206,7 @@ function MdTabDirective($mdInkRipple, $compile, $mdAria, $mdUtil, $mdConstant) {
 angular.module('material.components.tabs')
 
 .controller('$mdTabs', [
-  '$scope',
+  '$scope', 
   '$element',
   '$mdUtil',
   MdTabsController
@@ -67216,7 +67227,7 @@ function MdTabsController(scope, element, $mdUtil) {
   self.indexOf = tabsList.indexOf;
   self.itemAt = tabsList.itemAt;
   self.count = tabsList.count;
-
+  
   self.selected = selected;
   self.add = add;
   self.remove = remove;
@@ -67595,8 +67606,18 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "        </md-list>\n" +
     "\n" +
     "        <h3>Add a Calendar</h3>\n" +
-    "        <form>\n" +
-    "            <md-text-float label=\"Course e.g. CSC301H1 S LEC-0101\" hasErrors=\"{{modalData.calendarData.errors.title}}\" ng-model=\"modalData.calendarData.title\" templateUrl=\"templates/typeaheadMdInput.html\" ng-attr-courses=\"{{modalData.calendars}}\"> </md-text-float>\n" +
+    "        <form id=\"AddCalendarForm\">\n" +
+    "            <div ng-repeat=\"course in modalData.calendarData.courses\">\n" +
+    "                <md-text-float label=\"Course e.g. CSC301H1 S LEC-0101\" hasErrors=\"{{modalData.calendarData.errors.courses[$index]}}\" ng-model=\"modalData.calendarData.courses[$index].title\" templateUrl=\"templates/typeaheadMdInput.html\" ng-attr-courses=\"{{modalData.calendars}}\"> </md-text-float>\n" +
+    "                <md-button ng-if=\"modalData.calendarData.errors.courses.length > 1\" ng-click=\"removeCourseFromList($index)\">X</md-button>\n" +
+    "            </div>\n" +
+    "            <md-button ng-click=\"addMoreCourses()\">Add Another</md-button>\n" +
+    "            <h3>Get Courses From Rosi</h3>\n" +
+    "            <div class=\"row\">\n" +
+    "                <md-text-float label=\"Username\" hasErrors=\"{{modalData.calendarData.errors.username}}\" ng-model=\"modalData.calendarData.username\" templateUrl=\"templates/standardMdInput.html\"> </md-text-float>\n" +
+    "                <md-text-float label=\"Password\" type=\"password\" hasErrors=\"{{modalData.calendarData.errors.password}}\" ng-model=\"modalData.calendarData.password\" templateUrl=\"templates/standardMdInput.html\"> </md-text-float>\n" +
+    "            </div>\n" +
+    "            <md-button ng-click=\"getCoursesFromRosi()\">Get Courses</md-button>\n" +
     "        </form>\n" +
     "    </md-content>\n" +
     "    <div class=\"md-actions modal-buttons\">\n" +
@@ -67618,40 +67639,72 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
     "            </div>\n" +
     "            <div class=\"row\">\n" +
     "                <md-radio-group ng-model=\"modalData.eventData.calendar\" ng-show=\"shouldShowField('calendar')\" ng-change=\"selectCalendar()\">\n" +
-    "                    <md-radio-button ng-repeat=\"calendar in modalData.calendars\" ng-value=\"calendar\" aria-label=\"{{ calendar.name }}\">\n" +
+    "                    <md-radio-button ng-disabled=\"shouldDisabledField('calendar')\" ng-repeat=\"calendar in modalData.calendars\" ng-value=\"calendar\" aria-label=\"{{ calendar.name }}\">\n" +
     "                        {{ calendar.name }}\n" +
     "                    </md-radio-button>\n" +
     "                </md-radio-group>\n" +
     "                <md-radio-group ng-model=\"modalData.eventData.tagType\" ng-show=\"shouldShowField('tagType')\">\n" +
-    "                    <md-radio-button ng-repeat=\"tag in modalData.tagTypes\" ng-value=\"tag\" aria-label=\"{{ tag }}\">\n" +
+    "                    <md-radio-button ng-disabled=\"shouldDisabledField('tagType')\" ng-repeat=\"tag in modalData.tagTypes\" ng-value=\"tag\" aria-label=\"{{ tag }}\">\n" +
     "                        {{ tag }}\n" +
     "                    </md-radio-button>\n" +
     "                </md-radio-group>\n" +
     "            </div>\n" +
-    "            <md-text-float label=\"Type Number\" hasErrors=\"{{modalData.eventData.errors.tagNumber}}\" ng-show=\"shouldShowField('tagNumber')\" ng-model=\"modalData.eventData.tagNumber\"> </md-text-float>\n" +
-    "            <md-text-float label=\"Event Title\" hasErrors=\"{{modalData.eventData.errors.title}}\" ng-show=\"shouldShowField('title')\" ng-model=\"modalData.eventData.title\"> </md-text-float>\n" +
+    "            <md-text-float label=\"Type Number\" ng-disabled=\"shouldDisabledField('tagNumber')\" hasErrors=\"{{modalData.eventData.errors.tagNumber}}\" ng-show=\"shouldShowField('tagNumber')\" ng-model=\"modalData.eventData.tagNumber\"> </md-text-float>\n" +
+    "            <md-text-float label=\"Event Title\" ng-disabled=\"shouldDisabledField('title')\" hasErrors=\"{{modalData.eventData.errors.title}}\" ng-show=\"shouldShowField('title')\" ng-model=\"modalData.eventData.title\"> </md-text-float>\n" +
     "            <div class=\"row\">\n" +
-    "                <md-text-float label=\"Start Date\" hasErrors=\"{{modalData.eventData.errors.startDay}}\" ng-show=\"shouldShowField('startDate')\" ng-model=\"modalData.eventData.startDay\"> </md-text-float>\n" +
-    "                <md-text-float label=\"Start Time\" hasErrors=\"{{modalData.eventData.errors.startTime}}\" ng-show=\"shouldShowField('startTime')\" ng-model=\"modalData.eventData.startTime\"> </md-text-float>\n" +
+    "                <md-text-float label=\"Start Date\" ng-disabled=\"shouldDisabledField('startDay')\" hasErrors=\"{{modalData.eventData.errors.startDay}}\" ng-show=\"shouldShowField('startDate')\" ng-model=\"modalData.eventData.startDay\"> </md-text-float>\n" +
+    "                <md-text-float label=\"Start Time\" ng-disabled=\"shouldDisabledField('startTime')\" hasErrors=\"{{modalData.eventData.errors.startTime}}\" ng-show=\"shouldShowField('startTime')\" ng-model=\"modalData.eventData.startTime\"> </md-text-float>\n" +
     "            </div>\n" +
     "            <div class=\"row\">\n" +
-    "                <md-text-float label=\"End Date\" hasErrors=\"{{modalData.eventData.errors.endDay}}\" ng-show=\"shouldShowField('endDate')\" ng-model=\"modalData.eventData.endDay\"> </md-text-float>\n" +
-    "                <md-text-float label=\"End Time\" hasErrors=\"{{modalData.eventData.errors.endTime}}\" ng-show=\"shouldShowField('endTime')\" ng-model=\"modalData.eventData.endTime\"> </md-text-float>\n" +
+    "                <md-text-float label=\"End Date\" ng-disabled=\"shouldDisabledField('endDay')\" hasErrors=\"{{modalData.eventData.errors.endDay}}\" ng-show=\"shouldShowField('endDate')\" ng-model=\"modalData.eventData.endDay\"> </md-text-float>\n" +
+    "                <md-text-float label=\"End Time\" ng-disabled=\"shouldDisabledField('endTime')\" hasErrors=\"{{modalData.eventData.errors.endTime}}\" ng-show=\"shouldShowField('endTime')\" ng-model=\"modalData.eventData.endTime\"> </md-text-float>\n" +
     "            </div>\n" +
-    "            <md-switch aria-label=\"allDay\" ng-show=\"shouldShowField('allDay')\" ng-model=\"modalData.eventData.allDay\">\n" +
+    "            <md-switch aria-label=\"allDay\" ng-disabled=\"shouldDisabledField('allDay')\" ng-show=\"shouldShowField('allDay')\" ng-model=\"modalData.eventData.allDay\">\n" +
     "                All day event\n" +
     "            </md-switch>\n" +
     "        </form>\n" +
-    "        <p ng-show=\"shouldShowField('alternateTimes')\">events</p>\n" +
-    "        <p ng-show=\"shouldShowField('alternateTimes')\">{{ modalData.alternateTimes }}</p>\n" +
-    "        <p ng-show=\"shouldShowField('comments')\">comments</p>\n" +
-    "        <p ng-show=\"shouldShowField('comments')\">{{ modalData.comments }}</p>\n" +
+    "\n" +
+    "        <md-list ng-show=\"shouldShowField('alternateTimes')\">\n" +
+    "            <h4>Other Suggested Times</h4>\n" +
+    "            <md-item ng-repeat=\"item in modalData.alternateTimes\">\n" +
+    "                <md-item-content>\n" +
+    "                    <div class=\"md-tile-left\">\n" +
+    "                        <section layout=\"row\" layout-phone=\"column\" layout-align=\"center center\">\n" +
+    "                            <md-button ng-click=\"voteOnAlternative(item, 1)\" ng-disabled=\"item.userVote === 1\" class=\"md-raised md-primary\">+</md-button>\n" +
+    "                            <md-button ng-click=\"voteOnAlternative(item, -1)\" ng-disabled=\"item.userVote === -1\" class=\"md-raised md-warn\">-</md-button>\n" +
+    "                        </section>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"md-tile-content\">\n" +
+    "                        <h3>Start: {{item.startFormatted}}</h3>\n" +
+    "                        <h3>End: {{item.endFormatted}}</h3>\n" +
+    "                        <h3>Votes: {{item.voteTotal}}</h3>\n" +
+    "                    </div>\n" +
+    "                </md-item-content>\n" +
+    "          </md-item>\n" +
+    "        </md-list>\n" +
+    "\n" +
+    "        <md-list id=\"CommentList\" ng-show=\"shouldShowField('comments')\">\n" +
+    "            <h4>Comments</h4>\n" +
+    "            <md-item ng-repeat=\"item in modalData.comments\">\n" +
+    "                <md-item-content>\n" +
+    "                    <div class=\"md-tile-content\">\n" +
+    "                        <h3>\"{{item.comment}}\"</h3>\n" +
+    "                        <h4>-{{item.user}}</h4>\n" +
+    "                    </div>\n" +
+    "                </md-item-content>\n" +
+    "            </md-item>\n" +
+    "            <form>\n" +
+    "                <md-text-float id=\"CommentInput\" label=\"Comment\" hasErrors=\"{{modalData.eventData.errors.tagNumber}}\" ng-model=\"modalData.newComment\"> </md-text-float>\n" +
+    "                <md-button id=\"CommentSubmit\" ng-click=\"addComment()\" class=\"md-raised md-primary\">Add Comment</md-button>\n" +
+    "            </form>\n" +
+    "\n" +
+    "        </md-list>\n" +
     "    </md-content>\n" +
     "    <div class=\"md-actions modal-buttons\">\n" +
-    "        <md-button ng-disabled=\"isSaveDisabled()\" ng-click=\"save()\">Save</md-button>\n" +
+    "        <md-button ng-disabled=\"isSaveDisabled()\" ng-click=\"save()\" ng-if=\"!(modalData.eventData.calendar.isAppCalendar && !modalData.eventChanged)\">{{ modalData.saveButtonText }}</md-button>\n" +
     "        <md-button ng-click=\"cancel()\">Cancel</md-button>\n" +
     "    </div>\n" +
-    "</md-dialog>"
+    "</md-dialog>\n"
   );
 
 
@@ -67673,8 +67726,6 @@ angular.module('AppTemplates', []).run(['$templateCache', function($templateCach
 
 }]);
 
-
-
 Error.stackTraceLimit = Infinity;
 var myApp = angular.module("TimeTableApp", [
     "ngRoute",
@@ -67687,7 +67738,8 @@ var myApp = angular.module("TimeTableApp", [
     "timeTable.controllers.eventModal",
     "timeTable.controllers.calendarModal",
     "timeTable.service.eventService",
-    "timeTable.service.calendarService"
+    "timeTable.service.calendarService",
+    "timeTable.service.rosiService"
 ])
 .config(["$httpProvider", "$routeProvider", function($httpProvider, $routeProvider) {
     $httpProvider.defaults.xsrfCookieName = "csrftoken";
@@ -67711,13 +67763,42 @@ angular.module("timeTable.constants", [])
         calendarListUrl: jsBootstrap.calendarListUrl || "",
         eventListUrl: jsBootstrap.eventListUrl || "",
         eventUpdateUrl: jsBootstrap.eventUpdateUrl || "",
+        voteCreateUrl: jsBootstrap.voteCreateUrl || "",
+        commentCreateUrl: jsBootstrap.commentCreateUrl || "",
+        rosiCourseListUrl: jsBootstrap.rosiCourseListUrl || "",
         tagTypes: jsBootstrap.tagTypes || "",
-        staticUrl: jsBootstrap.staticUrl || ""
+        staticUrl: jsBootstrap.staticUrl || "",
+        userId: jsBootstrap.userId || ""
     };
 
     return {
         get: function(name) {
             return constants[name];
+        }
+    };
+}]);
+
+angular.module("timeTable.service.rosiService", [])
+.factory("RosiService", ["$q", "$http", "Constants", function($q, $http, Constants) {
+    return {
+        getCourses: function(username, password) {
+            var url = Constants.get('rosiCourseListUrl');
+            var params = {
+                'student_num': username,
+                'password': password
+            };
+
+            var defer = $q.defer();
+
+            $http({method: "POST", url: url, data: params})
+            .success(function(result){
+                defer.resolve(result);
+            })
+            .error(function(error){
+                defer.reject(error);
+            });
+
+            return defer.promise;
         }
     };
 }]);
@@ -67742,10 +67823,10 @@ angular.module("timeTable.service.calendarService", [])
             return defer.promise;
         },
 
-        addCalendar: function(title) {
+        addCalendar: function(courses) {
             var url = Constants.get('calendarListUrl');
             var params = {
-                title: title,
+                courses: courses,
             };
 
             var defer = $q.defer();
@@ -67799,7 +67880,7 @@ angular.module("timeTable.service.eventService", [])
 
             $http({method: "POST", url: url, data: params})
             .success(function(result){
-                defer.resolve(result, 1);
+                defer.resolve(result);
             })
             .error(function(error){
                 defer.reject(error);
@@ -67824,7 +67905,55 @@ angular.module("timeTable.service.eventService", [])
 
             $http({method: "PUT", url: url, data: params})
             .success(function(result){
-                defer.resolve(result, 1);
+                defer.resolve(result);
+            })
+            .error(function(error){
+                defer.reject(error);
+            });
+
+            return defer.promise;
+        },
+
+        voteForEvent: function(calendar, title, startDate, endDate, allDay, tagType, tagNumber, vote) {
+            var url = Constants.get('voteCreateUrl');
+            var params = {
+                calendar: calendar,
+                title: title,
+                start: startDate,
+                end: endDate,
+                all_day: allDay,
+                tag_type: tagType.toUpperCase(),
+                number: tagNumber,
+                vote: vote
+            };
+
+            var defer = $q.defer();
+
+            $http({method: "POST", url: url, data: params})
+            .success(function(result){
+                defer.resolve(result);
+            })
+            .error(function(error){
+                defer.reject(error);
+            });
+
+            return defer.promise;
+        },
+
+        commentOnEvent: function(calendar, tagType, tagNumber, comment) {
+            var url = Constants.get('commentCreateUrl');
+            var params = {
+                calendar: calendar,
+                tag_type: tagType.toUpperCase(),
+                number: tagNumber,
+                comment: comment
+            };
+
+            var defer = $q.defer();
+
+            $http({method: "POST", url: url, data: params})
+            .success(function(result){
+                defer.resolve(result);
             })
             .error(function(error){
                 defer.reject(error);
@@ -67835,7 +67964,7 @@ angular.module("timeTable.service.eventService", [])
     };
 }]);
 
-var calendarModalController = function ($scope, $mdDialog, Constants, CalendarService, calendars) {
+var calendarModalController = function ($scope, $mdDialog, Constants, CalendarService, RosiService, calendars) {
     var usersAppCalendars = [];
     for (i = 0; i < calendars.length; i++) {
         if (calendars[i].isAppCalendar) {
@@ -67848,8 +67977,10 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
             'calendars': [],
             'usersCalendars': usersAppCalendars,
             calendarData: {
-                'title': '',
-                'errors': {}
+                'courses': [{'title': ''}],
+                'errors': {
+                    'courses': ['']
+                }
             }
         };
         CalendarService.getCalendars().then(function (data) {
@@ -67912,24 +68043,23 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
 
     $scope.validateForm = function() {
         var calendarData = $scope.modalData.calendarData;
-        var errors = [];
-        $scope.modalData.calendarData.errors = {};
-        if (!calendarData.title) {
-            $scope.modalData.calendarData.errors.title = 'title is required';
-        } else {
-            var validCourse = calendarData.title.match("^([A-Z]{3})[0-9]{3}(H|Y)1 (F|S|Y) (LEC|TUT)-[0-9]{4}$");
-            if (!validCourse) {
-                $scope.modalData.calendarData.errors.title = 'invalid course format';
+        for (var i = 0; i < calendarData.courses.length; i++) {
+            calendarData.errors.courses[i] = '';
+            if (!calendarData.courses[i].title) {
+                calendarData.errors.courses[i] = 'title is required';
+            } else {
+                var validCourse = calendarData.courses[i].title.match("^([A-Z]{3})[0-9]{3}(H|Y)1 (F|S|Y) (LEC|TUT|PRA)-[0-9]{4}$");
+                if (!validCourse) {
+                    calendarData.errors.courses[i] = 'invalid course format';
+                }
             }
         }
         return {
-            'errors': errors
+            'errors': calendarData.errors
         };
     };
 
-
-
-    $scope.addCalendar = function() {
+    $scope.addCalendars = function() {
         var calendarData = $scope.modalData.calendarData;
         var validate = $scope.validateForm();
         if (validate.errors.length > 0) {
@@ -67938,7 +68068,11 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
         }
 
         var promise;
-        promise = CalendarService.addCalendar(calendarData.title);
+        var courses = [];
+        for (var i = 0; i < calendarData.courses.length; i++) {
+            courses.push(calendarData.courses[i].title);
+        }
+        promise = CalendarService.addCalendar(courses);
 
         promise.then(
             function (data) {
@@ -67950,7 +68084,7 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
     };
 
     $scope.save = function () {
-        $scope.addCalendar();
+        $scope.addCalendars();
     };
 
     $scope.cancel = function () {
@@ -67961,7 +68095,7 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
 };
 
 angular.module("timeTable.controllers.calendarModal", [])
-.controller("CalendarModalController", ["$scope", "$mdDialog", "Constants", "CalendarService", "calendars", calendarModalController]);
+.controller("CalendarModalController", ["$scope", "$mdDialog", "Constants", "CalendarService", "RosiService", "calendars", calendarModalController]);
 
 var eventModalController = function ($scope, $mdDialog, Constants, EventService, eventData, calendars) {
     $scope.open = function($event, opened) {
@@ -67987,9 +68121,11 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         return '';
     };
 
-
     $scope.$watch('modalData.eventData', function(newValue, oldValue) {
         $scope.validateForm();
+        if (newValue != oldValue) {
+            $scope.modalData.eventChanged = true;
+        }
     }, true);
 
     $scope.shouldShowField = function(field) {
@@ -68009,7 +68145,103 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
     };
 
     $scope.isSaveDisabled = function() {
-        return !($scope.modalData.eventData.calendar && (!$scope.modalData.eventData.calendar.isAppCalendar || !$scope.modalData.eventData.calendar.canEditEvents));
+        return !($scope.modalData.eventData.calendar && (!$scope.modalData.eventData.calendar.isAppCalendar || !$scope.modalData.eventData.calendar.canEditEvents)) && $scope.validateForm().errors.length > 0;
+    };
+
+    $scope.getUserVote = function(votes) {
+        for (var i = 0; i < votes.length; i++) {
+            if (votes[i].user === parseInt(Constants.get('userId'))) {
+                return votes[i].number;
+            }
+        }
+        return 0;
+    };
+
+    $scope.setUserVoteOnAlternative = function(alternative, vote) {
+        for (var i = 0; i < alternative.votes.length; i++) {
+            if (alternative.votes[i].user === parseInt(Constants.get('userId'))) {
+                alternative.votes[i].number = vote;
+                return;
+            }
+        }
+        alternative.votes.push({number: vote, user: parseInt(Constants.get('userId'))});
+    };
+
+    $scope.getVoteTotalForEvent = function(votes) {
+        var total = 0;
+        for (var i = 0; i < votes.length; i++) {
+            total = total + votes[i].number;
+        }
+        return total;
+    };
+
+    $scope.voteOnAlternative = function(alternative, vote) {
+        eventData = $scope.modalData.eventData;
+        promise = EventService.voteForEvent(eventData.calendar.id, eventData.title, alternative.start, alternative.end, alternative.all_day, $scope.modalData.initialEvent.description.tag.tag_type, $scope.modalData.initialEvent.description.tag.number, vote);
+        promise.then(
+            function (data) {
+                $scope.modalData.initialEvent.allDay = data.allDay;
+                $scope.modalData.initialEvent.start = data.start;
+                $scope.modalData.initialEvent.end = data.end;
+                $scope.modalData.initialEvent.description = data.description;
+                $scope.modalData.initialEvent.sequence = data.sequence;
+                $scope.modalData.comments = data.description.comments;
+                $scope.updateAlternatives(data.description.events);
+                $scope.modalData.alternateTimes = data.description.events;
+
+                $scope.modalData.sequence = data.sequence;
+                $scope.modalData.startDay = moment(data.start).format("YYYY/MM/DD");
+                $scope.modalData.startTime = moment(data.start).format("h:mma");
+                $scope.modalData.endDay = moment(data.end).format("YYYY/MM/DD");
+                $scope.modalData.endTime = moment(data.end).format("h:mma");
+                $scope.modalData.allDay = data.allDay;
+            }, function (reason) {
+                // Do nothing. The update failed.
+            }
+        );
+    };
+
+    $scope.updateAlternatives = function(events) {
+        for (var i = 0; i < events.length; i++) {
+            var formatStr;
+            if (events[i].allDay) {
+                formatStr = 'ddd, MMM Do';
+            } else {
+                formatStr = "ddd, MMM Do YYYY, h:mma";
+            }
+            events[i].startFormatted = moment(events[i].start).format(formatStr);
+            events[i].endFormatted = moment(events[i].end).format(formatStr);
+            events[i].userVote = $scope.getUserVote(events[i].votes);
+            events[i].voteTotal = $scope.getVoteTotalForEvent(events[i].votes);
+        }
+    };
+
+    $scope.addComment = function() {
+        var comment = $scope.modalData.newComment;
+        if (comment !== '' && comment !== undefined) {
+            promise = EventService.commentOnEvent(eventData.calendar.id, $scope.modalData.initialEvent.description.tag.tag_type, $scope.modalData.initialEvent.description.tag.number, comment);
+            promise.then(
+                function (data) {
+                    $scope.modalData.initialEvent.allDay = data.allDay;
+                    $scope.modalData.initialEvent.start = data.start;
+                    $scope.modalData.initialEvent.end = data.end;
+                    $scope.modalData.initialEvent.description = data.description;
+                    $scope.modalData.initialEvent.sequence = data.sequence;
+                    $scope.modalData.comments = data.description.comments;
+                    $scope.updateAlternatives(data.description.events);
+                    $scope.modalData.alternateTimes = data.description.events;
+
+                    $scope.modalData.sequence = data.sequence;
+                    $scope.modalData.startDay = moment(data.start).format("YYYY/MM/DD");
+                    $scope.modalData.startTime = moment(data.start).format("h:mma");
+                    $scope.modalData.endDay = moment(data.end).format("YYYY/MM/DD");
+                    $scope.modalData.endTime = moment(data.end).format("h:mma");
+                    $scope.modalData.allDay = data.allDay;
+                }, function (reason) {
+                    // Do nothing. The update failed.
+                }
+            );
+        }
     };
 
     $scope.init = function() {
@@ -68021,9 +68253,14 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
             userEventFields = ['calendar', 'id', 'title', 'sequence', 'startDate', 'endDate', 'startTime', 'endTime', 'allDay'];
             var calendar = $scope.getCalendarOption(calendars, eventData.calendar.id),
                 hasJsonDescription = (Object(eventData.description) === eventData.description);
+            if (hasJsonDescription) {
+                $scope.updateAlternatives(eventData.description.events);
+            }
             if (calendar.isAppCalendar) {
                 $scope.modalData = {
-                    'modalTitle': "Edit Event",
+                    'modalTitle': "Vote or Suggest a New Date and Time",
+                    'initialEvent': eventData,
+                    'saveButtonText': 'Suggest New Date',
                     'appEventFields': appEventFields,
                     'userEventFields': userEventFields,
                     'disabledEventFields': ['calendar', 'id', 'tagType', 'tagNumber'],
@@ -68032,11 +68269,13 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                     'comments': (hasJsonDescription && eventData.description.comments) || '',
                     'calendars': [calendar],
                     'tagTypes': (hasJsonDescription && eventData.description.tag && [(eventData.description.tag.tag_type.charAt(0).toUpperCase() + eventData.description.tag.tag_type.slice(1).toLowerCase())]) || [],
+                    'eventChanged': false,
                     eventData: {
                         'errors': {},
                         'calendar': calendar,
                         'id': eventData.id,
                         'sequence': eventData.sequence,
+                        'title': eventData.title,
                         'startDay': moment(eventData.start).format("YYYY/MM/DD"),
                         'endDay': moment(eventData.end).format("YYYY/MM/DD"),
                         'startTime': moment(eventData.start).format("h:mma"),
@@ -68049,7 +68288,9 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
             } else {
                 if (eventData.canEditEvents) {
                     $scope.modalData = {
+                        'saveButtonText': 'Save Changes',
                         'modalTitle': "Edit Event",
+                        'initialEvent': eventData,
                         'appEventFields': appEventFields,
                         'userEventFields': userEventFields,
                         'disabledEventFields': [],
@@ -68062,15 +68303,17 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                             'sequence': eventData.sequence,
                             'title': eventData.title,
                             'startDay': moment(eventData.start).format("YYYY/MM/DD"),
-                            'endDay': moment(eventData.end).add('hours', 1).format("YYYY/MM/DD"),
+                            'endDay': moment(eventData.end).format("YYYY/MM/DD"),
                             'startTime': moment(eventData.start).format("h:mma"),
-                            'endTime': moment(eventData.end).add('hours', 1).format("h:mma"),
+                            'endTime': moment(eventData.end).format("h:mma"),
                             'allDay': eventData.allDay,
                         }
                     };
                 } else {
                     $scope.modalData = {
-                        'modalTitle': "Edit Event",
+                        'saveButtonText': '',
+                        'modalTitle': "View Event",
+                        'initialEvent': eventData,
                         'appEventFields': appEventFields,
                         'userEventFields': userEventFields,
                         'disabledEventFields': ['title', 'startDay', 'endDay', 'startTime', 'endTime', 'allDay', 'calendar'],
@@ -68085,7 +68328,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
                             'startDay': moment(eventData.start).format("YYYY/MM/DD"),
                             'endDay': moment(eventData.end).format("YYYY/MM/DD"),
                             'startTime': moment(eventData.start).format("h:mma"),
-                            'endTime': moment(eventData.end).add('hours', 1).format("h:mma"),
+                            'endTime': moment(eventData.end).format("h:mma"),
                             'allDay': eventData.allDay,
                         }
                     };
@@ -68094,7 +68337,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
         } else {
             // new
             var eligableCreationCalendars = [];
-            for (i =0; i < calendars.length; i++) {
+            for (var i = 0; i < calendars.length; i++) {
                 if (calendars[i].isAppCalendar || calendars[i].canCreateEvents) {
                     eligableCreationCalendars.push(calendars[i]);
                 }
@@ -68102,6 +68345,7 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
             appEventFields = ['calendar', 'tagType', 'tagNumber', 'startDate', 'endDate', 'startTime', 'endTime', 'allDay'];
             userEventFields = ['calendar', 'title', 'startDate', 'endDate', 'startTime', 'endTime', 'allDay'];
             $scope.modalData = {
+                'saveButtonText': 'Add Event',
                 'modalTitle': "Create Event",
                 'calendars': eligableCreationCalendars,
                 'tagTypes': Constants.get('tagTypes'),
@@ -68126,6 +68370,11 @@ var eventModalController = function ($scope, $mdDialog, Constants, EventService,
     };
 
     $scope.validateForm = function() {
+        if (!$scope.modalData) {
+            return {
+                'errors': ['modal data is not defined']
+            };
+        }
         var eventData = $scope.modalData.eventData;
         var fields;
         var errors = [];
@@ -68292,8 +68541,16 @@ angular.module("timeTable.controllers.calendar", [])
         editable: true,
         header:{
           left: 'title',
-          center: 'month agendaWeek agendaDay',
+          center: 'month agendaWeek agendaDay basicWeek basicDay',
           right: 'today prev,next'
+        },
+        buttonText: {
+            today:    'today',
+            month:    'month',
+            week:     'week',
+            day:      'day',
+            agendaDay: 'agenda day',
+            agendaWeek: 'agenda week'
         },
         eventClick: $scope.editEvent,
         dayClick: $scope.dayClick,
@@ -68309,8 +68566,8 @@ angular.module("timeTable.controllers.calendar", [])
         EventService.getEvents()
             .then(function (data) {
                 var sourceNames = Object.keys(data);
-                //TODO: Add more before merging.
-                var eventColors = ['#E8860C', '#FF0000', '#7C0CE8', '#0D88FF', '#0DFFF9', '#92FF25', '#A8A8FF'];
+                //var eventColors = ['#E1BEE7', '#F8BBD0', '#B2DFDB', '#F0F4C3', '#FFECB3', '#C8E6C9', '#B3E5FC', '#FFCCBC', '#D7CCC8', '#B2EBF2', '#DCEDC8', '#C5CAE9', '#FFCDD2', '#BBDEFB', '#D1C4E9'];
+                var eventColors = ['#CE93D8', '#F48FB1', '#80CBC4', '#E6EE9C', '#FFE082', '#A5D6A7', '#81D4FA', '#FFAB91', '#BCAAA4', '#80DEEA', '#C5E1A5', '#9FA8DA', '#EF9A9A', '#90CAF9', '#B39DDB'];
                 for (var i = 0; i < sourceNames.length; i++) {
                     var source = sourceNames[i];
                     self.sources.push({

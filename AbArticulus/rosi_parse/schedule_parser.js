@@ -7,7 +7,7 @@ var password = casper.cli.raw.get(1);
 function getCourses() {
     var courses = document.querySelectorAll('#APPTable tr[valign="top"]');
     return Array.prototype.map.call(courses, function(e) {
-        return e.querySelector('b').innerHTML.substring(0, 10) + '-' + e.querySelector('td').innerText.split('\n')[1];
+        return e.querySelector('b').innerHTML.substring(0, 10) + ' ' + e.querySelector('td').innerText.split('\n')[1].replace(' ', '-');
     });
 }
 

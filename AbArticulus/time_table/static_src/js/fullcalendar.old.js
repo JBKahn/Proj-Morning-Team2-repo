@@ -73,7 +73,9 @@ var defaults = {
 		today: 'today',
 		month: 'month',
 		week: 'week',
-		day: 'day'
+		day: 'day',
+		adgendaWeek: 'adgenda week',
+		adgendaDay: 'adgenda day'
 	},
 	
 	// jquery-ui theming
@@ -3970,6 +3972,7 @@ function AgendaEventRenderer() {
 		if (seg.isEnd) {
 			classes.push('fc-event-end');
 		}
+		classes.push('md-whiteframe-z1');
 		classes = classes.concat(event.className);
 		if (event.source) {
 			classes = classes.concat(event.source.className || []);
@@ -5343,7 +5346,7 @@ function DayEventRenderer() {
 			html += "<div";
 		}
 		html +=
-			" class='md-whiteframe-z2 " + classNames.join(' ') + "'" +
+			" class='md-whiteframe-z1 " + classNames.join(' ') + "'" +
 			" style=" +
 				"'" +
 				"position:absolute;" +

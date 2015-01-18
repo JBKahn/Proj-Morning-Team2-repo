@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from time import sleep
 
 import requests
 from rest_framework import status
@@ -29,7 +30,7 @@ def get_google_api_endpoint_url(api_name, **kwargs):
 
 
 def make_request(user, url, params=None, method="GET", data=None):
-    retries = 2
+    retries = 3
     response = None
     while retries > 0 and (response is None or response.status_code != 200):
         if response is not None and response.status_code == status.HTTP_401_UNAUTHORIZED:
@@ -37,10 +38,12 @@ def make_request(user, url, params=None, method="GET", data=None):
             social = user.social_auth.get(provider='google-oauth2')
             strategy = load_strategy(response)
             social.refresh_token(strategy=strategy)
+            sleep(0.5)
         # Default params will pass other params if we need more.
         if params is None:
-            social = user.social_auth.get(provider='google-oauth2')
-            params = {'access_token': social.extra_data['access_token']}
+            params = {}
+        social = user.social_auth.get(provider='google-oauth2')
+        params.update({'access_token': social.extra_data['access_token']})
         if method == "GET":
             response = requests.get(
                 url=url,
@@ -85,5 +88,6 @@ def json_to_dict(event):
         'id': event.get('id'),
         'sequence': event.get('sequence'),
         'description': description,
-        'isAppEvent': event.get('creator', {}).get('email') == settings.EMAIL_OF_USER_WITH_CALENDARS
+        'isAppEvent': event.get('creator', {}).get('email') == settings.EMAIL_OF_USER_WITH_CALENDARS,
+        'isReccuring': event.get('recurringEventId') is not None
     }

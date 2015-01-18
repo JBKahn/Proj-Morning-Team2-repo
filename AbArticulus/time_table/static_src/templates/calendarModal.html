@@ -14,8 +14,18 @@
         </md-list>
 
         <h3>Add a Calendar</h3>
-        <form>
-            <md-text-float label="Course e.g. CSC301H1 S LEC-0101" hasErrors="{{modalData.calendarData.errors.title}}" ng-model="modalData.calendarData.title" templateUrl="templates/typeaheadMdInput.html" ng-attr-courses="{{modalData.calendars}}"> </md-text-float>
+        <form id="AddCalendarForm">
+            <div ng-repeat="course in modalData.calendarData.courses">
+                <md-text-float label="Course e.g. CSC301H1 S LEC-0101" hasErrors="{{modalData.calendarData.errors.courses[$index]}}" ng-model="modalData.calendarData.courses[$index].title" templateUrl="templates/typeaheadMdInput.html" ng-attr-courses="{{modalData.calendars}}"> </md-text-float>
+                <md-button ng-if="modalData.calendarData.errors.courses.length > 1" ng-click="removeCourseFromList($index)">X</md-button>
+            </div>
+            <md-button ng-click="addMoreCourses()">Add Another</md-button>
+            <h3>Get Courses From Rosi</h3>
+            <div class="row">
+                <md-text-float label="Username" hasErrors="{{modalData.calendarData.errors.username}}" ng-model="modalData.calendarData.username" templateUrl="templates/standardMdInput.html"> </md-text-float>
+                <md-text-float label="Password" type="password" hasErrors="{{modalData.calendarData.errors.password}}" ng-model="modalData.calendarData.password" templateUrl="templates/standardMdInput.html"> </md-text-float>
+            </div>
+            <md-button ng-click="getCoursesFromRosi()">Get Courses</md-button>
         </form>
     </md-content>
     <div class="md-actions modal-buttons">

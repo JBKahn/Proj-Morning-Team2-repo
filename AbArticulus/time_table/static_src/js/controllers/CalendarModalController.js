@@ -1,4 +1,4 @@
-var calendarModalController = function ($scope, $mdDialog, Constants, CalendarService, calendars) {
+var calendarModalController = function ($scope, $mdDialog, Constants, CalendarService, RosiService, calendars) {
     var usersAppCalendars = [];
     for (i = 0; i < calendars.length; i++) {
         if (calendars[i].isAppCalendar) {
@@ -11,8 +11,10 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
             'calendars': [],
             'usersCalendars': usersAppCalendars,
             calendarData: {
-                'title': '',
-                'errors': {}
+                'courses': [{'title': ''}],
+                'errors': {
+                    'courses': ['']
+                }
             }
         };
         CalendarService.getCalendars().then(function (data) {
@@ -75,24 +77,23 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
 
     $scope.validateForm = function() {
         var calendarData = $scope.modalData.calendarData;
-        var errors = [];
-        $scope.modalData.calendarData.errors = {};
-        if (!calendarData.title) {
-            $scope.modalData.calendarData.errors.title = 'title is required';
-        } else {
-            var validCourse = calendarData.title.match("^([A-Z]{3})[0-9]{3}(H|Y)1 (F|S|Y) (LEC|TUT)-[0-9]{4}$");
-            if (!validCourse) {
-                $scope.modalData.calendarData.errors.title = 'invalid course format';
+        for (var i = 0; i < calendarData.courses.length; i++) {
+            calendarData.errors.courses[i] = '';
+            if (!calendarData.courses[i].title) {
+                calendarData.errors.courses[i] = 'title is required';
+            } else {
+                var validCourse = calendarData.courses[i].title.match("^([A-Z]{3})[0-9]{3}(H|Y)1 (F|S|Y) (LEC|TUT|PRA)-[0-9]{4}$");
+                if (!validCourse) {
+                    calendarData.errors.courses[i] = 'invalid course format';
+                }
             }
         }
         return {
-            'errors': errors
+            'errors': calendarData.errors
         };
     };
 
-
-
-    $scope.addCalendar = function() {
+    $scope.addCalendars = function() {
         var calendarData = $scope.modalData.calendarData;
         var validate = $scope.validateForm();
         if (validate.errors.length > 0) {
@@ -101,7 +102,11 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
         }
 
         var promise;
-        promise = CalendarService.addCalendar(calendarData.title);
+        var courses = [];
+        for (var i = 0; i < calendarData.courses.length; i++) {
+            courses.push(calendarData.courses[i].title);
+        }
+        promise = CalendarService.addCalendar(courses);
 
         promise.then(
             function (data) {
@@ -113,7 +118,7 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
     };
 
     $scope.save = function () {
-        $scope.addCalendar();
+        $scope.addCalendars();
     };
 
     $scope.cancel = function () {
@@ -124,4 +129,4 @@ var calendarModalController = function ($scope, $mdDialog, Constants, CalendarSe
 };
 
 angular.module("timeTable.controllers.calendarModal", [])
-.controller("CalendarModalController", ["$scope", "$mdDialog", "Constants", "CalendarService", "calendars", calendarModalController]);
+.controller("CalendarModalController", ["$scope", "$mdDialog", "Constants", "CalendarService", "RosiService", "calendars", calendarModalController]);

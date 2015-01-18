@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.utils import timezone
 
-from abcalendar.models import Tag, Calendar, Event, GoogleEvent, Vote
+from abcalendar.models import Tag, Calendar, Event, GoogleEvent, Vote, Comment
 from abcalendar.serializers import GoogleEventSerializer, EventSerializer, VoteSerializer, TagSerializer
 from api.interfaces.google_api_interface import GoogleApiInterface
 from api.interfaces.helpers import json_to_dict
@@ -34,6 +34,10 @@ class ApiInterface(object):
         return response.json()
 
     @classmethod
+    def user_add_calendars(cls, user, titles):
+        return [cls.user_add_calendar(user, title) for title in titles]
+
+    @classmethod
     def user_add_calendar(cls, user, title):
         calendar_user = get_user_model().objects.get(email=settings.EMAIL_OF_USER_WITH_CALENDARS)
         calendars = cls.get_calendars_from_user(calendar_user)
@@ -51,7 +55,7 @@ class ApiInterface(object):
     def get_events_from_calendar(cls, user, calendar_id):
         response = GoogleApiInterface.get_events_from_calendar(user, calendar_id)
         if response.status_code != status.HTTP_200_OK:
-            raise UnexpectedResponseError(response.status_code)
+            raise UnexpectedResponseError(response.json())
         formated_events = []
         for item in response.json().get('items'):
             if item.get('status') != u'cancelled':
@@ -120,6 +124,125 @@ class ApiInterface(object):
             event_data=event_data,
             revision=revision
         )
+
+    @classmethod
+    def add_comment_to_event(cls, user, calendar_id, tag_data, comment_data):
+        if not Calendar.objects.filter(gid=calendar_id).exists():
+            raise ValueError("You cannot vote for a non app event")
+        calendar_object = Calendar.objects.get(gid=calendar_id)
+        if not Tag.objects.filter(**tag_data).exists():
+            raise ValueError("You cannot vote for a non existant event")
+        tag_object = Tag.objects.get(**tag_data)
+
+        if not GoogleEvent.objects.filter(tag=tag_object, calendar=calendar_object).exists():
+            raise ValueError("The event you're trying to vote on does not exist")
+
+        gevent = GoogleEvent.objects.get(tag=tag_object, calendar=calendar_object)
+        if len(comment_data.get('comment')) < 1:
+            raise ValueError("The comment length must be greater than 0")
+
+        Comment.objects.create(gevent=gevent, user=user, comment=comment_data.get('comment'))
+
+        events = gevent.events.annotate(num_votes=Sum('votes__number'))
+        most_upvoted_event = max(events, key=lambda e: e.num_votes)
+        vote_count = most_upvoted_event.num_votes
+
+        if vote_count >= -1:
+            gevent.revision = gevent.revision + 1
+            gevent.save()
+
+            event_data = {
+                'start': timezone.localtime(most_upvoted_event.start),
+                'end': timezone.localtime(most_upvoted_event.end),
+                'recur_until': (most_upvoted_event.reccur_until and timezone.localtime(most_upvoted_event.reccur_until)) or most_upvoted_event.reccur_until,
+                'description': JSONRenderer().render(GoogleEventSerializer(gevent).data)
+            }
+            event_data['title'] = '{}: {} {}'.format(calendar_object.name, tag_object.tag_type.capitalize(), tag_object.number)
+            event_data = cls.create_event_from_dict(event_data)
+            event_data['sequence'] = gevent.revision
+            calendar_user = get_user_model().objects.get(email=settings.EMAIL_OF_USER_WITH_CALENDARS)
+            # TODO: remove. for testing only as we won't share the primary calendar
+            if calendar_id == settings.EMAIL_OF_USER_WITH_CALENDARS:
+                calendar_id = 'primary'
+            response = GoogleApiInterface.put_event_to_calendar(user=calendar_user, calendar_id=calendar_id, event_id=gevent.gid, event=event_data)
+            if response.status_code == status.HTTP_200_OK:
+                newEventData = json_to_dict(response.json())
+                newEventData['existing'] = True
+                return newEventData
+            else:
+                gevent.revision = gevent.revision - 1
+                gevent.save()
+        else:
+            return cls.delete_event_from_calendar(user=user, calendar_id=calendar_id, event_id=gevent.gid)
+
+    @classmethod
+    def vote_for_user_event(cls, user, calendar_id, event_data, tag_data, vote_data):
+        if not Calendar.objects.filter(gid=calendar_id).exists():
+            raise ValueError("You cannot vote for a non app event")
+        calendar_object = Calendar.objects.get(gid=calendar_id)
+        if not Tag.objects.filter(**tag_data).exists():
+            raise ValueError("You cannot vote for a non existant event")
+        tag_object = Tag.objects.get(**tag_data)
+        event_object_data = {
+            'start': event_data.get('start'),
+            'end': event_data.get('end'),
+            'all_day': event_data.get('all_day'),
+            'reccur_until': event_data.get('reccur_until'),
+        }
+
+        if not GoogleEvent.objects.filter(tag=tag_object, calendar=calendar_object).exists():
+            raise ValueError("The event you're trying to vote on does not exist")
+
+        gevent = GoogleEvent.objects.get(tag=tag_object, calendar=calendar_object)
+
+        if not gevent.events.filter(**event_object_data).exists():
+            raise ValueError("The event you're voting for does not have this alternative")
+        event_object = gevent.events.get(**event_object_data)
+
+        vote = vote_data.get('vote')
+        if vote == 1:
+            Vote.objects.filter(user=user, event__pk__in=gevent.events.values_list('pk', flat=True), number=1).delete()
+            Vote.objects.filter(user=user, event=event_object).delete()
+            Vote.objects.create(user=user, event=event_object, number=vote)
+        elif vote == -1:
+            Vote.objects.filter(user=user, event=event_object).delete()
+            Vote.objects.create(user=user, event=event_object, number=vote)
+        elif vote == 0:
+            Vote.objects.filter(user=user, event=event_object).delete()
+        else:
+            raise ValueError("This is not a valid vote, must be 1, -1 or 0")
+
+        events = gevent.events.annotate(num_votes=Sum('votes__number'))
+        most_upvoted_event = max(events, key=lambda e: e.num_votes)
+        vote_count = most_upvoted_event.num_votes
+
+        if vote_count >= -1:
+            gevent.revision = gevent.revision + 1
+            gevent.save()
+
+            event_data = {
+                'start': timezone.localtime(most_upvoted_event.start),
+                'end': timezone.localtime(most_upvoted_event.end),
+                'recur_until': (most_upvoted_event.reccur_until and timezone.localtime(most_upvoted_event.reccur_until)) or most_upvoted_event.reccur_until,
+                'description': JSONRenderer().render(GoogleEventSerializer(gevent).data)
+            }
+            event_data['title'] = '{}: {} {}'.format(calendar_object.name, tag_object.tag_type.capitalize(), tag_object.number)
+            event_data = cls.create_event_from_dict(event_data)
+            event_data['sequence'] = gevent.revision
+            calendar_user = get_user_model().objects.get(email=settings.EMAIL_OF_USER_WITH_CALENDARS)
+            # TODO: remove. for testing only as we won't share the primary calendar
+            if calendar_id == settings.EMAIL_OF_USER_WITH_CALENDARS:
+                calendar_id = 'primary'
+            response = GoogleApiInterface.put_event_to_calendar(user=calendar_user, calendar_id=calendar_id, event_id=gevent.gid, event=event_data)
+            if response.status_code == status.HTTP_200_OK:
+                newEventData = json_to_dict(response.json())
+                newEventData['existing'] = True
+                return newEventData
+            else:
+                gevent.revision = gevent.revision - 1
+                gevent.save()
+        else:
+            return cls.delete_event_from_calendar(user=user, calendar_id=calendar_id, event_id=gevent.gid)
 
     @classmethod
     def add_user_event(cls, user, calendar_id, event_data, tag_data):
